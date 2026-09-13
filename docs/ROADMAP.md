@@ -1,7 +1,7 @@
 # pcbtech build sequence
 
 1. Component provenance and accuracy gates.
-2. Typed pins, nets, and electrical-rule validation.
+2. Typed pins, nets, and topology-only electrical-rule validation. (initial slice complete)
 3. Deterministic digital event simulator.
 4. SPICE adapter with reproducible reference fixtures.
 5. Board stack-up, geometry, clearance, and current constraints.

@@ -5,8 +5,9 @@ mkdir -p build
 cxx="${CXX:-g++}"
 flags="-std=c++20 -Wall -Wextra -Wpedantic -Iinclude"
 
-$cxx $flags src/component.cpp tests/component_tests.cpp -o build/component_tests
+$cxx $flags src/component.cpp src/circuit.cpp tests/component_tests.cpp -o build/component_tests
 ./build/component_tests
-$cxx $flags src/component.cpp src/main.cpp -o build/pcbtech_validate
+$cxx $flags src/component.cpp src/circuit.cpp tests/circuit_tests.cpp -o build/circuit_tests
+./build/circuit_tests
+$cxx $flags src/component.cpp src/circuit.cpp src/main.cpp -o build/pcbtech_validate
 ./build/pcbtech_validate
-

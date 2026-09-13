@@ -12,7 +12,7 @@ pcbtech is an open-source, physics-grounded PCB construction game and engineerin
 
 ## First vertical slice
 
-The initial C++ core validates component records before they can enter a simulated design. It deliberately rejects unverified or physically invalid parts.
+The initial C++ core validates component records before they can enter a simulated design. It deliberately rejects unverified or physically invalid parts. Its topology-only electrical-rule checker also rejects duplicate net names, pins assigned to multiple nets, and conflicting power or digital outputs. Dangling nets are reported as warnings because intent cannot be inferred safely.
 
 ```bash
 cmake -S . -B build
