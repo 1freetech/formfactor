@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-add_library(pcbtech_core src/component.cpp src/circuit.cpp src/digital.cpp src/spice.cpp src/stackup.cpp src/layout.cpp src/impedance.cpp src/return_path.cpp src/pdn.cpp src/decoupling.cpp)
+add_library(pcbtech_core src/component.cpp src/catalog.cpp src/circuit.cpp src/digital.cpp src/spice.cpp src/stackup.cpp src/layout.cpp src/impedance.cpp src/return_path.cpp src/pdn.cpp src/decoupling.cpp)
 target_include_directories(pcbtech_core PUBLIC include)
 target_compile_options(pcbtech_core PRIVATE -Wall -Wextra -Wpedantic)
 
@@ -21,6 +21,10 @@ enable_testing()
 add_executable(component_tests tests/component_tests.cpp)
 target_link_libraries(component_tests PRIVATE pcbtech_core)
 add_test(NAME component_validation COMMAND component_tests)
+
+add_executable(catalog_tests tests/catalog_tests.cpp)
+target_link_libraries(catalog_tests PRIVATE pcbtech_core)
+add_test(NAME catalog_linkage COMMAND catalog_tests)
 
 add_executable(circuit_tests tests/circuit_tests.cpp)
 target_link_libraries(circuit_tests PRIVATE pcbtech_core)
