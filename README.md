@@ -24,6 +24,8 @@ The initial layout model records pads, vias, and straight trace segments in exac
 
 Circular pad and via clearance is checked exactly across overlapping copper layers using 128-bit squared distances inside a declared safe numeric domain. Different nets must meet the sourced clearance; same-net copper is exempt. Trace and polygon clearance remain pending and are not approximated.
 
+Every trace also carries an explicit current load and sourced current limit in integer microamperes. Loads at the limit pass; overloads, missing values, and missing provenance block fabrication export. pcbtech does not yet calculate ampacity or current density because those require validated copper-thickness, temperature-rise, and thermal-boundary inputs.
+
 ```bash
 cmake -S . -B build
 cmake --build build

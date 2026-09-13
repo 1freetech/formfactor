@@ -109,6 +109,18 @@ LayoutValidation validate_layout(
     if (trace.start.x == trace.end.x && trace.start.y == trace.end.y) result.errors.emplace_back("trace must have nonzero length: " + trace.id);
     if (trace.width_nm < rules.minimum_trace_width_nm) result.errors.emplace_back("trace width below sourced rule: " + trace.id);
     if (trace.width_nm > kMaximumExactGeometryNm) result.errors.emplace_back("trace width exceeds exact numeric representation domain: " + trace.id);
+    if (!trace.current_load_microamps || !trace.current_limit_microamps) {
+      result.errors.emplace_back("trace current load and limit are required: " + trace.id);
+    } else {
+      if (*trace.current_load_microamps < 0 || *trace.current_limit_microamps <= 0) {
+        result.errors.emplace_back("trace current values must be non-negative load and positive limit: " + trace.id);
+      } else if (*trace.current_load_microamps > *trace.current_limit_microamps) {
+        result.errors.emplace_back("trace current load exceeds sourced limit: " + trace.id);
+      }
+    }
+    if (!single_line(trace.current_limit_source)) {
+      result.errors.emplace_back("authoritative trace current-limit source required: " + trace.id);
+    }
   }
   if (!result.errors.empty()) return result;
 
@@ -134,7 +146,7 @@ LayoutValidation validate_layout(
   std::vector<std::string> records;
   for (const auto& pad : pads) records.push_back("pad " + pad.id + " " + pad.net + " " + pad.layer + " " + std::to_string(pad.centre.x) + " " + std::to_string(pad.centre.y) + " " + std::to_string(pad.diameter_nm));
   for (const auto& via : vias) records.push_back("via " + via.id + " " + via.net + " " + via.start_layer + " " + via.end_layer + " " + std::to_string(via.centre.x) + " " + std::to_string(via.centre.y) + " " + std::to_string(via.diameter_nm) + " " + std::to_string(via.drill_nm));
-  for (const auto& trace : traces) records.push_back("trace " + trace.id + " " + trace.net + " " + trace.layer + " " + std::to_string(trace.start.x) + " " + std::to_string(trace.start.y) + " " + std::to_string(trace.end.x) + " " + std::to_string(trace.end.y) + " " + std::to_string(trace.width_nm));
+  for (const auto& trace : traces) records.push_back("trace " + trace.id + " " + trace.net + " " + trace.layer + " " + std::to_string(trace.start.x) + " " + std::to_string(trace.start.y) + " " + std::to_string(trace.end.x) + " " + std::to_string(trace.end.y) + " " + std::to_string(trace.width_nm) + " load_uA=" + std::to_string(*trace.current_load_microamps) + " limit_uA=" + std::to_string(*trace.current_limit_microamps) + " current_source=" + trace.current_limit_source);
   std::sort(records.begin(), records.end());
   std::ostringstream output;
   output << "pcbtech-layout-v1 " << board_width_nm << ' ' << board_height_nm << " nm source=" << rules.authoritative_source << '\n';

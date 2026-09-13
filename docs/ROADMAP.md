@@ -4,7 +4,7 @@
 2. Typed pins, nets, and topology-only electrical-rule validation. (initial slice complete)
 3. Deterministic three-state digital event simulator. (initial slice complete)
 4. SPICE adapter with reproducible reference fixtures. (canonical passive/DC operating-point export slice complete; solver execution pending)
-5. Board stack-up, geometry, clearance, and current constraints. (stackup, exact-nanometre geometry, and exact circular pad/via clearance slices complete; trace/shape clearance and current constraints pending)
+5. Board stack-up, geometry, clearance, and current constraints. (stackup, exact geometry, circular clearance, and sourced per-trace current-limit slices complete; trace/shape clearance and calculated ampacity pending)
 6. Thermal and power solvers with uncertainty reporting.
 7. KiCad import/export and DRC comparison.
 8. Interactive 3D board-construction interface.

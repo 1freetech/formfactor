@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -9,7 +10,17 @@ namespace pcbtech {
 struct PointNm { std::int64_t x{}; std::int64_t y{}; };
 struct PadGeometry { std::string id; std::string layer; PointNm centre; std::int64_t diameter_nm{}; std::string net; };
 struct ViaGeometry { std::string id; std::string start_layer; std::string end_layer; PointNm centre; std::int64_t diameter_nm{}; std::int64_t drill_nm{}; std::string net; };
-struct TraceGeometry { std::string id; std::string layer; PointNm start; PointNm end; std::int64_t width_nm{}; std::string net; };
+struct TraceGeometry {
+  std::string id;
+  std::string layer;
+  PointNm start;
+  PointNm end;
+  std::int64_t width_nm{};
+  std::string net;
+  std::optional<std::int64_t> current_load_microamps;
+  std::optional<std::int64_t> current_limit_microamps;
+  std::string current_limit_source;
+};
 
 struct LayoutRules {
   std::int64_t minimum_trace_width_nm{};
