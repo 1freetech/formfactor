@@ -20,6 +20,8 @@ The initial SPICE adapter exports a deterministic ngspice-compatible `.op` deck 
 
 The initial multilayer stackup model records top-to-bottom copper and dielectric layers with explicit micrometre units and authoritative material sources. It validates ordering, identity, thickness, and caller-supplied dielectric properties, emits a deterministic record, and blocks fabrication export when required data is invalid or missing. It does not yet calculate controlled impedance or assume fabrication tolerances.
 
+The initial layout model records pads, vias, and straight trace segments in exact integer nanometres. Caller-supplied, sourced manufacturing rules govern minimum trace width, via drill, and annular ring; invalid geometry or missing provenance blocks fabrication export. Spatial clearance, curved traces, polygons, and KiCad serialization remain pending.
+
 ```bash
 cmake -S . -B build
 cmake --build build

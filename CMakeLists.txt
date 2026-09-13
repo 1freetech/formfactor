@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-add_library(pcbtech_core src/component.cpp src/circuit.cpp src/digital.cpp src/spice.cpp src/stackup.cpp)
+add_library(pcbtech_core src/component.cpp src/circuit.cpp src/digital.cpp src/spice.cpp src/stackup.cpp src/layout.cpp)
 target_include_directories(pcbtech_core PUBLIC include)
 target_compile_options(pcbtech_core PRIVATE -Wall -Wextra -Wpedantic)
 
@@ -32,3 +32,7 @@ add_test(NAME spice_export COMMAND spice_tests)
 add_executable(stackup_tests tests/stackup_tests.cpp)
 target_link_libraries(stackup_tests PRIVATE pcbtech_core)
 add_test(NAME stackup_validation COMMAND stackup_tests)
+
+add_executable(layout_tests tests/layout_tests.cpp)
+target_link_libraries(layout_tests PRIVATE pcbtech_core)
+add_test(NAME layout_validation COMMAND layout_tests)
