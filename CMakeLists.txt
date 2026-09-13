@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-add_library(pcbtech_core src/component.cpp src/circuit.cpp src/digital.cpp src/spice.cpp src/stackup.cpp src/layout.cpp src/impedance.cpp)
+add_library(pcbtech_core src/component.cpp src/circuit.cpp src/digital.cpp src/spice.cpp src/stackup.cpp src/layout.cpp src/impedance.cpp src/return_path.cpp)
 target_include_directories(pcbtech_core PUBLIC include)
 target_compile_options(pcbtech_core PRIVATE -Wall -Wextra -Wpedantic)
 
@@ -40,3 +40,7 @@ add_test(NAME layout_validation COMMAND layout_tests)
 add_executable(impedance_tests tests/impedance_tests.cpp)
 target_link_libraries(impedance_tests PRIVATE pcbtech_core)
 add_test(NAME impedance_constraints COMMAND impedance_tests)
+
+add_executable(return_path_tests tests/return_path_tests.cpp)
+target_link_libraries(return_path_tests PRIVATE pcbtech_core)
+add_test(NAME return_path_constraints COMMAND return_path_tests)

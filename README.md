@@ -28,6 +28,8 @@ Every trace also carries an explicit current load and sourced current limit in i
 
 Controlled-impedance requirements can be recorded for single-ended traces and differential pairs in exact integer milliohms. Constraints require trace references, positive target/tolerance intervals, and authoritative sources. The current slice validates requirements only; it does not claim a routed structure meets them without a validated field solver.
 
+Return-path requirements bind signal traces to known reference nets with explicit maximum discontinuity lengths in integer nanometres and authoritative sources. The validator prepares deterministic solver input but does not claim physical continuity until reference-plane geometry is modeled and evaluated.
+
 ```bash
 cmake -S . -B build
 cmake --build build
