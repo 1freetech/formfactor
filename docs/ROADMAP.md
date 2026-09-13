@@ -4,6 +4,8 @@ Apply [simple instructions and component selection rules](INTERACTION_RULES.md) 
 
 The SDL workbench is currently a visual smoke-test prototype. It proves that a native window can launch; it is not the target graphics quality and must not drive engineering truth. Physics and validated data stay below visualization in the dependency graph.
 
+See [SEMICONDUCTOR_PHYSICS.md](SEMICONDUCTOR_PHYSICS.md) for the standing path from board/circuit physics through electromagnetic fields, semiconductor-device TCAD, quantum transport, and material/electronic-structure analysis.
+
 ## 1. Truth layer
 
 Build the authoritative, reproducible engineering record before higher-level game behavior.
@@ -80,6 +82,7 @@ See [VISUAL_ASSET_PIPELINE.md](VISUAL_ASSET_PIPELINE.md).
 ## 6. Lessons, engineering contracts, metrics, and sandbox
 
 - Progress from electrical fundamentals through component use, schematic capture, layout, verification, advanced PCB constraints, troubleshooting, and optimization.
+- Include a semiconductor-physics progression from atomic/crystal concepts through bands, doping, PN junctions, MOS structures, device transport, and only then advanced quantum/material views. Connect lessons to [SEMICONDUCTOR_PHYSICS.md](SEMICONDUCTOR_PHYSICS.md) so educational explanations never outrun the implemented solver/data layer.
 - Use realistic engineering briefs, datasheets, constraints, costs, availability, test evidence, and objective pass/fail outcomes.
 - Preserve an unrestricted sandbox alongside guided progression.
 - Add save/load/share only after file formats are versioned and reproducible.
@@ -89,7 +92,7 @@ SHENZHEN I/O, Turing Complete, CRUMB, and PC Building Simulator are design refer
 
 ## 7. Advanced solvers and calibration
 
-Add advanced thermal, power, signal-integrity, EMI/EMC, and electromagnetic/field analysis only when each solver has:
+Add advanced thermal, power, signal-integrity, EMI/EMC, electromagnetic/field, semiconductor-device, quantum-transport, and material/electronic-structure analysis only when each solver has:
 
 1. documented equations or an authoritative upstream interface;
 2. explicit units and boundary conditions;
@@ -99,6 +102,8 @@ Add advanced thermal, power, signal-integrity, EMI/EMC, and electromagnetic/fiel
 6. uncertainty/limitation reporting;
 7. deterministic or reproducibly bounded execution;
 8. measured-vs-modelled calibration support where real measurements exist.
+
+The intended solver ladder is documented in [SEMICONDUCTOR_PHYSICS.md](SEMICONDUCTOR_PHYSICS.md): SPICE/ngspice for circuit/compact models; a validated field solver such as openEMS for PCB electromagnetics; a TCAD interface such as DEVSIM for explicitly defined semiconductor devices; quantum-transport tools such as Kwant only for supplied microscopic models; and electronic-structure tools such as Quantum ESPRESSO only for explicit material/crystal calculations. These are candidate open interfaces, not claims of current integration.
 
 ngspice/SPICE, Qucs-S, Verilator, OpenROAD, KiCad, FreeCAD, and similar open tools may be integrated as license-compatible upstream engines or workflow references. Solver output must remain separable from visualization.
 
