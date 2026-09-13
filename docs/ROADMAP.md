@@ -66,6 +66,10 @@ Wokwi and Turing Complete are interaction/progression references only; pcbtech m
 ## 5. Responsive 2D then inspectable 3D workbench
 
 - Build a responsive 2D engineering workbench first: labelled category buttons, component cards, placement/snapping, wiring/routing interactions, linked schematic/board selection, and readable validation results.
+- Preserve a secondary `pcbtech 2D Lite` runtime profile for systems with limited RAM, GPU capability, or storage. It should use the same project files and engineering truth layer while omitting optional 3D assets, heavy materials, and other presentation-only costs. (required future profile; not implemented yet)
+- Prefer lazy/on-demand loading for component previews, textures, waveforms, and other nonessential assets so the full application does not require every visual resource in memory at once.
+- Measure startup time, peak memory, GPU/CPU load, and project-open time before claiming the Lite profile is faster or lighter. Performance targets must come from repeatable benchmarks rather than estimates.
+- Lite mode must not silently weaken ERC/DRC, electrical calculations, safety gates, or export rules. Any intentionally reduced-fidelity solver mode must be separately named, explicitly selected, and preserve its own provenance/limitations.
 - Add high-fidelity 3D inspection only after authoritative package/footprint/physical-model links exist.
 - Prefer manufacturer STEP models, verified KiCad-compatible 3D models, or models generated from sourced mechanical dimensions. Mark unverified assets `visual-only`.
 - Use the best license-compatible open graphics stack available; Godot, FreeCAD, KiCad, and related open tools may be used when their interfaces and licenses fit the architecture.
