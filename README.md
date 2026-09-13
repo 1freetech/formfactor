@@ -2,6 +2,10 @@
 
 pcbtech is an open-source, physics-grounded PCB construction game and engineering simulator. The long-term goal is an interactive board builder whose designs are accepted only when engineering solvers and manufacturing checks support them.
 
+Start with [Run pcbtech in VS Code](docs/GETTING_STARTED.md) for simple, numbered setup instructions. The current build runs in a terminal; the graphical workbench is still planned.
+
+All setup help and future game screens follow the [simple instructions and component selection rules](docs/INTERACTION_RULES.md): visible buttons, one action per step, and accurate links between component names, schematic symbols, physical packages, and simulation models.
+
 ## Accuracy contract
 
 - The renderer never decides whether a circuit works.
