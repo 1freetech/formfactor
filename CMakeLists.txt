@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-add_library(pcbtech_core src/component.cpp src/circuit.cpp)
+add_library(pcbtech_core src/component.cpp src/circuit.cpp src/digital.cpp)
 target_include_directories(pcbtech_core PUBLIC include)
 target_compile_options(pcbtech_core PRIVATE -Wall -Wextra -Wpedantic)
 
@@ -20,3 +20,7 @@ add_test(NAME component_validation COMMAND component_tests)
 add_executable(circuit_tests tests/circuit_tests.cpp)
 target_link_libraries(circuit_tests PRIVATE pcbtech_core)
 add_test(NAME circuit_validation COMMAND circuit_tests)
+
+add_executable(digital_tests tests/digital_tests.cpp)
+target_link_libraries(digital_tests PRIVATE pcbtech_core)
+add_test(NAME digital_simulation COMMAND digital_tests)

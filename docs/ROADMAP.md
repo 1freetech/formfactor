@@ -2,7 +2,7 @@
 
 1. Component provenance and accuracy gates.
 2. Typed pins, nets, and topology-only electrical-rule validation. (initial slice complete)
-3. Deterministic digital event simulator.
+3. Deterministic three-state digital event simulator. (initial slice complete)
 4. SPICE adapter with reproducible reference fixtures.
 5. Board stack-up, geometry, clearance, and current constraints.
 6. Thermal and power solvers with uncertainty reporting.
