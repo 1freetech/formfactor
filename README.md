@@ -22,7 +22,7 @@ The initial multilayer stackup model records top-to-bottom copper and dielectric
 
 The initial layout model records pads, vias, and straight trace segments in exact integer nanometres. Caller-supplied, sourced manufacturing rules govern minimum trace width, via drill, annular ring, and copper clearance; invalid geometry or missing provenance blocks fabrication export. Curved traces, polygons, and KiCad serialization remain pending.
 
-Circular pad and via clearance is checked exactly across overlapping copper layers using 128-bit squared distances inside a declared safe numeric domain. Different nets must meet the sourced clearance; same-net copper is exempt. Trace and polygon clearance remain pending and are not approximated.
+Circular pad and via clearance and straight-trace-to-circular-copper clearance are checked exactly across overlapping copper layers using 128-bit distance comparisons inside a declared safe numeric domain. Different nets must meet the sourced clearance; same-net copper is exempt. Trace-to-trace and polygon clearance remain pending and are not approximated.
 
 Every trace also carries an explicit current load and sourced current limit in integer microamperes. Loads at the limit pass; overloads, missing values, and missing provenance block fabrication export. pcbtech does not yet calculate ampacity or current density because those require validated copper-thickness, temperature-rise, and thermal-boundary inputs.
 

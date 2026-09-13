@@ -11,10 +11,12 @@ namespace pcbtech {
 namespace {
 #if defined(__GNUC__) || defined(__clang__)
 __extension__ typedef unsigned __int128 UInt128;
+__extension__ typedef __int128 Int128;
 #else
 #error "pcbtech exact clearance currently requires a compiler with unsigned 128-bit integers"
 #endif
-constexpr std::int64_t kMaximumExactGeometryNm = std::numeric_limits<std::int64_t>::max() / 4;
+// One metre keeps every squared and segment-distance product below 2^128.
+constexpr std::int64_t kMaximumExactGeometryNm = 1000000000;
 bool single_line(const std::string& value) {
   return !value.empty() && value.find('\n') == std::string::npos && value.find('\r') == std::string::npos;
 }
@@ -44,6 +46,36 @@ bool violates_clearance(const CircleCopper& a, const CircleCopper& b,
                            static_cast<UInt128>(2) * clearance_nm;
   return static_cast<UInt128>(4) * (static_cast<UInt128>(dx) * dx + static_cast<UInt128>(dy) * dy) <
          required * required;
+}
+bool violates_trace_circle_clearance(const TraceGeometry& trace, const std::size_t trace_layer,
+                                     const CircleCopper& circle,
+                                     const std::int64_t clearance_nm) {
+  if (trace.net == circle.net || trace_layer < circle.first_layer || trace_layer > circle.last_layer)
+    return false;
+  const auto vx = trace.end.x - trace.start.x;
+  const auto vy = trace.end.y - trace.start.y;
+  const auto wx = circle.centre.x - trace.start.x;
+  const auto wy = circle.centre.y - trace.start.y;
+  const Int128 projection = static_cast<Int128>(wx) * vx + static_cast<Int128>(wy) * vy;
+  const UInt128 length_squared = static_cast<UInt128>(vx >= 0 ? vx : -vx) *
+                                     static_cast<std::uint64_t>(vx >= 0 ? vx : -vx) +
+                                 static_cast<UInt128>(vy >= 0 ? vy : -vy) *
+                                     static_cast<std::uint64_t>(vy >= 0 ? vy : -vy);
+  const UInt128 required = static_cast<UInt128>(trace.width_nm) + circle.diameter_nm +
+                           static_cast<UInt128>(2) * clearance_nm;
+  if (projection <= 0 || static_cast<UInt128>(projection) >= length_squared) {
+    const PointNm endpoint = projection <= 0 ? trace.start : trace.end;
+    const auto dx = static_cast<std::uint64_t>(circle.centre.x >= endpoint.x ?
+        circle.centre.x - endpoint.x : endpoint.x - circle.centre.x);
+    const auto dy = static_cast<std::uint64_t>(circle.centre.y >= endpoint.y ?
+        circle.centre.y - endpoint.y : endpoint.y - circle.centre.y);
+    return static_cast<UInt128>(4) *
+               (static_cast<UInt128>(dx) * dx + static_cast<UInt128>(dy) * dy) <
+           required * required;
+  }
+  const Int128 cross = static_cast<Int128>(vx) * wy - static_cast<Int128>(vy) * wx;
+  const UInt128 magnitude = static_cast<UInt128>(cross < 0 ? -cross : cross);
+  return static_cast<UInt128>(4) * magnitude * magnitude < required * required * length_squared;
 }
 }  // namespace
 
@@ -138,6 +170,16 @@ LayoutValidation validate_layout(
     for (std::size_t b = a + 1; b < circles.size(); ++b) {
       if (violates_clearance(circles[a], circles[b], rules.minimum_clearance_nm)) {
         result.errors.emplace_back("copper clearance below sourced rule: " + circles[a].id + " to " + circles[b].id);
+      }
+    }
+  }
+  for (const auto& trace : traces) {
+    const auto trace_layer = layer_index.at(trace.layer);
+    for (const auto& circle : circles) {
+      if (violates_trace_circle_clearance(trace, trace_layer, circle,
+                                          rules.minimum_clearance_nm)) {
+        result.errors.emplace_back("copper clearance below sourced rule: " + trace.id +
+                                   " to " + circle.id);
       }
     }
   }

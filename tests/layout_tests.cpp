@@ -38,5 +38,18 @@ int main() {
   assert(validate_layout(10000000, 10000000, layers, rules, near_pad, vias, traces).valid());
   near_pad[1].centre.x = 0; near_pad[1].net = "GND";  // same-net overlap is not a clearance violation
   assert(validate_layout(10000000, 10000000, layers, rules, near_pad, vias, traces).valid());
+  const std::vector<TraceGeometry> clearance_trace{{"TC", "F_Cu", {1000000, 2000000},
+      {5000000, 2000000}, 100000, "VCC", 1, 1, "validated-ampacity-source"}};
+  std::vector<PadGeometry> trace_pad{{"PC", "F_Cu", {3000000, 2449999}, 600000, "GND"}};
+  assert(!validate_layout(10000000, 10000000, layers, rules, trace_pad, {}, clearance_trace).valid());
+  trace_pad[0].centre.y = 2450000;  // exact capsule clearance boundary is valid
+  assert(validate_layout(10000000, 10000000, layers, rules, trace_pad, {}, clearance_trace).valid());
+  trace_pad[0].centre = {5450000, 2000000};  // endpoint distance also uses exact clearance
+  assert(validate_layout(10000000, 10000000, layers, rules, trace_pad, {}, clearance_trace).valid());
+  trace_pad[0].centre.x = 5449999;
+  assert(!validate_layout(10000000, 10000000, layers, rules, trace_pad, {}, clearance_trace).valid());
+  trace_pad[0].centre = {3000000, 2000000}; trace_pad[0].net = "VCC";
+  assert(validate_layout(10000000, 10000000, layers, rules, trace_pad, {}, clearance_trace).valid());
+  assert(!validate_layout(1000000001, 10000000, layers, rules, pads, vias, traces).valid());
   assert(!validate_layout(0, 10000000, layers, rules, pads, vias, traces).valid());
 }

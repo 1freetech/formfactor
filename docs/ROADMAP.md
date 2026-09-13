@@ -4,7 +4,7 @@
 2. Typed pins, nets, and topology-only electrical-rule validation. (initial slice complete)
 3. Deterministic three-state digital event simulator. (initial slice complete)
 4. SPICE adapter with reproducible reference fixtures. (canonical passive/DC operating-point export slice complete; solver execution pending)
-5. Board stack-up, geometry, clearance, and current constraints. (stackup, exact geometry, circular clearance, and sourced per-trace current-limit slices complete; trace/shape clearance and calculated ampacity pending)
+5. Board stack-up, geometry, clearance, and current constraints. (stackup, exact geometry, circular and trace-to-circular clearance, and sourced per-trace current-limit slices complete; trace-to-trace/shape clearance and calculated ampacity pending)
    - Controlled impedance: deterministic sourced single-ended/differential constraint representation complete; solver evaluation pending.
    - Return paths: deterministic trace-to-reference-net requirement representation complete; plane geometry evaluation pending.
    - Power integrity: exact rational target-impedance requirement model complete; PDN/decoupling solver evaluation pending.
