@@ -30,6 +30,8 @@ Controlled-impedance requirements can be recorded for single-ended traces and di
 
 Return-path requirements bind signal traces to known reference nets with explicit maximum discontinuity lengths in integer nanometres and authoritative sources. The validator prepares deterministic solver input but does not claim physical continuity until reference-plane geometry is modeled and evaluated.
 
+PDN requirements use the standard target-impedance relationship `Z_target = delta-V / delta-I`. Ripple and load step are supplied in microvolts and microamps, then stored as an exact reduced rational impedance in ohms alongside bandwidth and provenance. No decimal precision, decoupling response, or pass result is fabricated.
+
 ```bash
 cmake -S . -B build
 cmake --build build

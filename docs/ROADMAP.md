@@ -7,6 +7,7 @@
 5. Board stack-up, geometry, clearance, and current constraints. (stackup, exact geometry, circular clearance, and sourced per-trace current-limit slices complete; trace/shape clearance and calculated ampacity pending)
    - Controlled impedance: deterministic sourced single-ended/differential constraint representation complete; solver evaluation pending.
    - Return paths: deterministic trace-to-reference-net requirement representation complete; plane geometry evaluation pending.
+   - Power integrity: exact rational target-impedance requirement model complete; PDN/decoupling solver evaluation pending.
 6. Thermal and power solvers with uncertainty reporting.
 7. KiCad import/export and DRC comparison.
 8. Interactive 3D board-construction interface.

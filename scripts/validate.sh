@@ -5,7 +5,7 @@ mkdir -p build
 cxx="${CXX:-g++}"
 flags="-std=c++20 -Wall -Wextra -Wpedantic -Iinclude"
 
-sources="src/component.cpp src/circuit.cpp src/digital.cpp src/spice.cpp src/stackup.cpp src/layout.cpp src/impedance.cpp src/return_path.cpp"
+sources="src/component.cpp src/circuit.cpp src/digital.cpp src/spice.cpp src/stackup.cpp src/layout.cpp src/impedance.cpp src/return_path.cpp src/pdn.cpp"
 
 $cxx $flags $sources tests/component_tests.cpp -o build/component_tests
 ./build/component_tests
@@ -23,5 +23,7 @@ $cxx $flags $sources tests/impedance_tests.cpp -o build/impedance_tests
 ./build/impedance_tests
 $cxx $flags $sources tests/return_path_tests.cpp -o build/return_path_tests
 ./build/return_path_tests
+$cxx $flags $sources tests/pdn_tests.cpp -o build/pdn_tests
+./build/pdn_tests
 $cxx $flags $sources src/main.cpp -o build/pcbtech_validate
 ./build/pcbtech_validate
