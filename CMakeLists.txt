@@ -12,6 +12,11 @@ target_compile_options(pcbtech_core PRIVATE -Wall -Wextra -Wpedantic)
 add_executable(pcbtech_validate src/main.cpp)
 target_link_libraries(pcbtech_validate PRIVATE pcbtech_core)
 
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(SDL2 REQUIRED IMPORTED_TARGET sdl2)
+add_executable(pcbtech_freelab src/workbench.cpp)
+target_link_libraries(pcbtech_freelab PRIVATE pcbtech_core PkgConfig::SDL2)
+
 enable_testing()
 add_executable(component_tests tests/component_tests.cpp)
 target_link_libraries(component_tests PRIVATE pcbtech_core)
