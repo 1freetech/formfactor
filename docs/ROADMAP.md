@@ -11,7 +11,7 @@ Build the authoritative, reproducible engineering record before higher-level gam
 - Component provenance and accuracy tiers. (initial slice complete)
   - [Finite component-rating gate](COMPONENT_RATING_VALIDATION.md): voltage, current, and junction-temperature scalars reject NaN and infinity, with unit-labelled errors propagated to catalogue validation. Numeric validity is not manufacturer-rating verification or high-voltage/thermal certification.
 - Versioned catalogue identity linking selected part, schematic symbol, footprint, physical model, simulation model, and explicit component-pin / footprint-pad / simulation-terminal mappings. (initial slice complete)
-- Exact unit-aware quantities. (initial decimal SI quantity slice complete; catalogue property integration pending)
+- Exact unit-aware quantities. (initial decimal SI quantity slice complete; unsupported unit/dimension identifiers now fail closed; catalogue property integration pending)
 - Typed pins, nets, and topology-only electrical-rule validation. (initial slice complete)
 - Deterministic three-state digital event simulator. (initial slice complete)
 - SPICE/model integration. (canonical passive/DC operating-point export slice complete; solver execution and model-library support pending)

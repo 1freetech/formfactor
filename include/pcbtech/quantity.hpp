@@ -88,12 +88,14 @@ class Quantity {
 
 // Constructs coefficient * 10^decimal_exponent * unit and stores it in exact
 // canonical SI decimal form. No binary floating-point value is introduced.
+// Unit values outside the explicitly supported enumeration fail closed.
 [[nodiscard]] std::optional<Quantity> make_quantity(
     std::int64_t coefficient, int decimal_exponent, Unit unit);
 
 // Constructs an already-SI decimal quantity at a validated import boundary.
 // The supported exponent range [-30, +30] matches the current SI prefix range
 // from quecto through quetta. Values outside it are rejected, not rounded.
+// Dimension values outside the explicitly supported enumeration are rejected.
 [[nodiscard]] std::optional<Quantity> make_si_quantity(
     std::int64_t coefficient, int exponent10, Dimension dimension);
 

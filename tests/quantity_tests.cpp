@@ -1,8 +1,10 @@
 #include "pcbtech/quantity.hpp"
 
+#include <array>
 #include <cassert>
 #include <cstdint>
 #include <limits>
+#include <utility>
 
 int main() {
   using pcbtech::Dimension;
@@ -78,4 +80,90 @@ int main() {
   assert(!pcbtech::make_si_quantity(1, -31, Dimension::Length));
   assert(!pcbtech::make_si_quantity(1, 31, Dimension::Length));
   assert(!pcbtech::make_quantity(1, 30, Unit::Gigahertz));
+
+  // Every declared unit maps to its physical dimension. These checks guard
+  // the fail-closed switch from accidentally rejecting or remapping a unit.
+  const std::array<std::pair<Unit, Dimension>, 33> supported_units{{
+      {Unit::One, Dimension::Dimensionless},
+      {Unit::Volt, Dimension::Voltage},
+      {Unit::Millivolt, Dimension::Voltage},
+      {Unit::Microvolt, Dimension::Voltage},
+      {Unit::Ampere, Dimension::Current},
+      {Unit::Milliampere, Dimension::Current},
+      {Unit::Microampere, Dimension::Current},
+      {Unit::Ohm, Dimension::Resistance},
+      {Unit::Kiloohm, Dimension::Resistance},
+      {Unit::Megaohm, Dimension::Resistance},
+      {Unit::Farad, Dimension::Capacitance},
+      {Unit::Millifarad, Dimension::Capacitance},
+      {Unit::Microfarad, Dimension::Capacitance},
+      {Unit::Nanofarad, Dimension::Capacitance},
+      {Unit::Picofarad, Dimension::Capacitance},
+      {Unit::Henry, Dimension::Inductance},
+      {Unit::Millihenry, Dimension::Inductance},
+      {Unit::Microhenry, Dimension::Inductance},
+      {Unit::Nanohenry, Dimension::Inductance},
+      {Unit::Hertz, Dimension::Frequency},
+      {Unit::Kilohertz, Dimension::Frequency},
+      {Unit::Megahertz, Dimension::Frequency},
+      {Unit::Gigahertz, Dimension::Frequency},
+      {Unit::Meter, Dimension::Length},
+      {Unit::Millimeter, Dimension::Length},
+      {Unit::Micrometer, Dimension::Length},
+      {Unit::Nanometer, Dimension::Length},
+      {Unit::Second, Dimension::Time},
+      {Unit::Millisecond, Dimension::Time},
+      {Unit::Microsecond, Dimension::Time},
+      {Unit::Nanosecond, Dimension::Time},
+      {Unit::Watt, Dimension::Power},
+      {Unit::Milliwatt, Dimension::Power},
+  }};
+  for (const auto& [unit, expected_dimension] : supported_units) {
+    const auto quantity = pcbtech::make_quantity(1, 0, unit);
+    const auto replay = pcbtech::make_quantity(1, 0, unit);
+    assert(quantity && replay);
+    assert(quantity->dimension() == expected_dimension);
+    assert(pcbtech::canonical_quantity_record(*quantity) ==
+           pcbtech::canonical_quantity_record(*replay));
+  }
+
+  const std::array supported_dimensions{
+      Dimension::Dimensionless, Dimension::Voltage, Dimension::Current,
+      Dimension::Resistance, Dimension::Capacitance, Dimension::Inductance,
+      Dimension::Frequency, Dimension::Length, Dimension::Time,
+      Dimension::Power};
+  for (const auto dimension : supported_dimensions) {
+    const auto quantity = pcbtech::make_si_quantity(1, 0, dimension);
+    assert(quantity && quantity->dimension() == dimension);
+  }
+
+  // Unsupported identifiers must fail closed instead of becoming a real
+  // dimension or silently falling back to a dimensionless quantity. Test the
+  // adjacent boundaries and distant values with signed and zero coefficients.
+  const std::array invalid_dimensions{
+      -1, 10, 1000, std::numeric_limits<int>::max()};
+  const std::array invalid_units{
+      -1, 33, 1000, std::numeric_limits<int>::max()};
+  const std::array coefficients{
+      std::numeric_limits<std::int64_t>::min(), std::int64_t{0},
+      std::numeric_limits<std::int64_t>::max()};
+  const std::array exponents{-30, 0, 30};
+  for (const auto raw : invalid_dimensions) {
+    const auto dimension = static_cast<Dimension>(raw);
+    for (const auto coefficient : coefficients) {
+      for (const auto exponent : exponents) {
+        assert(!pcbtech::make_si_quantity(coefficient, exponent, dimension));
+        assert(!pcbtech::make_si_quantity(coefficient, exponent, dimension));
+      }
+    }
+  }
+  for (const auto raw : invalid_units) {
+    const auto unit = static_cast<Unit>(raw);
+    for (const auto coefficient : coefficients) {
+      for (const auto exponent : exponents) {
+        assert(!pcbtech::make_quantity(coefficient, exponent, unit));
+        assert(!pcbtech::make_quantity(coefficient, exponent, unit));
+      }
+    }
+  }
 }

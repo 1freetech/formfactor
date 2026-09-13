@@ -12,7 +12,25 @@ constexpr int kMaxExponent10 = 30;
 struct UnitDefinition {
   Dimension dimension;
   int scale_exponent10;
+  bool supported{true};
 };
+
+constexpr bool valid_dimension(Dimension dimension) {
+  switch (dimension) {
+    case Dimension::Dimensionless:
+    case Dimension::Voltage:
+    case Dimension::Current:
+    case Dimension::Resistance:
+    case Dimension::Capacitance:
+    case Dimension::Inductance:
+    case Dimension::Frequency:
+    case Dimension::Length:
+    case Dimension::Time:
+    case Dimension::Power:
+      return true;
+  }
+  return false;
+}
 
 constexpr UnitDefinition definition(Unit unit) {
   switch (unit) {
@@ -50,7 +68,7 @@ constexpr UnitDefinition definition(Unit unit) {
     case Unit::Watt: return {Dimension::Power, 0};
     case Unit::Milliwatt: return {Dimension::Power, -3};
   }
-  return {Dimension::Dimensionless, 0};
+  return {Dimension::Dimensionless, 0, false};
 }
 
 struct DecimalValue {
@@ -114,6 +132,7 @@ std::string dimension_name(Dimension dimension) {
 std::optional<Quantity> make_si_quantity(std::int64_t coefficient,
                                          int exponent10,
                                          Dimension dimension) {
+  if (!valid_dimension(dimension)) return std::nullopt;
   if (exponent10 < kMinExponent10 || exponent10 > kMaxExponent10) {
     return std::nullopt;
   }
@@ -128,6 +147,7 @@ std::optional<Quantity> make_quantity(std::int64_t coefficient,
     return std::nullopt;
   }
   const auto unit_definition = definition(unit);
+  if (!unit_definition.supported) return std::nullopt;
   const int combined_exponent =
       decimal_exponent + unit_definition.scale_exponent10;
   if (combined_exponent < kMinExponent10 ||
