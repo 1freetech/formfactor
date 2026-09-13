@@ -18,6 +18,8 @@ All setup help and future game screens follow the [simple instructions and compo
 
 The initial C++ core validates component records before they can enter a simulated design. It deliberately rejects unverified or physically invalid parts. Its topology-only electrical-rule checker also rejects duplicate net names, pins assigned to multiple nets, and conflicting power or digital outputs. Dangling nets are reported as warnings because intent cannot be inferred safely.
 
+The catalogue links a stable part identity to revisioned symbol, footprint, physical-model, simulation-model, and explicit pin-mapping records. Its [initial quantity-property layer](docs/CATALOG_QUANTITY_PROPERTIES.md) attaches sourced exact-SI values, qualifiers, and optional conditions, then emits deterministic replay records. Missing properties stay absent; typed property schemas, numeric filtering, source authentication, and graphical component cards remain pending.
+
 The deterministic digital-event slice supports explicit-delay NOT, AND, and OR gates with `low`, `high`, and `unknown` states. Timing must be supplied by the caller; absent component timing is never fabricated.
 
 The initial SPICE adapter exports a deterministic ngspice-compatible `.op` deck for explicitly valued resistors and independent DC voltage sources. It enforces finite SI values, positive resistance, reference node `0`, unique references, and injection-safe identifiers. Solver execution and model-library support remain future work.

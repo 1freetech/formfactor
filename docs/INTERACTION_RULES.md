@@ -1,6 +1,6 @@
 # Simple instructions and accurate component selection
 
-Status: project requirements. The current application is a terminal engineering core. The component catalogue, selection cards, linked schematic/board views, and guided game interface below are planned work, not completed features.
+Status: project requirements. The current application is a terminal engineering core. Versioned catalogue identities, asset/pin mappings, and sourced exact quantity-property records have initial validated data-model slices. Catalogue search, selection cards, linked schematic/board views, and the guided game interface below remain planned work, not completed features.
 
 ## 1. Make each step easy to follow
 

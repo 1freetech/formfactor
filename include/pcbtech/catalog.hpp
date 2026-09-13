@@ -1,7 +1,9 @@
 #pragma once
 
 #include "pcbtech/component.hpp"
+#include "pcbtech/quantity.hpp"
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -31,6 +33,23 @@ struct PinMapping {
   std::string simulation_terminal;
 };
 
+// Describes what a sourced value claims. This is metadata, not a statement
+// that pcbtech has independently measured or verified the value.
+enum class QuantityValueQualifier { Nominal, Minimum, Typical, Maximum };
+
+struct CatalogQuantityProperty {
+  // Stable, project-internal record identifier such as "capacitance.nominal".
+  // Identifiers are deliberately separate from user-facing labels.
+  std::string property_id;
+  std::string display_name;
+  Quantity value;
+  QuantityValueQualifier qualifier{QuantityValueQualifier::Nominal};
+  // Source wording for applicable conditions. Absence remains explicit and
+  // must not be interpreted as an unconditional value by higher layers.
+  std::optional<std::string> conditions;
+  Source source;
+};
+
 struct CatalogEntry {
   std::string catalog_id;
   std::string display_name;
@@ -43,11 +62,19 @@ struct CatalogEntry {
   AssetLink physical_model;
   AssetLink simulation_model;
   std::vector<PinMapping> pin_mappings;
+  std::vector<CatalogQuantityProperty> quantity_properties;
 };
 
 struct CatalogValidationResult {
   std::vector<std::string> errors;
+  // Project-internal, versioned replay record. It is emitted only when the
+  // complete catalogue entry passes validation.
+  std::string canonical_quantity_property_record;
   [[nodiscard]] bool linked_model_ready() const { return errors.empty(); }
+  [[nodiscard]] bool quantity_properties_export_allowed() const {
+    return linked_model_ready() &&
+           !canonical_quantity_property_record.empty();
+  }
 };
 
 [[nodiscard]] CatalogValidationResult validate_catalog_entry(
