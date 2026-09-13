@@ -32,6 +32,8 @@ Return-path requirements bind signal traces to known reference nets with explici
 
 PDN requirements use the standard target-impedance relationship `Z_target = delta-V / delta-I`. Ripple and load step are supplied in microvolts and microamps, then stored as an exact reduced rational impedance in ohms alongside bandwidth and provenance. No decimal precision, decoupling response, or pass result is fabricated.
 
+Decoupling requirements bind known capacitor references to power nets with explicit minimum capacitance and voltage rating, maximum ESR and ESL, placement distance, and authoritative provenance. The validator emits deterministic solver input only; it does not infer bias derating, frequency response, mounting inductance, or PDN compliance.
+
 ```bash
 cmake -S . -B build
 cmake --build build

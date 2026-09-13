@@ -8,6 +8,7 @@
    - Controlled impedance: deterministic sourced single-ended/differential constraint representation complete; solver evaluation pending.
    - Return paths: deterministic trace-to-reference-net requirement representation complete; plane geometry evaluation pending.
    - Power integrity: exact rational target-impedance requirement model complete; PDN/decoupling solver evaluation pending.
+   - Decoupling: sourced capacitor electrical and placement requirement model complete; component-model and PDN-response evaluation pending.
 6. Thermal and power solvers with uncertainty reporting.
 7. KiCad import/export and DRC comparison.
 8. Interactive 3D board-construction interface.
