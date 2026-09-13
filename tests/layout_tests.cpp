@@ -4,11 +4,11 @@
 
 int main() {
   using namespace pcbtech;
-  const LayoutRules rules{100000, 200000, 75000, "fabricator-capability-document"};
+  const LayoutRules rules{100000, 200000, 75000, "fabricator-capability-document", 100000};
   const std::vector<std::string> layers{"F_Cu", "B_Cu"};
-  const std::vector<PadGeometry> pads{{"P1", "F_Cu", {0, 0}, 600000}};
-  const std::vector<ViaGeometry> vias{{"V1", "F_Cu", "B_Cu", {5000000, 5000000}, 350000, 200000}};
-  const std::vector<TraceGeometry> traces{{"T1", "F_Cu", {0, 0}, {5000000, 5000000}, 100000}};
+  const std::vector<PadGeometry> pads{{"P1", "F_Cu", {0, 0}, 600000, "GND"}};
+  const std::vector<ViaGeometry> vias{{"V1", "F_Cu", "B_Cu", {5000000, 5000000}, 350000, 200000, "GND"}};
+  const std::vector<TraceGeometry> traces{{"T1", "F_Cu", {0, 0}, {5000000, 5000000}, 100000, "GND"}};
   const auto valid = validate_layout(10000000, 10000000, layers, rules, pads, vias, traces);
   assert(valid.valid() && valid.fabrication_export_allowed());
   assert(valid.canonical_record == validate_layout(10000000, 10000000, layers, rules, pads, vias, traces).canonical_record);
@@ -25,5 +25,12 @@ int main() {
   assert(!validate_layout(10000000, 10000000, layers, rules, pads, bad_via, traces).valid());
   auto duplicate = traces; duplicate[0].id = "P1";
   assert(!validate_layout(10000000, 10000000, layers, rules, pads, vias, duplicate).valid());
+  auto near_pad = pads;
+  near_pad.push_back({"P2", "F_Cu", {799999, 0}, 800000, "VCC"});
+  assert(!validate_layout(10000000, 10000000, layers, rules, near_pad, vias, traces).valid());
+  near_pad[1].centre.x = 800000;  // exact clearance boundary is valid
+  assert(validate_layout(10000000, 10000000, layers, rules, near_pad, vias, traces).valid());
+  near_pad[1].centre.x = 0; near_pad[1].net = "GND";  // same-net overlap is not a clearance violation
+  assert(validate_layout(10000000, 10000000, layers, rules, near_pad, vias, traces).valid());
   assert(!validate_layout(0, 10000000, layers, rules, pads, vias, traces).valid());
 }

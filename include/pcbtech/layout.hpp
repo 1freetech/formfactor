@@ -7,15 +7,16 @@
 namespace pcbtech {
 
 struct PointNm { std::int64_t x{}; std::int64_t y{}; };
-struct PadGeometry { std::string id; std::string layer; PointNm centre; std::int64_t diameter_nm{}; };
-struct ViaGeometry { std::string id; std::string start_layer; std::string end_layer; PointNm centre; std::int64_t diameter_nm{}; std::int64_t drill_nm{}; };
-struct TraceGeometry { std::string id; std::string layer; PointNm start; PointNm end; std::int64_t width_nm{}; };
+struct PadGeometry { std::string id; std::string layer; PointNm centre; std::int64_t diameter_nm{}; std::string net; };
+struct ViaGeometry { std::string id; std::string start_layer; std::string end_layer; PointNm centre; std::int64_t diameter_nm{}; std::int64_t drill_nm{}; std::string net; };
+struct TraceGeometry { std::string id; std::string layer; PointNm start; PointNm end; std::int64_t width_nm{}; std::string net; };
 
 struct LayoutRules {
   std::int64_t minimum_trace_width_nm{};
   std::int64_t minimum_via_drill_nm{};
   std::int64_t minimum_annular_ring_nm{};
   std::string authoritative_source;
+  std::int64_t minimum_clearance_nm{};
 };
 
 struct LayoutValidation {
