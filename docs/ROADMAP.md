@@ -1,21 +1,125 @@
-# pcbtech build sequence
+# pcbtech dependency-aware roadmap
 
-Apply [simple instructions and component selection rules](INTERACTION_RULES.md) throughout this sequence. These rules are documented requirements; the component browser and graphical workbench are not implemented yet. The current executable is covered by [Run pcbtech in VS Code](GETTING_STARTED.md).
+Apply [simple instructions and component selection rules](INTERACTION_RULES.md) throughout this sequence. Preserve the lowercase `pcbtech` name and the accuracy contract: unknown data stays unknown, approximations are labelled, and no electrical, thermal, manufacturing, or safety claim is made without an implemented validator or solver backed by authoritative inputs.
 
-1. Component provenance and accuracy gates.
-   - Pending: versioned catalogue records linking the selected part, symbol, footprint, physical model, and explicit pin mappings. Include functional categories and unit-aware property filters. Follow the acceptance cases in the interaction rules.
-2. Typed pins, nets, and topology-only electrical-rule validation. (initial slice complete)
-3. Deterministic three-state digital event simulator. (initial slice complete)
-4. SPICE adapter with reproducible reference fixtures. (canonical passive/DC operating-point export slice complete; solver execution pending)
-5. Board stack-up, geometry, clearance, and current constraints. (stackup, exact geometry, circular and trace-to-circular clearance, and sourced per-trace current-limit slices complete; trace-to-trace/shape clearance and calculated ampacity pending)
-   - Controlled impedance: deterministic sourced single-ended/differential constraint representation complete; solver evaluation pending.
-   - Return paths: deterministic trace-to-reference-net requirement representation complete; plane geometry evaluation pending.
-   - Power integrity: exact rational target-impedance requirement model complete; PDN/decoupling solver evaluation pending.
-   - Decoupling: sourced capacitor electrical and placement requirement model complete; component-model and PDN-response evaluation pending.
-6. Thermal and power solvers with uncertainty reporting.
-7. KiCad import/export and DRC comparison.
-8. Interactive 3D board-construction interface.
-   - Pending: labelled category buttons, searchable component cards with symbol/package previews, linked selection across views, and numbered guidance showing one action and its expected result. Keep engineering details available through an explicit details control.
-9. Manufacturability gates and reproducible export bundles.
+The SDL workbench is currently a visual smoke-test prototype. It proves that a native window can launch; it is not the target graphics quality and must not drive engineering truth. Physics and validated data stay below visualization in the dependency graph.
 
-Each development cycle must make one bounded improvement, add or strengthen a test, run the full validation suite, and save only passing work.
+## 1. Truth layer
+
+Build the authoritative, reproducible engineering record before higher-level game behavior.
+
+- Component provenance and accuracy tiers. (initial slice complete)
+- Versioned catalogue identity linking selected part, schematic symbol, footprint, physical model, simulation model, and explicit component-pin / footprint-pad / simulation-terminal mappings. (initial slice complete)
+- Exact unit-aware quantities. (initial decimal SI quantity slice complete; catalogue property integration pending)
+- Typed pins, nets, and topology-only electrical-rule validation. (initial slice complete)
+- Deterministic three-state digital event simulator. (initial slice complete)
+- SPICE/model integration. (canonical passive/DC operating-point export slice complete; solver execution and model-library support pending)
+- Reproducible simulation records, solver/version provenance, deterministic inputs, and replayable outputs. (pending)
+
+Unit handling follows the BIPM SI Brochure and NIST SP 811. The current exact quantity slice stores decimal SI values without binary floating-point conversion and rejects unsupported exponent ranges rather than rounding them. Offset units such as degrees Celsius remain pending until affine conversion is implemented explicitly.
+
+## 2. PCB and advanced-technology layer
+
+Implement these in dependency order. A representation may exist before a solver, but it must never be reported as a solved physical result until a validated solver evaluates it.
+
+- Schematic connectivity and stable cross-view component references.
+- Board geometry: outlines, copper layers, pads, vias, traces, zones, keepouts, and mechanical objects.
+- Multilayer stackups with sourced material properties. (initial representation complete)
+- Exact geometry, sourced clearance, and per-trace current-limit checks. (partial implementation complete)
+- Controlled-impedance requirements and differential-pair constraints. (requirement representation complete; field-solver evaluation pending)
+- High-speed signal-integrity analysis only after validated transmission-line/field-solver interfaces exist.
+- Return-path requirements. (representation complete; reference-plane geometry evaluation pending)
+- Power integrity, target impedance, decoupling, and PDN analysis. (target-impedance and decoupling requirement representations complete; solver evaluation pending)
+- Current density and calculated ampacity only after copper thickness, temperature rise, material properties, and thermal boundary conditions are sourced.
+- Thermal vias, heat spreading, junction-to-board/package paths, and coupled thermal-power analysis only with validated thermal inputs.
+- Creepage, clearance, high-voltage safety, pollution/material-group assumptions, and applicable standard provenance. Never infer a safe working voltage from spacing alone.
+- EMI/EMC awareness and rule-based risk indicators first; field/radiated-emissions claims require validated solver or measured data.
+- Flex and rigid-flex layer/stackup concepts, bend regions, material data, and bend constraints only after format and material support are explicit.
+- BGA fanout, microvias, via-in-pad, filled/capped via attributes, and fabrication capability constraints.
+- DFM/DFA/DFT gates, test-point coverage, fixture-access records, and boundary-scan/JTAG concepts. Boundary scan must use explicit device/BSDL or equivalent authoritative data; do not invent scan-chain capability.
+- BOM, AVL, approved alternates, lifecycle/obsolescence risk, package/revision identity, and substitution safety.
+- Repairability metrics based on explicit access, package, tooling, documentation, and replacement constraints.
+- Manufacturing-yield models only when process capability distributions or measured production data are supplied; do not fabricate yield percentages.
+- Measured-vs-modelled calibration records that preserve instrument, fixture, environmental, solver, model, revision, uncertainty, and timestamp provenance.
+- KiCad-compatible import/export, DRC comparison, BOM/manufacturing bundles, and fabrication export gates.
+
+## 3. Instruments and visualization
+
+- Probes, multimeters, oscilloscopes, logic views, buses, and waveform history.
+- Voltage/current/power/thermal overlays sourced from solver results, never renderer guesses.
+- Pause, step, replay, run history, adjustable parameters, and exportable simulation records.
+- Clearly labelled fast/approximate versus high-accuracy/non-realtime modes where validated solver backends support both.
+- Separate CPU/GPU execution paths only when numerical equivalence/tolerance tests exist.
+
+Interaction inspiration may come from CRUMB, EveryCircuit/Falstad, SpaceSim, Logic World, Virtual Circuit Board, Retro Gadgets, and similar tools, but proprietary code, assets, branding, and protected content are never copied.
+
+## 4. Firmware and hardware co-simulation
+
+- Deterministic firmware/peripheral co-simulation with observable pins, buses, clocks, interrupts, and reproducible timing boundaries.
+- Explicit executable/firmware provenance and simulator versions.
+- Verilator and other license-compatible open tooling may be integrated behind validated adapters where appropriate.
+- No undocumented chip internals are invented.
+
+Wokwi and Turing Complete are interaction/progression references only; pcbtech must use original implementation or license-compatible open dependencies.
+
+## 5. Responsive 2D then inspectable 3D workbench
+
+- Build a responsive 2D engineering workbench first: labelled category buttons, component cards, placement/snapping, wiring/routing interactions, linked schematic/board selection, and readable validation results.
+- Add high-fidelity 3D inspection only after authoritative package/footprint/physical-model links exist.
+- Prefer manufacturer STEP models, verified KiCad-compatible 3D models, or models generated from sourced mechanical dimensions. Mark unverified assets `visual-only`.
+- Use the best license-compatible open graphics stack available; Godot, FreeCAD, KiCad, and related open tools may be used when their interfaces and licenses fit the architecture.
+- The renderer never determines whether a circuit works.
+
+See [VISUAL_ASSET_PIPELINE.md](VISUAL_ASSET_PIPELINE.md).
+
+## 6. Lessons, engineering contracts, metrics, and sandbox
+
+- Progress from electrical fundamentals through component use, schematic capture, layout, verification, advanced PCB constraints, troubleshooting, and optimization.
+- Use realistic engineering briefs, datasheets, constraints, costs, availability, test evidence, and objective pass/fail outcomes.
+- Preserve an unrestricted sandbox alongside guided progression.
+- Add save/load/share only after file formats are versioned and reproducible.
+- Optimization scores may include cost, area, power, thermal margin, manufacturability, repairability, part availability, and measured performance only when the inputs are explicit.
+
+SHENZHEN I/O, Turing Complete, CRUMB, and PC Building Simulator are design references for learning flow and tactile interaction only.
+
+## 7. Advanced solvers and calibration
+
+Add advanced thermal, power, signal-integrity, EMI/EMC, and electromagnetic/field analysis only when each solver has:
+
+1. documented equations or an authoritative upstream interface;
+2. explicit units and boundary conditions;
+3. solver/version provenance;
+4. reference fixtures or analytical cases;
+5. numerical tolerance tests;
+6. uncertainty/limitation reporting;
+7. deterministic or reproducibly bounded execution;
+8. measured-vs-modelled calibration support where real measurements exist.
+
+ngspice/SPICE, Qucs-S, Verilator, OpenROAD, KiCad, FreeCAD, and similar open tools may be integrated as license-compatible upstream engines or workflow references. Solver output must remain separable from visualization.
+
+## 8. pcbtech training module and virtual certification
+
+This is a required future product pillar, not a current feature.
+
+- Training modules must teach the same validated engineering concepts used by the simulator.
+- Completion requires objective checks rather than cosmetic progress alone.
+- A virtual pcbtech certificate may be generated only after the defined completion requirements pass.
+- Email delivery of a certificate requires an explicit user-provided destination, user consent, and a configured/authorized mail-delivery interface. The project must not claim an email was sent unless the delivery service confirms it.
+- Certificate records should include curriculum version, completion timestamp, assessment version, and verification identifier without exposing unnecessary personal data.
+
+## Standing development protocol
+
+For each bounded development run:
+
+1. Read current `main`, this roadmap, `INTERACTION_RULES.md`, `GETTING_STARTED.md`, tests, open gaps, and recent commits.
+2. Select exactly one improvement from the earliest incomplete dependency. State the pillar and the advanced-PCB capability it unlocks.
+3. Define measurable acceptance criteria and the authoritative standard, equation, file format, or validated upstream interface used.
+4. Write original code or use only license-compatible open dependencies.
+5. Test valid, invalid, boundary, deterministic/replay, unit, and export-safety behavior as applicable.
+6. Run the complete available validation suite on actual repository files; use strict warnings and sanitizers where supported.
+7. Fix failures before moving the tested change to `main`.
+8. Update status only for behavior actually implemented and tested. Keep future requirements labelled pending.
+9. Verify the resulting GitHub `main` state after the passing commit lands.
+10. Report only concrete tested changes, acceptance results, limitations/blockers, commit hash, and verification link in simple but scientifically precise language.
+
+If authoritative data, permissions, credentials, dependencies, licensing, or safe architecture are missing, record the exact blocker and choose a smaller independently verifiable improvement in the same dependency layer.
