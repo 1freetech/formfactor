@@ -9,6 +9,7 @@ The SDL workbench is currently a visual smoke-test prototype. It proves that a n
 Build the authoritative, reproducible engineering record before higher-level game behavior.
 
 - Component provenance and accuracy tiers. (initial slice complete)
+  - [Finite component-rating gate](COMPONENT_RATING_VALIDATION.md): voltage, current, and junction-temperature scalars reject NaN and infinity, with unit-labelled errors propagated to catalogue validation. Numeric validity is not manufacturer-rating verification or high-voltage/thermal certification.
 - Versioned catalogue identity linking selected part, schematic symbol, footprint, physical model, simulation model, and explicit component-pin / footprint-pad / simulation-terminal mappings. (initial slice complete)
 - Exact unit-aware quantities. (initial decimal SI quantity slice complete; catalogue property integration pending)
 - Typed pins, nets, and topology-only electrical-rule validation. (initial slice complete)

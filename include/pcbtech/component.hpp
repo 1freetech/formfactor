@@ -18,6 +18,8 @@ struct Component {
   std::string part_number;
   std::string package;
   unsigned pin_count{};
+  // Legacy scalar ratings: finite and > 0 in V, A, and degrees Celsius.
+  // Numeric validity does not verify a rating against a manufacturer's data.
   double max_voltage_v{};
   double max_current_a{};
   double max_junction_c{};
@@ -35,4 +37,3 @@ struct ValidationResult {
 [[nodiscard]] ValidationResult validate(const Component& component);
 
 }  // namespace pcbtech
-

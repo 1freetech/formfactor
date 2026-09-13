@@ -1,6 +1,10 @@
 #include "pcbtech/catalog.hpp"
 
+#include <array>
 #include <cassert>
+#include <limits>
+#include <string>
+#include <vector>
 
 namespace {
 
@@ -50,4 +54,34 @@ int main() {
   repeated_logical_pin.pin_mappings.insert(
       repeated_logical_pin.pin_mappings.begin() + 1, {"1", "EP", "p"});
   assert(pcbtech::validate_catalog_entry(repeated_logical_pin).linked_model_ready());
+
+  // Linked assets must not conceal an invalid component rating. These are
+  // synthetic numeric fixtures, not manufacturer-verified parts or assets.
+  const std::array rating_fields{
+      &pcbtech::Component::max_voltage_v,
+      &pcbtech::Component::max_current_a,
+      &pcbtech::Component::max_junction_c};
+  const std::array non_finite_values{
+      std::numeric_limits<double>::quiet_NaN(),
+      std::numeric_limits<double>::infinity(),
+      -std::numeric_limits<double>::infinity()};
+  const std::array tiers{pcbtech::AccuracyTier::Verified,
+                        pcbtech::AccuracyTier::Partial,
+                        pcbtech::AccuracyTier::VisualOnly};
+  for (const auto tier : tiers) {
+    for (const auto field : rating_fields) {
+      for (const auto value : non_finite_values) {
+        auto invalid = entry;
+        invalid.component.requested_tier = tier;
+        invalid.component.*field = value;
+        const auto result = pcbtech::validate_catalog_entry(invalid);
+        assert(!result.linked_model_ready());
+        const auto component_result = pcbtech::validate(invalid.component);
+        assert(component_result.errors.size() == 1);
+        assert(result.errors == std::vector<std::string>{
+                                    "component: " + component_result.errors.front()});
+        assert(pcbtech::validate_catalog_entry(invalid).errors == result.errors);
+      }
+    }
+  }
 }

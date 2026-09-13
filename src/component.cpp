@@ -1,5 +1,7 @@
 #include "pcbtech/component.hpp"
 
+#include <cmath>
+
 namespace pcbtech {
 
 bool ValidationResult::export_allowed() const {
@@ -14,9 +16,18 @@ ValidationResult validate(const Component& c) {
   if (c.part_number.empty()) result.errors.emplace_back("part number is required");
   if (c.package.empty()) result.errors.emplace_back("package is required");
   if (c.pin_count == 0) result.errors.emplace_back("pin count must be positive");
-  if (c.max_voltage_v <= 0.0) result.errors.emplace_back("maximum voltage must be positive");
-  if (c.max_current_a <= 0.0) result.errors.emplace_back("maximum current must be positive");
-  if (c.max_junction_c <= 0.0) result.errors.emplace_back("maximum junction temperature must be positive");
+  // Rejecting only values <= 0 lets NaN and positive infinity through.
+  // Preserve the existing positive-rating contract, but require finite inputs.
+  if (!std::isfinite(c.max_voltage_v) || c.max_voltage_v <= 0.0) {
+    result.errors.emplace_back("maximum voltage must be finite and positive (V)");
+  }
+  if (!std::isfinite(c.max_current_a) || c.max_current_a <= 0.0) {
+    result.errors.emplace_back("maximum current must be finite and positive (A)");
+  }
+  if (!std::isfinite(c.max_junction_c) || c.max_junction_c <= 0.0) {
+    result.errors.emplace_back(
+        "maximum junction temperature must be finite and positive (deg C)");
+  }
 
   const bool has_authoritative_source = !c.sources.empty() &&
       !c.sources.front().title.empty() && !c.sources.front().url.empty() &&
@@ -34,4 +45,3 @@ ValidationResult validate(const Component& c) {
 }
 
 }  // namespace pcbtech
-
