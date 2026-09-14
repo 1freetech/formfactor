@@ -14,7 +14,7 @@ Implemented scope: truth-layer catalogue data and exact numeric filtering. Advan
 8. An exact numeric filter selects a property ID and qualifier, then applies `at-least`, `at-most`, or `equal` using the exact SI comparison layer.
 9. Missing properties, qualifier mismatches, and source-condition mismatches return `unknown`, never `match`. Conditioned values are eligible only when the filter supplies the exact condition text.
 10. Invalid catalogue provenance, malformed filters, unsupported enumerations, and dimension mismatches fail closed without a decision record. Valid decisions produce the deterministic `formfactor-catalog-filter-v1` record.
-11. The 36 supported property IDs explicitly cover all four qualifiers for capacitance, current, frequency, inductance, length, power, resistance, time, and voltage. Each schema fixes its physical dimension and qualifier; unknown IDs, wrong dimensions, and qualifier conflicts fail closed before catalogue export.
+11. The 36 supported property IDs explicitly cover all four qualifiers for capacitance, current, frequency, inductance, length, power, resistance, time, and voltage. Each schema fixes its physical dimension, qualifier, and implemented component-family support set; unknown IDs, wrong dimensions, qualifier conflicts, and undeclared families fail closed before catalogue export.
 
 The numerical layer follows the [BIPM SI Brochure](https://www.bipm.org/en/publications/si-brochure) and [NIST SP 811](https://www.nist.gov/pml/owm/si-units-information). The catalogue record layout and identifier grammar are original formfactor formats, not external standards.
 
@@ -26,7 +26,7 @@ The numerical layer follows the [BIPM SI Brochure](https://www.bipm.org/en/publi
 4. Unknown qualifier identifiers fail closed.
 5. The `Quantity` type can only be created through its validated exact-decimal factory. Equivalent inputs such as `1 V` and `1000 mV` therefore produce the same SI value and the same catalogue record.
 6. Source metadata requires a title, URL, and revision. This is structural provenance: formfactor does not authenticate the URL, classify the publisher, or verify that the recorded number was copied correctly.
-7. Schema membership is explicit and is never inferred from the spelling of an ID. The registry supplies semantic types only and never supplies a numeric component value.
+7. Schema membership and component-family applicability are explicit and are never inferred from spelling, labels, or part appearance. Family exclusion means FormFactor has not implemented that property-family combination; it is not a claim of physical impossibility.
 
 ## 3. Measured acceptance results
 
@@ -41,11 +41,11 @@ The catalogue tests cover:
 7. rejection of a catalogue ID containing a forged record line;
 8. suppression of canonical output for every invalid case, including invalid legacy component ratings.
 
-The filter tests additionally cover equivalent units, exact inclusive boundaries, definite non-matches, missing values, qualifier and condition mismatches, incompatible dimensions, invalid enumerations and IDs, deterministic records, and export blocking when source provenance is incomplete. All part names, URLs, assets, and numbers in the tests are synthetic fixtures. They are not verified manufacturer components.
+The filter tests additionally cover equivalent units, exact inclusive boundaries, definite non-matches, missing values, qualifier and condition mismatches, incompatible dimensions, invalid enumerations and IDs, deterministic records, and export blocking when source provenance is incomplete. CR-007 additionally verifies valid and unsupported family use, deterministic family-set lookup, `Other` rejection, and complete output suppression. All part names, URLs, assets, and numbers in the tests are synthetic fixtures. They are not verified manufacturer components.
 
 ## 4. Limits kept visible
 
-- Temperature remains unsupported until affine unit conversion is implemented. Tolerance and component-family applicability remain unsupported until each contract is explicitly added and tested.
+- Temperature remains unsupported until affine unit conversion is implemented. Tolerance and manufacturer-specific applicability remain unsupported until each contract is explicitly added and tested.
 - Qualifier relationships, tolerances, sign/range plausibility, operating ranges, and cross-checks against legacy `double` rating fields are not implemented.
 - Condition text is not machine-interpreted. A future filter must treat a conditioned value conservatively rather than silently ignoring its conditions.
 - A source record is not proof of authenticity or measurement accuracy.

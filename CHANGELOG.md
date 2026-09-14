@@ -4,6 +4,10 @@ This file records published changes without rewriting shared Git history. Histor
 
 ## 2026-09-14
 
+### CR-007 — Fail-closed component-family applicability
+
+FormFactor now attaches an explicit supported-family set to every implemented catalogue quantity schema and rejects a property when its entry's primary component family is not declared by that schema, so a plausible property name cannot silently cross family boundaries or enter an export record. The registry is a conservative project support contract rather than a claim that an excluded property is physically impossible; CR-007 covers valid family use, unsupported and `Other` rejection, deterministic repeat lookup, complete-record suppression, and existing dimension, qualifier, provenance, and unit gates. Source authentication, manufacturer-specific applicability, multiple-family entries, physical plausibility, safety, compliance, and solver evaluation remain unimplemented.
+
 ### CR-006 — Complete supported-dimension catalogue schema coverage
 
 FormFactor now exposes an explicit catalogue-property schema for all four source qualifiers across capacitance, current, frequency, inductance, length, power, resistance, time, and voltage, covering every currently supported non-dimensionless exact quantity without deriving meaning from free-form text or inventing a component value. The new regression fixture checks all 36 identifier, dimension, and qualifier mappings, deterministic repeat lookup, and fail-closed rejection of unsupported temperature and plausible undeclared qualifier names; existing catalogue validation still suppresses export when a property's exact dimension or qualifier conflicts with its schema. Temperature remains unsupported until affine conversion is implemented, and component-family applicability, source authentication, physical plausibility, safety, compliance, and solver evaluation remain explicitly unimplemented.

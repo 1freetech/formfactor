@@ -11,6 +11,40 @@
 namespace formfactor {
 namespace {
 
+
+std::vector<ComponentFamily> applicable_families(Dimension dimension) {
+  using Family = ComponentFamily;
+  switch (dimension) {
+    case Dimension::Capacitance:
+      return {Family::Passive, Family::Protection,
+              Family::SwitchingAmplification, Family::PowerConversion,
+              Family::SensorsTiming};
+    case Dimension::Current:
+    case Dimension::Power:
+    case Dimension::Voltage:
+      return {Family::Passive, Family::Protection,
+              Family::SwitchingAmplification, Family::PowerConversion,
+              Family::LogicComputeMemory, Family::SensorsTiming,
+              Family::ConnectionsControls, Family::IndicatorsActuators};
+    case Dimension::Frequency:
+    case Dimension::Time:
+      return {Family::SwitchingAmplification, Family::LogicComputeMemory,
+              Family::SensorsTiming};
+    case Dimension::Inductance:
+      return {Family::Passive, Family::PowerConversion};
+    case Dimension::Length:
+      return {Family::ConnectionsControls};
+    case Dimension::Resistance:
+      return {Family::Passive, Family::Protection,
+              Family::SwitchingAmplification, Family::PowerConversion,
+              Family::IndicatorsActuators};
+    case Dimension::Dimensionless:
+    case Dimension::Temperature:
+      return {};
+  }
+  return {};
+}
+
 bool valid_source(const Source& source) {
   return !source.title.empty() && !source.url.empty() &&
          !source.revision.empty();
@@ -126,7 +160,9 @@ std::optional<CatalogQuantityPropertySchema> catalog_quantity_property_schema(
         return schema.property_id == property_id;
       });
   if (found == std::end(schemas)) return std::nullopt;
-  return *found;
+  auto schema = *found;
+  schema.applicable_families = applicable_families(schema.dimension);
+  return schema;
 }
 
 CatalogValidationResult validate_catalog_entry(const CatalogEntry& entry) {
@@ -211,6 +247,13 @@ CatalogValidationResult validate_catalog_entry(const CatalogEntry& entry) {
       if (property.qualifier != schema->qualifier) {
         result.errors.emplace_back(prefix +
                                    " qualifier conflicts with its semantic schema");
+      }
+      if (std::find(schema->applicable_families.begin(),
+                    schema->applicable_families.end(),
+                    entry.primary_family) ==
+          schema->applicable_families.end()) {
+        result.errors.emplace_back(prefix +
+                                   " is unsupported for the component family");
       }
     }
 

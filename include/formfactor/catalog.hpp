@@ -54,6 +54,9 @@ struct CatalogQuantityPropertySchema {
   std::string property_id;
   Dimension dimension{Dimension::Dimensionless};
   QuantityValueQualifier qualifier{QuantityValueQualifier::Nominal};
+  // Families for which this semantic property is implemented. Absence means
+  // unsupported, not physically impossible.
+  std::vector<ComponentFamily> applicable_families;
 };
 
 // Returns the implemented semantic contract for a property identifier. An
