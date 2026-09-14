@@ -31,3 +31,10 @@ This is an integrity binding supplied by the caller. FormFactor does not yet ret
 CR-016 computes SHA-256 over the exact caller-supplied policy bytes using the NIST FIPS 180-4 algorithm and compares the lowercase digest before authorization. Missing bytes remain unknown and fail closed. An explicitly supplied empty artifact remains distinct and is verified against the standard empty-message digest. Binary bytes, including zero bytes, are hashed without text conversion. Valid records advance to `formfactor-source-authorization-v3` and preserve the verified byte count without embedding the policy content.
 
 The implementation is checked against NIST's empty-message, `abc`, and multi-block test vectors. Digest equality establishes byte integrity only; it does not verify a digital signature, publisher identity, policy authority, or network transport.
+
+
+## Ed25519 signing-key fingerprint validation
+
+CR-017 validates the structural identity of a caller-supplied policy signing key before any future signature gate can use it. The algorithm is exactly Ed25519, the public key is exactly 32 octets as specified by [RFC 8032](https://www.rfc-editor.org/rfc/rfc8032.html), and its lowercase SHA-256 fingerprint must match those exact bytes. Missing key bytes, 31-byte and 33-byte boundaries, malformed fingerprints, unsupported algorithms, and altered bytes fail closed without a record. Valid inputs produce deterministic `formfactor-policy-signing-key-v1` records that preserve the key ID, algorithm, byte count, and verified fingerprint without embedding the key bytes.
+
+Fingerprint equality establishes only that the supplied identifier and supplied key bytes are internally consistent. FormFactor does not yet verify an Ed25519 signature, establish key ownership or publisher authority, distribute trust anchors, check revocation or rotation, or connect this primitive to publisher authorization or catalogue export.

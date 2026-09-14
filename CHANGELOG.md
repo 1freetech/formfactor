@@ -1,5 +1,10 @@
 # Changelog
 
+## CR-017 — Fail-closed Ed25519 signing-key fingerprints
+
+Policy signing-key records now require the exact Ed25519 algorithm, a visible key ID, exactly 32 public-key bytes as specified by RFC 8032, and a lowercase SHA-256 fingerprint matching those exact bytes. Missing, 31-byte, 33-byte, altered, malformed, and unsupported inputs fail closed without a record; valid binary keys produce deterministic `formfactor-policy-signing-key-v1` replay records. This verifies only the internal integrity of caller-supplied key material and does not verify a policy signature, establish key ownership or authority, distribute trust anchors, handle revocation or rotation, or affect catalogue export.
+
+
 ## CR-016 — Exact authorization-policy digest verification
 
 Publisher-origin authorization now computes SHA-256 over the exact supplied policy artifact bytes and requires equality with the recorded lowercase digest before emitting any decision record. Missing bytes, modified content, and digest mismatches fail closed as `Invalid`; an explicitly supplied empty artifact and embedded zero bytes remain valid byte sequences, and the implementation is checked against the NIST FIPS 180-4 empty-message, `abc`, and multi-block vectors. Valid decisions advance to deterministic `formfactor-source-authorization-v3` records containing the verified byte count. Digest equality proves byte integrity only and does not authenticate a signature, publisher, policy authority, or network source.
