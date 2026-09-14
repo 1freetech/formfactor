@@ -55,10 +55,14 @@ sh scripts/validate.sh
 
 ## Engineering pipeline
 
-1. Import versioned component data with source provenance.
-2. Validate packages, pins, ratings, timing, thermal data, and models.
-3. Assemble connectivity and reject impossible nets.
-4. Run digital event simulation and SPICE-backed analog/power analysis.
-5. Run layout, signal-integrity, thermal, and manufacturability checks.
-6. Visualize solver output in the game engine.
-7. Export KiCad and manufacturing artifacts only after required gates pass.
+pcbtech follows a straightforward engineering flow. Each stage must produce trustworthy information before the next stage can rely on it.
+
+**Component data → Validation → Circuit → Simulation → PCB checks → Visualization → Gated export**
+
+1. **Start with known components.** Load versioned component records and keep the source for every important electrical, thermal, and physical property.
+2. **Check the component data.** Confirm package, pinout, ratings, timing, thermal limits, and available simulation models. Missing information stays unknown instead of being guessed.
+3. **Build and check the circuit.** Connect components into nets, then catch conflicts such as duplicate names, impossible connections, or incompatible outputs.
+4. **Simulate electrical behavior.** Use deterministic digital simulation for supported logic and SPICE-backed analysis for supported analog and power behavior.
+5. **Check the PCB design.** Validate layout rules and, when the required solvers and source data exist, evaluate signal integrity, power integrity, thermal behavior, and manufacturability.
+6. **Show the results.** The game engine presents solver output so users can see what passed, what failed, and what is still unknown. The renderer never decides engineering truth.
+7. **Export only validated work.** KiCad and manufacturing artifacts become eligible for export only after every required implemented validation gate passes.
