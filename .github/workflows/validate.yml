@@ -20,6 +20,15 @@ jobs:
       - name: Run complete dependency-free validation suite
         run: sh scripts/validate.sh
 
+      - name: Configure CMake engineering targets
+        run: cmake -S . -B build-cmake -DFORMFACTOR_BUILD_FREELAB=OFF
+
+      - name: Build CMake engineering targets
+        run: cmake --build build-cmake --parallel 2
+
+      - name: Run complete CTest suite
+        run: ctest --test-dir build-cmake --output-on-failure
+
       - name: Run exact-quantity test with strict warnings and sanitizers
         run: |
           g++ -std=c++20 -Wall -Wextra -Wpedantic -Werror \

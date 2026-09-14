@@ -49,6 +49,19 @@ ctest --test-dir build --output-on-failure
 ./build/formfactor_validate
 ```
 
+The engineering core and CTest suite configure without graphical dependencies.
+FreeLab is built automatically when `pkg-config` and the SDL2 development files
+are available; use `-DFORMFACTOR_BUILD_FREELAB=OFF` to disable that optional
+target explicitly.
+
+For a complete CMake build and CTest run on a machine where CMake is not yet
+installed, use the reproducible local bootstrap command below. It installs the
+pinned tool under the ignored `build/` directory without changing system files.
+
+```bash
+sh scripts/cmake_validate.sh
+```
+
 If CMake is unavailable, run the dependency-free fallback:
 
 ```bash

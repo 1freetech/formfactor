@@ -1,5 +1,9 @@
 # Changelog
 
+## CR-010 — Reproducible CMake and CTest validation
+
+FormFactor can now configure and test its engineering core through CMake even when the optional FreeLab graphics dependencies are unavailable, because `pkg-config` and SDL2 no longer block core configuration and the workbench is skipped with an explicit status message when those packages are missing. A pinned workspace-local bootstrap command provides CMake and CTest without modifying system packages, compiler warnings are treated as errors consistently across CMake targets, and GitHub Actions now configures, builds, and runs the complete CTest suite in addition to the dependency-free validation path. The change was verified locally with CMake 4.4.3, GNU C++ 13.3.0, all 19 registered CTest cases, the identity check, and the complete fallback suite; FreeLab itself still requires the SDL2 development package and was not built in the dependency-limited runner.
+
 This file records published changes without rewriting shared Git history. Historical summaries preserve original commit hashes and distinguish verified behavior from information that still requires direct diff or runner evidence.
 
 ## 2026-09-14
