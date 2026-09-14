@@ -1,5 +1,9 @@
 # Changelog
 
+## CR-015 — Fail-closed authorization-policy provenance
+
+Every publisher-origin authorization policy now requires visible revisioned HTTPS source metadata and a lowercase 64-hex SHA-256 digest binding the decision to the exact caller-supplied policy artifact. Missing, insecure, short, long, uppercase, and non-hex evidence fails closed as `Invalid` and suppresses the complete record; valid authorizations and denials advance to deterministic `formfactor-source-authorization-v2` records containing the policy source and digest. The core does not retrieve or hash the policy artifact, verify a signature, authenticate its publisher, or yet enforce the decision during catalogue export.
+
 ## CR-014 — Deterministic publisher-origin authorization
 
 FormFactor now evaluates a source claim against an explicit caller-supplied publisher policy using exact visible publisher IDs and exact canonical HTTPS origins. Valid mismatches, including subdomains and explicit-port differences, produce `NotAuthorized`; malformed sources, publisher IDs, origins, empty policies, and duplicate origins fail closed as `Invalid` with no record. Valid decisions produce deterministic `formfactor-source-authorization-v1` length-prefixed records independent of policy-origin order. This primitive does not authenticate the caller policy, publisher ownership, DNS, TLS, network content, or artifact signatures, and it is not yet connected to catalogue export.

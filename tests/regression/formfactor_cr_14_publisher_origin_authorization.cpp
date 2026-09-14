@@ -15,7 +15,10 @@ formfactor::SourcePublisherClaim claim(std::string url =
 
 formfactor::PublisherAuthorizationPolicy policy() {
   return {"fixture.publisher",
-          {"https://other.invalid", "https://fixture.invalid"}};
+          {"https://other.invalid", "https://fixture.invalid"},
+          {"Synthetic policy artifact",
+           "https://authority.invalid/policies/fixture", "Revision 14"},
+          std::string(64, 'a')};
 }
 
 void expect_invalid(const formfactor::SourcePublisherClaim& source_claim,
@@ -43,7 +46,7 @@ int main() {
   assert(authorized.decision ==
          formfactor::SourceAuthorizationDecision::Authorized);
   assert(authorized.canonical_record.find(
-             "formfactor-source-authorization-v1\n") == 0);
+             "formfactor-source-authorization-v2\n") == 0);
   assert(authorized.canonical_record.find("source-origin=23:https://fixture.invalid\n") !=
          std::string::npos);
   assert(authorized.canonical_record.find("decision=authorized\n") !=
@@ -78,7 +81,7 @@ int main() {
          formfactor::SourceAuthorizationDecision::NotAuthorized);
 
   const formfactor::PublisherAuthorizationPolicy boundary_policy{
-      "x", {"https://x"}};
+      "x", {"https://x"}, {"x", "https://x", "x"}, std::string(64, '0')};
   const auto boundary =
       formfactor::authorize_source_publisher(
           {"x", {"x", "https://x", "x"}}, boundary_policy);

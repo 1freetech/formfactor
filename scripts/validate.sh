@@ -55,6 +55,10 @@ $cxx $flags $sources \
   tests/regression/formfactor_cr_14_publisher_origin_authorization.cpp \
   -o build/regression_formfactor_cr_14
 ./build/regression_formfactor_cr_14
+$cxx $flags $sources \
+  tests/regression/formfactor_cr_15_authorization_policy_provenance.cpp \
+  -o build/regression_formfactor_cr_15
+./build/regression_formfactor_cr_15
 $cxx $flags $sources tests/circuit_tests.cpp -o build/circuit_tests
 ./build/circuit_tests
 $cxx $flags $sources tests/digital_tests.cpp -o build/digital_tests

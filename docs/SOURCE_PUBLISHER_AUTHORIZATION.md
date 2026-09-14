@@ -17,3 +17,10 @@ Paths and queries may appear in a source URL, but never in a policy origin. Subd
 ## Explicit limits
 
 The caller supplies the authorization policy. The core does not yet authenticate that policy, fetch a URL, validate TLS or DNS, follow redirects, check an artifact signature, establish publisher ownership, or connect this decision to catalogue export. `Authorized` therefore means only “matches this validated input policy.” It does not make a source authoritative and cannot establish electrical correctness, safety, compliance, or manufacturability.
+
+
+## Policy artifact provenance
+
+CR-015 requires the supplied policy to name a visible, revisioned HTTPS source and carry a lowercase 64-hex SHA-256 digest for the exact policy artifact. The canonical record advances to `formfactor-source-authorization-v2` and preserves the source title, URL, revision, and digest. The digest syntax represents the 256-bit SHA-256 output defined by [NIST FIPS 180-4](https://csrc.nist.gov/pubs/fips/180-4/upd1/final).
+
+This is an integrity binding supplied by the caller. FormFactor does not yet retrieve the policy artifact, calculate the digest, verify a signature, authenticate the policy publisher, or prove that the policy content authorizes any origin.

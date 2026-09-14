@@ -132,6 +132,14 @@ add_test(
   NAME regression_formfactor_cr_14_publisher_origin_authorization
   COMMAND regression_formfactor_cr_14)
 
+add_executable(
+  regression_formfactor_cr_15
+  tests/regression/formfactor_cr_15_authorization_policy_provenance.cpp)
+target_link_libraries(regression_formfactor_cr_15 PRIVATE formfactor_core)
+add_test(
+  NAME regression_formfactor_cr_15_authorization_policy_provenance
+  COMMAND regression_formfactor_cr_15)
+
 add_executable(circuit_tests tests/circuit_tests.cpp)
 target_link_libraries(circuit_tests PRIVATE formfactor_core)
 add_test(NAME circuit_validation COMMAND circuit_tests)

@@ -18,6 +18,14 @@ bool valid_record_text(std::string_view text) {
   return visible;
 }
 
+bool valid_sha256(std::string_view digest) {
+  if (digest.size() != 64U) return false;
+  return std::all_of(digest.begin(), digest.end(), [](const char character) {
+    return (character >= '0' && character <= '9') ||
+           (character >= 'a' && character <= 'f');
+  });
+}
+
 void append_field(std::string& record, std::string_view name,
                   std::string_view value) {
   record.append(name);
@@ -52,6 +60,13 @@ SourceAuthorizationResult authorize_source_publisher(
   if (policy.authorized_origins.empty()) {
     result.errors.emplace_back("policy requires at least one authorized HTTPS origin");
   }
+  if (!valid_source(policy.source)) {
+    result.errors.emplace_back("policy requires revisioned HTTPS source metadata");
+  }
+  if (!valid_sha256(policy.artifact_sha256)) {
+    result.errors.emplace_back(
+        "policy requires a lowercase 64-hex SHA-256 artifact digest");
+  }
 
   auto origins = policy.authorized_origins;
   for (const auto& origin : origins) {
@@ -80,9 +95,15 @@ SourceAuthorizationResult authorize_source_publisher(
   result.decision = authorized ? SourceAuthorizationDecision::Authorized
                                : SourceAuthorizationDecision::NotAuthorized;
 
-  result.canonical_record = "formfactor-source-authorization-v1\n";
+  result.canonical_record = "formfactor-source-authorization-v2\n";
   append_field(result.canonical_record, "claim-publisher", claim.publisher_id);
   append_field(result.canonical_record, "policy-publisher", policy.publisher_id);
+  append_field(result.canonical_record, "policy-source-title", policy.source.title);
+  append_field(result.canonical_record, "policy-source-url", policy.source.url);
+  append_field(result.canonical_record, "policy-source-revision",
+               policy.source.revision);
+  append_field(result.canonical_record, "policy-artifact-sha256",
+               policy.artifact_sha256);
   append_field(result.canonical_record, "source-url", claim.source.url);
   append_field(result.canonical_record, "source-origin", *source_origin);
   result.canonical_record.append("authorized-origin-count=");
