@@ -4,6 +4,10 @@ This file records published changes without rewriting shared Git history. Histor
 
 ## 2026-09-14
 
+### CR-002 — Strict warnings for the complete validation suite
+
+The dependency-free validation script now compiles every implemented FormFactor core target with `-Werror` in addition to the existing C++20, Wall, Wextra, and Wpedantic checks. This makes compiler warnings a failure for component, catalogue, quantity, regression, circuit, digital, SPICE, stackup, layout, impedance, return-path, PDN, decoupling, and executable validation targets; it does not add a new engineering claim or invent an unimplemented gate. The authoritative acceptance criteria are that `python3 scripts/check_identity.py` passes, `sh scripts/validate.sh` completes all existing targets, and the existing workflow continues to run the suite; remote GitHub file updates were applied, but local compiler and sanitizer execution was unavailable in this connector run.
+
 ### CR-001 — Governance traceability ledger
 
 The repository now has a durable changelog location for tracing published commits to implemented behavior, validation evidence, and limitations without changing existing commit hashes. This entry is documentation-only: it does not add an engineering gate, does not certify any unimplemented capability, and does not replace core validation. The current branch was inspected through the GitHub repository API; local compiler, test, sanitizer, and workflow execution were unavailable in this documentation-only connector run.
