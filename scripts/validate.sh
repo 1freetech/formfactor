@@ -71,6 +71,10 @@ $cxx $flags $sources \
   tests/regression/formfactor_cr_18_ed25519_signature_envelope.cpp \
   -o build/regression_formfactor_cr_18
 ./build/regression_formfactor_cr_18
+$cxx $flags src/hash.cpp src/policy_trust.cpp src/policy_signature.cpp \
+  tests/regression/formfactor_cr_19_ed25519_signature_verification.cpp \
+  -lcrypto -o build/regression_formfactor_cr_19
+./build/regression_formfactor_cr_19
 $cxx $flags $sources tests/circuit_tests.cpp -o build/circuit_tests
 ./build/circuit_tests
 $cxx $flags $sources tests/digital_tests.cpp -o build/digital_tests

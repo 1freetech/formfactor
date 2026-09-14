@@ -7,6 +7,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 option(FORMFACTOR_BUILD_FREELAB "Build the SDL2 graphical workbench when dependencies are available" ON)
 option(FORMFACTOR_WARNINGS_AS_ERRORS "Treat FormFactor compiler warnings as errors" ON)
+option(FORMFACTOR_BUILD_SIGNATURE_VERIFIER "Build the OpenSSL-backed Ed25519 policy signature verifier" ON)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -17,6 +18,13 @@ endif()
 
 add_library(formfactor_core src/component.cpp src/hash.cpp src/policy_trust.cpp src/source_authority.cpp src/catalog.cpp src/catalog_filter.cpp src/quantity.cpp src/circuit.cpp src/digital.cpp src/spice.cpp src/stackup.cpp src/layout.cpp src/impedance.cpp src/return_path.cpp src/pdn.cpp src/decoupling.cpp)
 target_include_directories(formfactor_core PUBLIC include)
+
+if(FORMFACTOR_BUILD_SIGNATURE_VERIFIER)
+  find_package(OpenSSL 1.1.1 REQUIRED COMPONENTS Crypto)
+  add_library(formfactor_policy_signature src/policy_signature.cpp)
+  target_include_directories(formfactor_policy_signature PUBLIC include)
+  target_link_libraries(formfactor_policy_signature PUBLIC formfactor_core OpenSSL::Crypto)
+endif()
 
 add_executable(formfactor_validate src/main.cpp)
 target_link_libraries(formfactor_validate PRIVATE formfactor_core)
@@ -163,6 +171,17 @@ target_link_libraries(regression_formfactor_cr_18 PRIVATE formfactor_core)
 add_test(
   NAME regression_formfactor_cr_18_ed25519_signature_envelope
   COMMAND regression_formfactor_cr_18)
+
+if(FORMFACTOR_BUILD_SIGNATURE_VERIFIER)
+  add_executable(
+    regression_formfactor_cr_19
+    tests/regression/formfactor_cr_19_ed25519_signature_verification.cpp)
+  target_link_libraries(
+    regression_formfactor_cr_19 PRIVATE formfactor_policy_signature)
+  add_test(
+    NAME regression_formfactor_cr_19_ed25519_signature_verification
+    COMMAND regression_formfactor_cr_19)
+endif()
 
 add_executable(circuit_tests tests/circuit_tests.cpp)
 target_link_libraries(circuit_tests PRIVATE formfactor_core)

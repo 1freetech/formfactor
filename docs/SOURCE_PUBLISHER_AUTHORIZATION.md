@@ -45,3 +45,10 @@ Fingerprint equality establishes only that the supplied identifier and supplied 
 CR-018 validates the complete byte envelope required by a later detached-signature verifier. A CR-017-valid Ed25519 key, explicitly present signed bytes, and exactly 64 signature octets are required; RFC 8032 defines the Ed25519 signature size. Missing message or signature bytes and 63-byte or 65-byte signatures fail closed without a record. An explicitly present empty message remains distinct from missing data. Valid inputs produce deterministic `formfactor-detached-signature-evidence-v1` records with SHA-256 bindings for the exact signed bytes and signature, while raw content remains outside the record.
 
 The record states `cryptographic-verification=not-performed`. A different but correctly sized signature is therefore structurally complete and produces different replay evidence; it is not accepted as authentic. FormFactor does not yet evaluate the Ed25519 verification equation, establish key ownership or authority, handle revocation or rotation, or connect this evidence to publisher authorization or catalogue export.
+
+
+## Cryptographic Ed25519 signature verification
+
+CR-019 performs one-shot PureEdDSA verification over the exact CR-018 message and signature bytes using OpenSSL EVP. The implementation passes RFC 8032 Ed25519 test vector 1, rejects a changed signature and changed message, and distinguishes malformed evidence from a structurally valid signature that fails the verification equation. OpenSSL's documented Ed25519 interface requires one-shot `EVP_DigestVerify` with no separately selected digest.
+
+Deterministic `formfactor-detached-signature-verification-v1` records preserve the OpenSSL backend name and version, a SHA-256 binding to the complete CR-018 evidence record, and the exact `verified` or `rejected` decision. Backend initialization or execution errors fail closed without a decision record. A verified signature establishes that the exact bytes were signed by the private key corresponding to the supplied public key; it does not establish that the key belongs to a publisher, remains authorized or unrevoked, or permits catalogue export.

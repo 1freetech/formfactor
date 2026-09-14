@@ -50,7 +50,9 @@ ctest --test-dir build --output-on-failure
 ```
 
 The engineering core and CTest suite configure without graphical dependencies.
-FreeLab is built automatically when `pkg-config` and the SDL2 development files
+The dedicated policy-signature verifier requires OpenSSL Crypto 1.1.1 or newer;
+use `-DFORMFACTOR_BUILD_SIGNATURE_VERIFIER=OFF` only when intentionally
+building without that cryptographic gate. FreeLab is built automatically when `pkg-config` and the SDL2 development files
 are available; use `-DFORMFACTOR_BUILD_FREELAB=OFF` to disable that optional
 target explicitly.
 
@@ -62,7 +64,7 @@ pinned tool under the ignored `build/` directory without changing system files.
 sh scripts/cmake_validate.sh
 ```
 
-If CMake is unavailable, run the dependency-free fallback:
+If CMake is unavailable, run the direct-compiler fallback. The complete fallback requires the OpenSSL Crypto headers and library:
 
 ```bash
 sh scripts/validate.sh

@@ -1,5 +1,10 @@
 # Changelog
 
+## CR-019 — OpenSSL-backed Ed25519 signature verification
+
+FormFactor now verifies exact CR-018 detached-signature evidence with OpenSSL's one-shot EVP Ed25519 interface and records the backend name and version with a deterministic SHA-256 evidence binding. RFC 8032 test vector 1 passes; changed signatures and changed messages produce `Rejected`, malformed evidence remains `Invalid`, and backend failures fail closed without records. Verification proves only that the exact bytes were signed by the private key corresponding to the supplied public key; key ownership, publisher authority, trust-anchor distribution, revocation, rotation, and catalogue-export enforcement remain unimplemented.
+
+
 ## CR-018 — Fail-closed detached Ed25519 signature envelopes
 
 Detached policy-signature evidence now requires a CR-017-valid Ed25519 key, explicitly present exact signed bytes, and exactly 64 signature octets as specified by RFC 8032. Missing inputs and 63-byte or 65-byte signatures fail closed; empty and binary messages remain distinct valid byte sequences, and deterministic `formfactor-detached-signature-evidence-v1` records bind the exact message and signature through SHA-256 without embedding either. Every record explicitly states that cryptographic verification was not performed, so structural completeness does not establish signature validity, key ownership, publisher authority, revocation status, or catalogue-export eligibility.
