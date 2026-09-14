@@ -1,4 +1,4 @@
-#include "pcbtech/quantity.hpp"
+#include "formfactor/quantity.hpp"
 
 #include <array>
 #include <cstdint>
@@ -8,7 +8,7 @@
 
 namespace {
 
-constexpr std::string_view kCrId = "pcbtech-cr-1";
+constexpr std::string_view kCrId = "formfactor-cr-1";
 
 int fail(std::string_view reason) {
   std::cerr << kCrId << ": implemented gate failed: " << reason << '\n';
@@ -18,10 +18,10 @@ int fail(std::string_view reason) {
 }  // namespace
 
 int main() {
-  using pcbtech::Dimension;
-  using pcbtech::Unit;
+  using formfactor::Dimension;
+  using formfactor::Unit;
 
-  // CR pcbtech-cr-1 protects the implemented fail-closed import boundary.
+  // CR formfactor-cr-1 protects the implemented fail-closed import boundary.
   // Invalid identifiers must never create a Quantity that could reach a
   // canonical record or a higher-level engineering export.
   const std::array invalid_units{
@@ -38,9 +38,9 @@ int main() {
     for (const auto coefficient : coefficients) {
       for (const auto exponent : exponents) {
         const auto first =
-            pcbtech::make_quantity(coefficient, exponent, unit);
+            formfactor::make_quantity(coefficient, exponent, unit);
         const auto replay =
-            pcbtech::make_quantity(coefficient, exponent, unit);
+            formfactor::make_quantity(coefficient, exponent, unit);
         if (first.has_value() || replay.has_value()) {
           return fail("unsupported Unit produced a Quantity");
         }
@@ -53,9 +53,9 @@ int main() {
     for (const auto coefficient : coefficients) {
       for (const auto exponent : exponents) {
         const auto first =
-            pcbtech::make_si_quantity(coefficient, exponent, dimension);
+            formfactor::make_si_quantity(coefficient, exponent, dimension);
         const auto replay =
-            pcbtech::make_si_quantity(coefficient, exponent, dimension);
+            formfactor::make_si_quantity(coefficient, exponent, dimension);
         if (first.has_value() || replay.has_value()) {
           return fail("unsupported Dimension produced a Quantity");
         }
@@ -64,24 +64,24 @@ int main() {
   }
 
   // Supported identifiers at both ends of the current enums remain valid.
-  const auto first_unit = pcbtech::make_quantity(
+  const auto first_unit = formfactor::make_quantity(
       std::numeric_limits<std::int64_t>::min(), -30, Unit::One);
-  const auto last_unit = pcbtech::make_quantity(
+  const auto last_unit = formfactor::make_quantity(
       std::numeric_limits<std::int64_t>::max(), 30, Unit::Milliwatt);
-  const auto first_dimension = pcbtech::make_si_quantity(
+  const auto first_dimension = formfactor::make_si_quantity(
       std::numeric_limits<std::int64_t>::min(), -30,
       Dimension::Dimensionless);
-  const auto last_dimension = pcbtech::make_si_quantity(
+  const auto last_dimension = formfactor::make_si_quantity(
       std::numeric_limits<std::int64_t>::max(), 30, Dimension::Power);
   if (!first_unit || !last_unit || !first_dimension || !last_dimension) {
     return fail("supported boundary identifier was rejected");
   }
 
-  const auto last_unit_replay = pcbtech::make_quantity(
+  const auto last_unit_replay = formfactor::make_quantity(
       std::numeric_limits<std::int64_t>::max(), 30, Unit::Milliwatt);
   if (!last_unit_replay ||
-      pcbtech::canonical_quantity_record(*last_unit) !=
-          pcbtech::canonical_quantity_record(*last_unit_replay)) {
+      formfactor::canonical_quantity_record(*last_unit) !=
+          formfactor::canonical_quantity_record(*last_unit_replay)) {
     return fail("supported boundary replay was not deterministic");
   }
 

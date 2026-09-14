@@ -1,10 +1,10 @@
-#include "pcbtech/decoupling.hpp"
+#include "formfactor/decoupling.hpp"
 
 #include <algorithm>
 #include <set>
 #include <sstream>
 
-namespace pcbtech {
+namespace formfactor {
 namespace {
 bool token(const std::string& value) {
   return !value.empty() && std::all_of(value.begin(), value.end(), [](const unsigned char c) {
@@ -69,10 +69,10 @@ DecouplingValidation validate_decoupling_requirements(
   if (!result.errors.empty()) return result;
   std::sort(records.begin(), records.end());
   std::ostringstream output;
-  output << "pcbtech-decoupling-requirements-v1\n";
+  output << "formfactor-decoupling-requirements-v1\n";
   for (const auto& record : records) output << record << '\n';
   result.canonical_record = output.str();
   return result;
 }
 
-}  // namespace pcbtech
+}  // namespace formfactor

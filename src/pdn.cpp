@@ -1,11 +1,11 @@
-#include "pcbtech/pdn.hpp"
+#include "formfactor/pdn.hpp"
 
 #include <algorithm>
 #include <numeric>
 #include <set>
 #include <sstream>
 
-namespace pcbtech {
+namespace formfactor {
 namespace {
 bool token(const std::string& value) {
   return !value.empty() && std::all_of(value.begin(), value.end(), [](const unsigned char c) {
@@ -53,10 +53,10 @@ PdnValidation validate_pdn_constraints(const std::vector<std::string>& net_names
   if (!result.errors.empty()) return result;
   std::sort(records.begin(), records.end());
   std::ostringstream output;
-  output << "pcbtech-pdn-constraints-v1 equation=Z_target=deltaV/deltaI\n";
+  output << "formfactor-pdn-constraints-v1 equation=Z_target=deltaV/deltaI\n";
   for (const auto& record : records) output << record << '\n';
   result.canonical_record = output.str();
   return result;
 }
 
-}  // namespace pcbtech
+}  // namespace formfactor

@@ -1,18 +1,18 @@
-# pcbtech semiconductor and microscopic physics ladder
+# FormFactor semiconductor and microscopic physics ladder
 
-Status: standing architecture requirement. This document defines how pcbtech may eventually descend from board-level electrical behavior into semiconductor device physics, quantum transport, and materials physics without mixing scales or inventing microscopic behavior.
+Status: standing architecture requirement. This document defines how formfactor may eventually descend from board-level electrical behavior into semiconductor device physics, quantum transport, and materials physics without mixing scales or inventing microscopic behavior.
 
 ## 1. Why this exists
 
-pcbtech is intended to remain useful from technician training through advanced engineering study. The long-term goal is not only to show that a transistor, diode, regulator, or ASIC package exists on a PCB, but to let a user inspect the physics layer that is appropriate to the question being asked.
+formfactor is intended to remain useful from technician training through advanced engineering study. The long-term goal is not only to show that a transistor, diode, regulator, or ASIC package exists on a PCB, but to let a user inspect the physics layer that is appropriate to the question being asked.
 
-A PCB trace, return path, via, differential pair, decoupling network, and power plane are primarily classical circuit/electromagnetic problems. A PN junction or MOS structure is a semiconductor-device problem. Nanoscale transport and electronic structure require still deeper models. pcbtech must therefore use a hierarchy of validated solvers rather than a single universal "physics engine."
+A PCB trace, return path, via, differential pair, decoupling network, and power plane are primarily classical circuit/electromagnetic problems. A PN junction or MOS structure is a semiconductor-device problem. Nanoscale transport and electronic structure require still deeper models. formfactor must therefore use a hierarchy of validated solvers rather than a single universal "physics engine."
 
 ## 2. Physics ladder
 
 ### Level A — circuit and package behavior
 
-Primary tools/interfaces: pcbtech deterministic models, SPICE/ngspice, authoritative compact models and measured data.
+Primary tools/interfaces: formfactor deterministic models, SPICE/ngspice, authoritative compact models and measured data.
 
 Use for:
 - voltage, current, power, resistance, capacitance, inductance and timing;
@@ -52,7 +52,7 @@ Potential observable fields include:
 - transient or AC device response;
 - quantum-correction terms only when the underlying model is explicitly selected and documented.
 
-pcbtech must not reverse-engineer or invent the internal geometry, doping profile, material stack, transistor count, or process details of a commercial IC/ASIC when those data are not public. In that case the package remains represented by verified external data, compact models, measurements, or explicitly labelled behavioral models.
+formfactor must not reverse-engineer or invent the internal geometry, doping profile, material stack, transistor count, or process details of a commercial IC/ASIC when those data are not public. In that case the package remains represented by verified external data, compact models, measurements, or explicitly labelled behavioral models.
 
 ### Level D — quantum transport
 
@@ -79,7 +79,7 @@ Examples:
 - a TCAD run may generate or calibrate an I-V/C-V relationship used in a teaching device model;
 - quantum/material calculations may inform a research fixture, but ordinary board simulation continues to use compact or measured models.
 
-This keeps pcbtech responsive while preserving a path to high-accuracy analysis.
+This keeps formfactor responsive while preserving a path to high-accuracy analysis.
 
 ## 4. Inspect Physics interaction model
 
@@ -91,7 +91,7 @@ A future component or structure may expose an **Inspect Physics** action with pr
 4. **Quantum** — transport/wavefunction-level analysis for a defined nanoscale model.
 5. **Material** — electronic-structure calculations for an explicitly defined material system.
 
-Unavailable layers stay unavailable. pcbtech must never fill a missing layer with guessed internals.
+Unavailable layers stay unavailable. formfactor must never fill a missing layer with guessed internals.
 
 ## 5. Data and reference hierarchy
 
@@ -111,7 +111,7 @@ Wikipedia or a general educational article must not be the sole numerical author
 
 BitcoinVersus.Tech already contains a substantial semiconductor/solid-state knowledge base, including topics such as PN junction current, forward bias, diode ideality factor and series resistance, MOSFET threshold voltage and operating characteristics, oxide charge density, flat-band capacitance, polycrystalline-silicon resistance, lattice atoms, valence bands, solar cells, characterization methods, and semiconductor processing concepts.
 
-Future pcbtech training modules may link those articles to the corresponding simulator objects and solver views. Educational prose may explain the concept; the simulator remains responsible for showing which variables, equations, boundary conditions, source data, and solver actually generated a result.
+Future formfactor training modules may link those articles to the corresponding simulator objects and solver views. Educational prose may explain the concept; the simulator remains responsible for showing which variables, equations, boundary conditions, source data, and solver actually generated a result.
 
 ## 7. Performance profiles
 

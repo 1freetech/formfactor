@@ -1,8 +1,8 @@
-#include "pcbtech/circuit.hpp"
+#include "formfactor/circuit.hpp"
 
 #include <set>
 
-namespace pcbtech {
+namespace formfactor {
 
 bool CircuitValidationResult::valid() const { return errors.empty(); }
 
@@ -49,4 +49,4 @@ CircuitValidationResult validate_circuit(const std::vector<Net>& nets) {
   return result;
 }
 
-}  // namespace pcbtech
+}  // namespace formfactor

@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-namespace pcbtech {
+namespace formfactor {
 
 struct PointNm { std::int64_t x{}; std::int64_t y{}; };
 struct PadGeometry { std::string id; std::string layer; PointNm centre; std::int64_t diameter_nm{}; std::string net; };
@@ -43,4 +43,4 @@ struct LayoutValidation {
     const std::vector<PadGeometry>& pads, const std::vector<ViaGeometry>& vias,
     const std::vector<TraceGeometry>& traces);
 
-}  // namespace pcbtech
+}  // namespace formfactor

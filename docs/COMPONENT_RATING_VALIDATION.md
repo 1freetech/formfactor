@@ -53,7 +53,7 @@ Prerequisites: the repository source, Ubuntu/WSL, and GCC with C++20 support, as
    CXX='g++ -Werror' sh scripts/validate.sh
    ```
 
-3. Wait for `pcbtech component gate: PASS`. The script stops if compilation or any test fails. `-Werror` treats compiler warnings as errors.
+3. Wait for `formfactor component gate: PASS`. The script stops if compilation or any test fails. `-Werror` treats compiler warnings as errors.
 
 This command tests the engineering core; it does not launch or validate the SDL workbench.
 
@@ -92,8 +92,8 @@ for test in tests/*_tests.cpp; do
   "./build/rating-sanitize/$name"
   printf 'PASS %s (ASan + UBSan)\n' "$name"
 done
-g++ $flags src/main.cpp "$@" -o build/rating-sanitize/pcbtech_validate
-./build/rating-sanitize/pcbtech_validate
+g++ $flags src/main.cpp "$@" -o build/rating-sanitize/formfactor_validate
+./build/rating-sanitize/formfactor_validate
 ```
 
 </details>

@@ -1,4 +1,4 @@
-# Run pcbtech in VS Code
+# Run formfactor in VS Code
 
 The current version compiles and runs engineering tests in a terminal. It does not open a PCB game window yet. A passing test run checks the implemented code; it does not certify a physical board.
 
@@ -41,8 +41,8 @@ If the project is already downloaded, open its folder in Ubuntu and run only `co
 In the Ubuntu terminal, run:
 
 ```bash
-git clone https://github.com/1freetech/pcbtech.git
-cd pcbtech
+git clone https://github.com/1freetech/formfactor.git
+cd formfactor
 code .
 ```
 
@@ -72,7 +72,7 @@ sh scripts/validate.sh
 The terminal may be quiet while compiling. A successful run ends with:
 
 ```text
-pcbtech component gate: PASS
+formfactor component gate: PASS
 ```
 
 The script stops on a failed build or test. Keep the full error text when asking for help. If it says the script cannot be found, use **File > Open Folder** to open the project folder containing `scripts`, then open a new terminal there.
@@ -80,7 +80,7 @@ The script stops on a failed build or test. Keep the full error text when asking
 After a successful build, rerun the component demonstration with:
 
 ```bash
-./build/pcbtech_validate
+./build/formfactor_validate
 ```
 
 This last command runs only the component demonstration. Use `sh scripts/validate.sh` to rebuild and run the complete test suite.

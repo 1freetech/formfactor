@@ -4,7 +4,7 @@
 #include <variant>
 #include <vector>
 
-namespace pcbtech {
+namespace formfactor {
 
 struct SpiceResistor {
   std::string reference;
@@ -33,4 +33,4 @@ struct SpiceDeckResult {
 [[nodiscard]] SpiceDeckResult export_spice_operating_point(
     const std::string& title, const std::vector<SpiceElement>& elements);
 
-}  // namespace pcbtech
+}  // namespace formfactor

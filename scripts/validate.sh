@@ -14,9 +14,9 @@ $cxx $flags $sources tests/catalog_tests.cpp -o build/catalog_tests
 $cxx $flags $sources tests/quantity_tests.cpp -o build/quantity_tests
 ./build/quantity_tests
 $cxx $flags $sources \
-  tests/regression/pcbtech_cr_1_invalid_unit_identifiers.cpp \
-  -o build/regression_pcbtech_cr_1
-./build/regression_pcbtech_cr_1
+  tests/regression/formfactor_cr_1_invalid_unit_identifiers.cpp \
+  -o build/regression_formfactor_cr_1
+./build/regression_formfactor_cr_1
 $cxx $flags $sources tests/circuit_tests.cpp -o build/circuit_tests
 ./build/circuit_tests
 $cxx $flags $sources tests/digital_tests.cpp -o build/digital_tests
@@ -35,5 +35,5 @@ $cxx $flags $sources tests/pdn_tests.cpp -o build/pdn_tests
 ./build/pdn_tests
 $cxx $flags $sources tests/decoupling_tests.cpp -o build/decoupling_tests
 ./build/decoupling_tests
-$cxx $flags $sources src/main.cpp -o build/pcbtech_validate
-./build/pcbtech_validate
+$cxx $flags $sources src/main.cpp -o build/formfactor_validate
+./build/formfactor_validate

@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-namespace pcbtech {
+namespace formfactor {
 
 struct PdnConstraint {
   std::string id;
@@ -28,4 +28,4 @@ struct PdnValidation {
     const std::vector<std::string>& net_names,
     const std::vector<PdnConstraint>& constraints);
 
-}  // namespace pcbtech
+}  // namespace formfactor

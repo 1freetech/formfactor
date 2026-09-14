@@ -140,7 +140,7 @@ int main() {
     }
 
     SDL_Window* window = SDL_CreateWindow(
-        "PCB Tech / FreeLab - Visual Workbench (prototype)",
+        "FormFactor / FreeLab - Visual Workbench (prototype)",
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
         1280,

@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-namespace pcbtech {
+namespace formfactor {
 
 enum class PinType { Passive, PowerInput, PowerOutput, DigitalInput, DigitalOutput, OpenDrain };
 
@@ -28,4 +28,4 @@ struct CircuitValidationResult {
 // current, logic level, or component behavior that is absent from the input.
 [[nodiscard]] CircuitValidationResult validate_circuit(const std::vector<Net>& nets);
 
-}  // namespace pcbtech
+}  // namespace formfactor

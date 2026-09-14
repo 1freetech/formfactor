@@ -1,4 +1,4 @@
-#include "pcbtech/spice.hpp"
+#include "formfactor/spice.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -7,7 +7,7 @@
 #include <sstream>
 #include <type_traits>
 
-namespace pcbtech {
+namespace formfactor {
 namespace {
 
 bool valid_token(const std::string& token) {
@@ -89,4 +89,4 @@ SpiceDeckResult export_spice_operating_point(
   return result;
 }
 
-}  // namespace pcbtech
+}  // namespace formfactor

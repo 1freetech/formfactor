@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-namespace pcbtech {
+namespace formfactor {
 
 enum class StackupLayerKind { copper, dielectric };
 
@@ -30,4 +30,4 @@ struct StackupValidation {
 [[nodiscard]] StackupValidation validate_stackup(
     const std::string& name, const std::vector<StackupLayer>& layers);
 
-}  // namespace pcbtech
+}  // namespace formfactor

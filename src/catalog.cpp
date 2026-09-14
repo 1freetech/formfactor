@@ -1,4 +1,4 @@
-#include "pcbtech/catalog.hpp"
+#include "formfactor/catalog.hpp"
 
 #include <algorithm>
 #include <locale>
@@ -7,7 +7,7 @@
 #include <unordered_set>
 #include <vector>
 
-namespace pcbtech {
+namespace formfactor {
 namespace {
 
 bool valid_source(const Source& source) {
@@ -175,7 +175,7 @@ CatalogValidationResult validate_catalog_entry(const CatalogEntry& entry) {
 
   std::ostringstream output;
   output.imbue(std::locale::classic());
-  output << "pcbtech-catalog-quantity-properties-v1\n";
+  output << "formfactor-catalog-quantity-properties-v1\n";
   append_text_field(output, "catalog-id", entry.catalog_id);
   output << "property-count=" << ordered_properties.size() << '\n';
   for (const auto* property : ordered_properties) {
@@ -199,4 +199,4 @@ CatalogValidationResult validate_catalog_entry(const CatalogEntry& entry) {
   return result;
 }
 
-}  // namespace pcbtech
+}  // namespace formfactor

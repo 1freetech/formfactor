@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-namespace pcbtech {
+namespace formfactor {
 
 struct DecouplingRequirement {
   std::string id;
@@ -32,4 +32,4 @@ struct DecouplingValidation {
     const std::vector<std::string>& component_references,
     const std::vector<DecouplingRequirement>& requirements);
 
-}  // namespace pcbtech
+}  // namespace formfactor

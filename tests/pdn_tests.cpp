@@ -1,9 +1,9 @@
-#include "pcbtech/pdn.hpp"
+#include "formfactor/pdn.hpp"
 
 #include <cassert>
 
 int main() {
-  using namespace pcbtech;
+  using namespace formfactor;
   const std::vector<std::string> nets{"VCORE", "VIO"};
   const std::vector<PdnConstraint> valid{
       {"core-pdn", "VCORE", 50000, 10000000, 100000000, "processor-power-spec"},

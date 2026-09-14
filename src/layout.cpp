@@ -1,4 +1,4 @@
-#include "pcbtech/layout.hpp"
+#include "formfactor/layout.hpp"
 
 #include <algorithm>
 #include <limits>
@@ -7,13 +7,13 @@
 #include <sstream>
 #include <tuple>
 
-namespace pcbtech {
+namespace formfactor {
 namespace {
 #if defined(__GNUC__) || defined(__clang__)
 __extension__ typedef unsigned __int128 UInt128;
 __extension__ typedef __int128 Int128;
 #else
-#error "pcbtech exact clearance currently requires a compiler with unsigned 128-bit integers"
+#error "formfactor exact clearance currently requires a compiler with unsigned 128-bit integers"
 #endif
 // One metre keeps every squared and segment-distance product below 2^128.
 constexpr std::int64_t kMaximumExactGeometryNm = 1000000000;
@@ -191,10 +191,10 @@ LayoutValidation validate_layout(
   for (const auto& trace : traces) records.push_back("trace " + trace.id + " " + trace.net + " " + trace.layer + " " + std::to_string(trace.start.x) + " " + std::to_string(trace.start.y) + " " + std::to_string(trace.end.x) + " " + std::to_string(trace.end.y) + " " + std::to_string(trace.width_nm) + " load_uA=" + std::to_string(*trace.current_load_microamps) + " limit_uA=" + std::to_string(*trace.current_limit_microamps) + " current_source=" + trace.current_limit_source);
   std::sort(records.begin(), records.end());
   std::ostringstream output;
-  output << "pcbtech-layout-v1 " << board_width_nm << ' ' << board_height_nm << " nm source=" << rules.authoritative_source << '\n';
+  output << "formfactor-layout-v1 " << board_width_nm << ' ' << board_height_nm << " nm source=" << rules.authoritative_source << '\n';
   for (const auto& record : records) output << record << '\n';
   result.canonical_record = output.str();
   return result;
 }
 
-}  // namespace pcbtech
+}  // namespace formfactor

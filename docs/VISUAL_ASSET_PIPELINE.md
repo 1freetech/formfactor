@@ -1,6 +1,6 @@
 # FreeLab visual asset and rendering contract
 
-The current SDL2 workbench is a temporary smoke-test harness. Its rectangles and lines prove that the compiled project can open a native window through WSL; they are not the intended visual quality of PCBTech / FreeLab.
+The current SDL2 workbench is a temporary smoke-test harness. Its rectangles and lines prove that the compiled project can open a native window through WSL; they are not the intended visual quality of FormFactor / FreeLab.
 
 The project remains backend-first. Engineering data, solver results, dimensions, pin mappings, and validation state are authoritative. The renderer may visualize those records but must never invent electrical or mechanical facts.
 
@@ -8,7 +8,7 @@ The project remains backend-first. Engineering data, solver results, dimensions,
 
 When the backend milestones are ready for a production interface, use an open-source 3D engine rather than growing the SDL2 prototype into a custom renderer. The preferred target is **Godot 4** for the interactive 3D FreeLab workbench. Godot is open source under the MIT license and supports glTF 2.0 / GLB assets, physically based materials, lighting, cameras, picking, UI, and desktop deployment.
 
-The C++ `pcbtech_core` library remains the engineering source of truth. The future Godot interface is a client of that core, not a replacement for it. Integration may use a narrow native binding or process/API boundary after the core data contracts stabilize.
+The C++ `formfactor_core` library remains the engineering source of truth. The future Godot interface is a client of that core, not a replacement for it. Integration may use a narrow native binding or process/API boundary after the core data contracts stabilize.
 
 Primary runtime 3D asset format: **GLB / glTF 2.0**.
 
@@ -58,7 +58,7 @@ The same stable component identity must be used in the component browser, schema
 8. **Validate** model bounds and placement before allowing the asset to be marked verified.
 9. **Cache** optimized runtime meshes while preserving the full-detail source model.
 
-KiCad supports STEP and VRML component models and current KiCad PCB exports include GLB output. This makes KiCad libraries and exports useful sources for the future asset pipeline while keeping the exact catalogue mapping under PCBTech control.
+KiCad supports STEP and VRML component models and current KiCad PCB exports include GLB output. This makes KiCad libraries and exports useful sources for the future asset pipeline while keeping the exact catalogue mapping under FormFactor control.
 
 ## Visual quality requirements
 
