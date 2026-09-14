@@ -11,8 +11,11 @@ jobs:
   engineering-core:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out pcbtech
+      - name: Check out FormFactor
         uses: actions/checkout@v4
+
+      - name: Verify FormFactor identity
+        run: python3 scripts/check_identity.py
 
       - name: Run complete dependency-free validation suite
         run: sh scripts/validate.sh
