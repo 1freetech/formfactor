@@ -116,6 +116,14 @@ add_test(
   NAME regression_formfactor_cr_12_source_claim_text
   COMMAND regression_formfactor_cr_12)
 
+add_executable(
+  regression_formfactor_cr_13
+  tests/regression/formfactor_cr_13_https_source_urls.cpp)
+target_link_libraries(regression_formfactor_cr_13 PRIVATE formfactor_core)
+add_test(
+  NAME regression_formfactor_cr_13_https_source_urls
+  COMMAND regression_formfactor_cr_13)
+
 add_executable(circuit_tests tests/circuit_tests.cpp)
 target_link_libraries(circuit_tests PRIVATE formfactor_core)
 add_test(NAME circuit_validation COMMAND circuit_tests)

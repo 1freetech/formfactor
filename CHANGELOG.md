@@ -1,5 +1,9 @@
 # Changelog
 
+## CR-013 — Fail-closed canonical HTTPS source URLs
+
+All source metadata now passes one shared conservative absolute-HTTPS URL validator before a verified component or catalogue claim can be exported. The validator follows an intentionally narrow RFC 3986 URI profile: lowercase `https://`, a lowercase ASCII DNS host with an optional numeric port, no credentials, no fragments, and no whitespace or control characters; malformed or unsupported URLs fail closed, deterministic validation is covered, and the one-character host is retained as the structural boundary. URL syntax does not authenticate a host, authorize a publisher, fetch an artifact, or prove any engineering claim.
+
 ## CR-012 — Fail-closed source-claim text evidence
 
 Every exported catalogue quantity claim now preserves the exact visible, single-line wording copied from its SHA-256-bound source artifact. The claim text is length-prefixed in deterministic `formfactor-catalog-quantity-properties-v5` records; missing, whitespace-only, and control-bearing text fails closed and suppresses the complete export record. The gate preserves transcription audit evidence without parsing the prose, inferring a value, authenticating a publisher, or asserting that the structured quantity matches the source wording.

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace formfactor {
@@ -12,6 +13,11 @@ struct Source {
   std::string url;
   std::string revision;
 };
+
+// Validates FormFactor's conservative absolute-HTTPS source profile. The
+// result is structural only; it does not fetch or authenticate the resource.
+[[nodiscard]] bool valid_source_url(std::string_view url);
+[[nodiscard]] bool valid_source(const Source& source);
 
 struct Component {
   std::string manufacturer;

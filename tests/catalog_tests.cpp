@@ -220,6 +220,14 @@ int main() {
     }
   }
 
+  for (const char* invalid_url :
+       {"http://example.invalid/property", "https://user@example.invalid/property",
+        "https://example.invalid/property#fragment"}) {
+    auto invalid = one_volt;
+    invalid.quantity_properties.front().source.url = invalid_url;
+    expect_rejected(invalid);
+  }
+
   for (const bool manufacturer_field : {false, true}) {
     auto missing_identity = one_volt;
     auto& claim = missing_identity.quantity_properties.front();

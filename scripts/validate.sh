@@ -47,6 +47,10 @@ $cxx $flags $sources \
   tests/regression/formfactor_cr_12_source_claim_text.cpp \
   -o build/regression_formfactor_cr_12
 ./build/regression_formfactor_cr_12
+$cxx $flags $sources \
+  tests/regression/formfactor_cr_13_https_source_urls.cpp \
+  -o build/regression_formfactor_cr_13
+./build/regression_formfactor_cr_13
 $cxx $flags $sources tests/circuit_tests.cpp -o build/circuit_tests
 ./build/circuit_tests
 $cxx $flags $sources tests/digital_tests.cpp -o build/digital_tests

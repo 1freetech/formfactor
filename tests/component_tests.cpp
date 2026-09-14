@@ -17,6 +17,26 @@ int main() {
   missing_source.sources.clear();
   assert(!formfactor::validate(missing_source).export_allowed());
 
+  const std::array<const char*, 10> invalid_source_urls{
+      "", "http://vendor.invalid/part-1", "ftp://vendor.invalid/part-1",
+      "https:///part-1", "https://Vendor.invalid/part-1",
+      "https://user@vendor.invalid/part-1", "https://vendor.invalid/#section",
+      "https://vendor.invalid/part 1", "https://vendor.invalid:abc/part-1",
+      "https://vendor..invalid/part-1"};
+  for (const char* url : invalid_source_urls) {
+    auto invalid_source = verified;
+    invalid_source.sources.front().url = url;
+    const auto first = formfactor::validate(invalid_source);
+    const auto replay = formfactor::validate(invalid_source);
+    assert(!first.export_allowed());
+    assert(first.effective_tier == formfactor::AccuracyTier::Partial);
+    assert(first.errors == replay.errors);
+  }
+  assert(formfactor::valid_source_url("https://x"));
+  assert(formfactor::valid_source_url(
+      "https://vendor.invalid:443/part-1?revision=a"));
+  assert(!formfactor::valid_source_url("https://vendor.invalid/part-1#page-2"));
+
   auto invalid_rating = verified;
   invalid_rating.max_voltage_v = 0.0;
   assert(!formfactor::validate(invalid_rating).export_allowed());

@@ -44,11 +44,6 @@ std::vector<ComponentFamily> applicable_families(Dimension dimension) {
   return {};
 }
 
-bool valid_source(const Source& source) {
-  return !source.title.empty() && !source.url.empty() &&
-         !source.revision.empty();
-}
-
 bool valid_record_text(std::string_view text) {
   bool has_non_whitespace = false;
   for (const unsigned char character : text) {
