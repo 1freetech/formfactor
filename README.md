@@ -83,3 +83,10 @@ formfactor follows a straightforward engineering flow. Each stage must produce t
 5. **Check the PCB design.** Validate layout rules and, when the required solvers and source data exist, evaluate signal integrity, power integrity, thermal behavior, and manufacturability.
 6. **Show the results.** The game engine presents solver output so users can see what passed, what failed, and what is still unknown. The renderer never decides engineering truth.
 7. **Export only validated work.** KiCad and manufacturing artifacts become eligible for export only after every required implemented validation gate passes.
+
+
+## Pinned policy-key trust evaluation
+
+CR-020 can evaluate an exact publisher/key binding against a caller-supplied, versioned trust root at a caller-supplied UTC instant. The root must contain valid CR-017 key material, a nonzero version, a fixed-format UTC expiry, and unambiguous publisher/key identities. Unknown or removed keys are not trusted, expired roots cannot authorize keys, malformed inputs fail closed, and deterministic records omit raw public-key bytes.
+
+This gate does not authenticate or distribute the trust root, preserve a previously trusted version, prevent rollback, verify threshold rotation, or authorize catalogue export. Those stateful and signed-root dependencies remain required before a caller-supplied root can become authoritative.

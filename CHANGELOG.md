@@ -1,5 +1,9 @@
 # Changelog
 
+## CR-020 — Deterministic pinned policy-key trust roots
+
+FormFactor now evaluates exact publisher/key bindings against an explicitly supplied, versioned trust root at an explicit fixed-format UTC instant. Valid roots require CR-017-validated keys, unambiguous publisher/key identities, a nonzero version, and a valid expiry; exact bindings before expiry produce `Trusted`, unknown or removed bindings produce `NotTrusted`, evaluation at or after expiry produces `Expired`, and malformed evidence fails closed as `Invalid` without a record. Deterministic records sort bindings and retain key-record SHA-256 digests without embedding public keys. The supplied root is not authenticated or persisted, so signed distribution, rollback protection, threshold rotation, durable revocation state, and catalogue-export integration remain unimplemented.
+
 ## CR-019 — OpenSSL-backed Ed25519 signature verification
 
 FormFactor now verifies exact CR-018 detached-signature evidence with OpenSSL's one-shot EVP Ed25519 interface and records the backend name and version with a deterministic SHA-256 evidence binding. RFC 8032 test vector 1 passes; changed signatures and changed messages produce `Rejected`, malformed evidence remains `Invalid`, and backend failures fail closed without records. Verification proves only that the exact bytes were signed by the private key corresponding to the supplied public key; key ownership, publisher authority, trust-anchor distribution, revocation, rotation, and catalogue-export enforcement remain unimplemented.

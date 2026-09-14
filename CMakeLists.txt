@@ -16,7 +16,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
   endif()
 endif()
 
-add_library(formfactor_core src/component.cpp src/hash.cpp src/policy_trust.cpp src/source_authority.cpp src/catalog.cpp src/catalog_filter.cpp src/quantity.cpp src/circuit.cpp src/digital.cpp src/spice.cpp src/stackup.cpp src/layout.cpp src/impedance.cpp src/return_path.cpp src/pdn.cpp src/decoupling.cpp)
+add_library(formfactor_core src/component.cpp src/hash.cpp src/policy_trust.cpp src/key_authority.cpp src/source_authority.cpp src/catalog.cpp src/catalog_filter.cpp src/quantity.cpp src/circuit.cpp src/digital.cpp src/spice.cpp src/stackup.cpp src/layout.cpp src/impedance.cpp src/return_path.cpp src/pdn.cpp src/decoupling.cpp)
 target_include_directories(formfactor_core PUBLIC include)
 
 if(FORMFACTOR_BUILD_SIGNATURE_VERIFIER)
@@ -171,6 +171,14 @@ target_link_libraries(regression_formfactor_cr_18 PRIVATE formfactor_core)
 add_test(
   NAME regression_formfactor_cr_18_ed25519_signature_envelope
   COMMAND regression_formfactor_cr_18)
+
+add_executable(
+  regression_formfactor_cr_20
+  tests/regression/formfactor_cr_20_pinned_key_trust_root.cpp)
+target_link_libraries(regression_formfactor_cr_20 PRIVATE formfactor_core)
+add_test(
+  NAME regression_formfactor_cr_20_pinned_key_trust_root
+  COMMAND regression_formfactor_cr_20)
 
 if(FORMFACTOR_BUILD_SIGNATURE_VERIFIER)
   add_executable(

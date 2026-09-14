@@ -29,7 +29,7 @@ jobs:
       - name: Run complete CTest suite
         run: ctest --test-dir build-cmake --output-on-failure
 
-      - name: Run exact-quantity test with strict warnings and sanitizers
+      - name: Run focused strict-warning sanitizer checks
         run: |
           g++ -std=c++20 -Wall -Wextra -Wpedantic -Werror \
             -fsanitize=address,undefined -fno-omit-frame-pointer -Iinclude \
@@ -42,3 +42,9 @@ jobs:
             tests/regression/formfactor_cr_19_ed25519_signature_verification.cpp \
             -lcrypto -o build/policy_signature_sanitizer_tests
           ASAN_OPTIONS=detect_leaks=1 ./build/policy_signature_sanitizer_tests
+          g++ -std=c++20 -Wall -Wextra -Wpedantic -Werror \
+            -fsanitize=address,undefined -fno-omit-frame-pointer -Iinclude \
+            src/hash.cpp src/policy_trust.cpp src/key_authority.cpp \
+            tests/regression/formfactor_cr_20_pinned_key_trust_root.cpp \
+            -o build/key_authority_sanitizer_tests
+          ASAN_OPTIONS=detect_leaks=1 ./build/key_authority_sanitizer_tests

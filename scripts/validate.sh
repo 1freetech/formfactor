@@ -5,7 +5,7 @@ mkdir -p build
 cxx="${CXX:-g++}"
 flags="-std=c++20 -Wall -Wextra -Wpedantic -Werror -Iinclude"
 
-sources="src/component.cpp src/hash.cpp src/policy_trust.cpp src/source_authority.cpp src/catalog.cpp src/catalog_filter.cpp src/quantity.cpp src/circuit.cpp src/digital.cpp src/spice.cpp src/stackup.cpp src/layout.cpp src/impedance.cpp src/return_path.cpp src/pdn.cpp src/decoupling.cpp"
+sources="src/component.cpp src/hash.cpp src/policy_trust.cpp src/key_authority.cpp src/source_authority.cpp src/catalog.cpp src/catalog_filter.cpp src/quantity.cpp src/circuit.cpp src/digital.cpp src/spice.cpp src/stackup.cpp src/layout.cpp src/impedance.cpp src/return_path.cpp src/pdn.cpp src/decoupling.cpp"
 
 $cxx $flags $sources tests/component_tests.cpp -o build/component_tests
 ./build/component_tests
@@ -75,6 +75,10 @@ $cxx $flags src/hash.cpp src/policy_trust.cpp src/policy_signature.cpp \
   tests/regression/formfactor_cr_19_ed25519_signature_verification.cpp \
   -lcrypto -o build/regression_formfactor_cr_19
 ./build/regression_formfactor_cr_19
+$cxx $flags src/hash.cpp src/policy_trust.cpp src/key_authority.cpp \
+  tests/regression/formfactor_cr_20_pinned_key_trust_root.cpp \
+  -o build/regression_formfactor_cr_20
+./build/regression_formfactor_cr_20
 $cxx $flags $sources tests/circuit_tests.cpp -o build/circuit_tests
 ./build/circuit_tests
 $cxx $flags $sources tests/digital_tests.cpp -o build/digital_tests
