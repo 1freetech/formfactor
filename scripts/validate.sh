@@ -13,6 +13,10 @@ $cxx $flags $sources tests/catalog_tests.cpp -o build/catalog_tests
 ./build/catalog_tests
 $cxx $flags $sources tests/quantity_tests.cpp -o build/quantity_tests
 ./build/quantity_tests
+$cxx $flags $sources \
+  tests/regression/pcbtech_cr_1_invalid_unit_identifiers.cpp \
+  -o build/regression_pcbtech_cr_1
+./build/regression_pcbtech_cr_1
 $cxx $flags $sources tests/circuit_tests.cpp -o build/circuit_tests
 ./build/circuit_tests
 $cxx $flags $sources tests/digital_tests.cpp -o build/digital_tests

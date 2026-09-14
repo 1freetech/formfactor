@@ -30,6 +30,14 @@ add_executable(quantity_tests tests/quantity_tests.cpp)
 target_link_libraries(quantity_tests PRIVATE pcbtech_core)
 add_test(NAME exact_quantity_units COMMAND quantity_tests)
 
+add_executable(
+  regression_pcbtech_cr_1
+  tests/regression/pcbtech_cr_1_invalid_unit_identifiers.cpp)
+target_link_libraries(regression_pcbtech_cr_1 PRIVATE pcbtech_core)
+add_test(
+  NAME regression_pcbtech_cr_1_invalid_unit_identifiers
+  COMMAND regression_pcbtech_cr_1)
+
 add_executable(circuit_tests tests/circuit_tests.cpp)
 target_link_libraries(circuit_tests PRIVATE pcbtech_core)
 add_test(NAME circuit_validation COMMAND circuit_tests)
