@@ -4,6 +4,10 @@ This file records published changes without rewriting shared Git history. Histor
 
 ## 2026-09-14
 
+### CR-008 — Fail-closed property-to-component identity binding
+
+FormFactor now requires every catalogue quantity claim to carry explicit manufacturer and part-number fields that exactly match the catalogue component before the claim can enter the deterministic export record, preventing a sourced value for one part from being silently attached to another part with a plausible label or family. The canonical record advances to `formfactor-catalog-quantity-properties-v2` so the added identity fields cannot be mistaken for the older layout; CR-008 covers valid binding, missing, mismatched, and control-bearing identity rejection, deterministic replay, and complete export suppression, while source URL authentication, transcription verification, publisher classification, physical plausibility, safety, compliance, and solver evaluation remain unimplemented.
+
 ### CR-007 — Fail-closed component-family applicability
 
 FormFactor now attaches an explicit supported-family set to every implemented catalogue quantity schema and rejects a property when its entry's primary component family is not declared by that schema, so a plausible property name cannot silently cross family boundaries or enter an export record. The registry is a conservative project support contract rather than a claim that an excluded property is physically impossible; CR-007 covers valid family use, unsupported and `Other` rejection, deterministic repeat lookup, complete-record suppression, and existing dimension, qualifier, provenance, and unit gates. Source authentication, manufacturer-specific applicability, multiple-family entries, physical plausibility, safety, compliance, and solver evaluation remain unimplemented.

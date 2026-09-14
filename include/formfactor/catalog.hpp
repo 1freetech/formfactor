@@ -5,6 +5,7 @@
 
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace formfactor {
@@ -47,6 +48,11 @@ struct CatalogQuantityProperty {
   // Source wording for applicable conditions. Absence remains explicit and
   // must not be interpreted as an unconditional value by higher layers.
   std::optional<std::string> conditions;
+  // Exact component identity stated for this claim. These fields prevent a
+  // sourced value from being attached to a different catalogue part; they do
+  // not authenticate the source or prove the value was transcribed correctly.
+  std::string claimed_manufacturer;
+  std::string claimed_part_number;
   Source source;
 };
 
@@ -57,6 +63,12 @@ struct CatalogQuantityPropertySchema {
   // Families for which this semantic property is implemented. Absence means
   // unsupported, not physically impossible.
   std::vector<ComponentFamily> applicable_families;
+
+  CatalogQuantityPropertySchema(std::string id, Dimension value_dimension,
+                                QuantityValueQualifier value_qualifier)
+      : property_id(std::move(id)),
+        dimension(value_dimension),
+        qualifier(value_qualifier) {}
 };
 
 // Returns the implemented semantic contract for a property identifier. An

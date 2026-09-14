@@ -27,11 +27,11 @@ formfactor::CatalogEntry entry() {
           {{"resistance.nominal", "Nominal resistance",
             quantity(1000, formfactor::Unit::Ohm),
             formfactor::QuantityValueQualifier::Nominal, std::nullopt,
-            source()},
+            "Fixture", "R-1", source()},
            {"power.maximum", "Maximum power",
             quantity(250, formfactor::Unit::Milliwatt),
             formfactor::QuantityValueQualifier::Maximum,
-            "at 70 degrees C ambient", source()}}};
+            "at 70 degrees C ambient", "Fixture", "R-1", source()}}};
 }
 
 }  // namespace

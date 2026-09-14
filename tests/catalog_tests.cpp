@@ -42,7 +42,8 @@ formfactor::CatalogQuantityProperty property(
     const char* id, const char* name, formfactor::Quantity value,
     formfactor::QuantityValueQualifier qualifier,
     std::optional<std::string> conditions = std::nullopt) {
-  return {id, name, value, qualifier, std::move(conditions), property_source()};
+  return {id, name, value, qualifier, std::move(conditions), "Vendor", "PART-2",
+          property_source()};
 }
 
 }  // namespace
@@ -80,7 +81,7 @@ int main() {
          formfactor::validate_catalog_entry(entry)
              .canonical_quantity_property_record);
   assert(valid.canonical_quantity_property_record.find(
-             "formfactor-catalog-quantity-properties-v1\n") == 0);
+             "formfactor-catalog-quantity-properties-v2\n") == 0);
   assert(valid.canonical_quantity_property_record.find("property-count=2\n") !=
          std::string::npos);
   assert(valid.canonical_quantity_property_record.find(
@@ -216,6 +217,25 @@ int main() {
       expect_rejected(invalid);
     }
   }
+
+  for (const bool manufacturer_field : {false, true}) {
+    auto missing_identity = one_volt;
+    auto& claim = missing_identity.quantity_properties.front();
+    (manufacturer_field ? claim.claimed_manufacturer : claim.claimed_part_number)
+        .clear();
+    expect_rejected(missing_identity);
+
+    auto mismatched_identity = one_volt;
+    auto& mismatched_claim = mismatched_identity.quantity_properties.front();
+    (manufacturer_field ? mismatched_claim.claimed_manufacturer
+                        : mismatched_claim.claimed_part_number) = "Different";
+    expect_rejected(mismatched_identity);
+  }
+
+  assert(valid.canonical_quantity_property_record.find(
+             "claimed-manufacturer=6:Vendor\n") != std::string::npos);
+  assert(valid.canonical_quantity_property_record.find(
+             "claimed-part-number=6:PART-2\n") != std::string::npos);
 
   auto forged_catalog_id = one_volt;
   forged_catalog_id.catalog_id = "vendor:part\nproperty-count=99";

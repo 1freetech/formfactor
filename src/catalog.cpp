@@ -39,7 +39,6 @@ std::vector<ComponentFamily> applicable_families(Dimension dimension) {
               Family::SwitchingAmplification, Family::PowerConversion,
               Family::IndicatorsActuators};
     case Dimension::Dimensionless:
-    case Dimension::Temperature:
       return {};
   }
   return {};
@@ -269,6 +268,15 @@ CatalogValidationResult validate_catalog_entry(const CatalogEntry& entry) {
       result.errors.emplace_back(prefix +
                                  " conditions must be non-empty single-line text when present");
     }
+    if (!valid_record_text(property.claimed_manufacturer) ||
+        !valid_record_text(property.claimed_part_number)) {
+      result.errors.emplace_back(prefix +
+                                 " requires complete single-line claimed component identity");
+    } else if (property.claimed_manufacturer != entry.component.manufacturer ||
+               property.claimed_part_number != entry.component.part_number) {
+      result.errors.emplace_back(prefix +
+                                 " claimed component identity does not match the catalogue component");
+    }
     if (!valid_source(property.source) ||
         !valid_record_text(property.source.title) ||
         !valid_record_text(property.source.url) ||
@@ -292,7 +300,7 @@ CatalogValidationResult validate_catalog_entry(const CatalogEntry& entry) {
 
   std::ostringstream output;
   output.imbue(std::locale::classic());
-  output << "formfactor-catalog-quantity-properties-v1\n";
+  output << "formfactor-catalog-quantity-properties-v2\n";
   append_text_field(output, "catalog-id", entry.catalog_id);
   output << "property-count=" << ordered_properties.size() << '\n';
   for (const auto* property : ordered_properties) {
@@ -306,6 +314,10 @@ CatalogValidationResult validate_catalog_entry(const CatalogEntry& entry) {
     if (property->conditions.has_value()) {
       append_text_field(output, "conditions", *property->conditions);
     }
+    append_text_field(output, "claimed-manufacturer",
+                      property->claimed_manufacturer);
+    append_text_field(output, "claimed-part-number",
+                      property->claimed_part_number);
     append_text_field(output, "source-title", property->source.title);
     append_text_field(output, "source-url", property->source.url);
     append_text_field(output, "source-revision", property->source.revision);

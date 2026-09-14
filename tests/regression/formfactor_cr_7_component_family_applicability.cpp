@@ -33,7 +33,8 @@ formfactor::CatalogEntry entry(formfactor::ComponentFamily family) {
       asset("simulation-model"),
       {{"1", "1", "p"}, {"2", "2", "n"}},
       {{"voltage.maximum", "Maximum voltage", *value,
-        formfactor::QuantityValueQualifier::Maximum, std::nullopt, source()}}};
+        formfactor::QuantityValueQualifier::Maximum, std::nullopt,
+        "Fixture", "CR-007", source()}}};
 }
 
 bool contains(const std::vector<formfactor::ComponentFamily>& families,
