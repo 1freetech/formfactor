@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-add_library(formfactor_core src/component.cpp src/catalog.cpp src/quantity.cpp src/circuit.cpp src/digital.cpp src/spice.cpp src/stackup.cpp src/layout.cpp src/impedance.cpp src/return_path.cpp src/pdn.cpp src/decoupling.cpp)
+add_library(formfactor_core src/component.cpp src/catalog.cpp src/catalog_filter.cpp src/quantity.cpp src/circuit.cpp src/digital.cpp src/spice.cpp src/stackup.cpp src/layout.cpp src/impedance.cpp src/return_path.cpp src/pdn.cpp src/decoupling.cpp)
 target_include_directories(formfactor_core PUBLIC include)
 target_compile_options(formfactor_core PRIVATE -Wall -Wextra -Wpedantic)
 
@@ -25,6 +25,10 @@ add_test(NAME component_validation COMMAND component_tests)
 add_executable(catalog_tests tests/catalog_tests.cpp)
 target_link_libraries(catalog_tests PRIVATE formfactor_core)
 add_test(NAME catalog_linkage COMMAND catalog_tests)
+
+add_executable(catalog_filter_tests tests/catalog_filter_tests.cpp)
+target_link_libraries(catalog_filter_tests PRIVATE formfactor_core)
+add_test(NAME catalog_exact_filter COMMAND catalog_filter_tests)
 
 add_executable(quantity_tests tests/quantity_tests.cpp)
 target_link_libraries(quantity_tests PRIVATE formfactor_core)

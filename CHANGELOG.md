@@ -4,6 +4,10 @@ This file records published changes without rewriting shared Git history. Histor
 
 ## 2026-09-14
 
+### CR-004 — Fail-closed exact catalogue filtering
+
+FormFactor can now evaluate one exact numeric catalogue constraint by property identity, value qualifier, comparison relation, and optional source condition while preserving three distinct outcomes: match, no match, and unknown. Exact SI comparison makes equivalent units and inclusive boundaries deterministic, while missing properties, mismatched qualifiers, and mismatched conditions remain unknown and can never satisfy a filter; incompatible dimensions, malformed requests, unsupported enumeration values, invalid catalogue records, and incomplete provenance fail closed without producing a decision record. The new tests cover valid, invalid, boundary, deterministic replay, equivalent-unit, provenance, and export-safety behavior, and the implementation does not claim that a sourced value is authentic, manufacturer-verified, safe, compliant, or physically solved.
+
 ### CR-003 — Deterministic SPICE execution evidence
 
 FormFactor now validates and serializes caller-supplied SPICE execution evidence into an unambiguous, deterministic replay record containing the exact input deck, solver name and version, portable exit status, and raw standard-output and standard-error streams. Missing provenance, missing input, absent output evidence, multiline versions, and out-of-range exit codes fail closed; repeated identical evidence produces an identical record. This records execution evidence only and does not invoke ngspice, authenticate the supplied provenance, interpret solver output, or claim that a circuit is electrically correct.

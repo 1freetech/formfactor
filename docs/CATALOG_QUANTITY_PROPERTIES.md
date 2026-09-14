@@ -1,6 +1,6 @@
 # Sourced exact catalogue quantity properties
 
-Implemented scope: truth-layer catalogue data. Advanced-PCB connection: exact, sourced voltage, current, resistance, capacitance, inductance, frequency, geometry, time, and power statements are prerequisites for honest component filtering and later solver inputs. This slice records and validates those statements; it does not implement filtering or a physical solver.
+Implemented scope: truth-layer catalogue data and exact numeric filtering. Advanced-PCB connection: exact, sourced voltage, current, resistance, capacitance, inductance, frequency, geometry, time, and power statements are prerequisites for honest component filtering and later solver inputs. This slice records, validates, and filters those statements; it does not implement a physical solver.
 
 ## 1. What is implemented
 
@@ -11,6 +11,9 @@ Implemented scope: truth-layer catalogue data. Advanced-PCB connection: exact, s
 5. A valid entry produces the versioned project-internal record `formfactor-catalog-quantity-properties-v1`. Properties are sorted by ID and text is byte-length-prefixed for deterministic replay.
 6. An entry with no properties exports `property-count=0`. No value is inferred from its component family, legacy scalar ratings, symbol, footprint, pin count, or appearance.
 7. Any catalogue, mapping, component, or quantity-property validation error suppresses the complete canonical property record.
+8. An exact numeric filter selects a property ID and qualifier, then applies `at-least`, `at-most`, or `equal` using the exact SI comparison layer.
+9. Missing properties, qualifier mismatches, and source-condition mismatches return `unknown`, never `match`. Conditioned values are eligible only when the filter supplies the exact condition text.
+10. Invalid catalogue provenance, malformed filters, unsupported enumerations, and dimension mismatches fail closed without a decision record. Valid decisions produce the deterministic `formfactor-catalog-filter-v1` record.
 
 The numerical layer follows the [BIPM SI Brochure](https://www.bipm.org/en/publications/si-brochure) and [NIST SP 811](https://www.nist.gov/pml/owm/si-units-information). The catalogue record layout and identifier grammar are original formfactor formats, not external standards.
 
@@ -36,7 +39,7 @@ The catalogue tests cover:
 7. rejection of a catalogue ID containing a forged record line;
 8. suppression of canonical output for every invalid case, including invalid legacy component ratings.
 
-All part names, URLs, assets, and numbers in `tests/catalog_tests.cpp` are synthetic fixtures. They are not verified manufacturer components.
+The filter tests additionally cover equivalent units, exact inclusive boundaries, definite non-matches, missing values, qualifier and condition mismatches, incompatible dimensions, invalid enumerations and IDs, deterministic records, and export blocking when source provenance is incomplete. All part names, URLs, assets, and numbers in the tests are synthetic fixtures. They are not verified manufacturer components.
 
 ## 4. Limits kept visible
 
@@ -44,4 +47,4 @@ All part names, URLs, assets, and numbers in `tests/catalog_tests.cpp` are synth
 - Qualifier relationships, tolerances, sign/range plausibility, operating ranges, and cross-checks against legacy `double` rating fields are not implemented.
 - Condition text is not machine-interpreted. A future filter must treat a conditioned value conservatively rather than silently ignoring its conditions.
 - A source record is not proof of authenticity or measurement accuracy.
-- No catalogue search, numeric filter, graphical card, schematic symbol renderer, safety check, solver, or physical compliance result is added here. Until filtering exists, the rule that missing values cannot satisfy a numeric constraint remains a pending UI/query behavior.
+- No multi-constraint catalogue search, typed semantic property schema, graphical card, schematic symbol renderer, safety check, solver, or physical compliance result is added here. The filter evaluates only exact stored claims and does not convert a source claim into manufacturer verification.
