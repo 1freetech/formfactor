@@ -22,7 +22,8 @@ formfactor::CatalogEntry entry() {
           {{"voltage.maximum", "Maximum voltage", *value,
             formfactor::QuantityValueQualifier::Maximum, std::nullopt,
             "Vendor", "PART-2", source(), std::string(64, 'a'),
-            "page 2, absolute maximum ratings, row VMAX"}}};
+            "page 2, absolute maximum ratings, row VMAX",
+            "VMAX: 5 V maximum"}}};
 }
 }  // namespace
 
@@ -34,7 +35,7 @@ int main() {
   assert(first.canonical_quantity_property_record ==
          replay.canonical_quantity_property_record);
   assert(first.canonical_quantity_property_record.find(
-             "formfactor-catalog-quantity-properties-v4\n") == 0);
+             "formfactor-catalog-quantity-properties-v5\n") == 0);
   assert(first.canonical_quantity_property_record.find(
              "source-locator=42:page 2, absolute maximum ratings, row VMAX\n") !=
          std::string::npos);

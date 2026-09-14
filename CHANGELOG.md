@@ -1,5 +1,9 @@
 # Changelog
 
+## CR-012 — Fail-closed source-claim text evidence
+
+Every exported catalogue quantity claim now preserves the exact visible, single-line wording copied from its SHA-256-bound source artifact. The claim text is length-prefixed in deterministic `formfactor-catalog-quantity-properties-v5` records; missing, whitespace-only, and control-bearing text fails closed and suppresses the complete export record. The gate preserves transcription audit evidence without parsing the prose, inferring a value, authenticating a publisher, or asserting that the structured quantity matches the source wording.
+
 ## CR-011 — Fail-closed source-claim locators
 
 Every exported catalogue quantity claim now requires visible, single-line text identifying its exact location inside the SHA-256-bound source artifact, such as a published page, table, section, or stable anchor. The locator is length-prefixed in deterministic `formfactor-catalog-quantity-properties-v4` records; missing, whitespace-only, and control-bearing locators fail closed and suppress the complete export record. The field makes a claim auditable but remains opaque source wording: FormFactor does not infer a location, fetch the artifact, authenticate its publisher, or assert that the transcription is correct.

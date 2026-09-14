@@ -5,10 +5,10 @@ Implemented scope: truth-layer catalogue data and exact numeric filtering. Advan
 ## 1. What is implemented
 
 1. A catalogue entry may contain zero or more `CatalogQuantityProperty` records.
-2. Each record has a stable machine ID, readable name, exact SI `Quantity`, value qualifier, optional source condition, exact claimed manufacturer and part number, revisioned source metadata, a lowercase SHA-256 digest of the exact source artifact used for transcription, and an exact in-artifact locator supplied from that artifact.
+2. Each record has a stable machine ID, readable name, exact SI `Quantity`, value qualifier, optional source condition, exact claimed manufacturer and part number, revisioned source metadata, a lowercase SHA-256 digest of the exact source artifact used for transcription, an exact in-artifact locator, and the exact visible source wording for the claim.
 3. Supported qualifiers are `nominal`, `minimum`, `typical`, and `maximum`. They preserve the source's claim; formfactor does not turn a typical value into a guaranteed limit.
 4. An absent condition is encoded separately from a present condition. Condition text is preserved as opaque source wording and is not evaluated or discarded.
-5. A valid entry produces the versioned project-internal record `formfactor-catalog-quantity-properties-v4`. Properties are sorted by ID and text is byte-length-prefixed for deterministic replay. Version 4 adds the source locator and intentionally replaces earlier layouts rather than silently changing them.
+5. A valid entry produces the versioned project-internal record `formfactor-catalog-quantity-properties-v5`. Properties are sorted by ID and text is byte-length-prefixed for deterministic replay. Version 5 adds source-claim text and intentionally replaces earlier layouts rather than silently changing them.
 6. An entry with no properties exports `property-count=0`. No value is inferred from its component family, legacy scalar ratings, symbol, footprint, pin count, or appearance.
 7. Any catalogue, mapping, component, or quantity-property validation error suppresses the complete canonical property record.
 8. An exact numeric filter selects a property ID and qualifier, then applies `at-least`, `at-most`, or `equal` using the exact SI comparison layer.
@@ -30,6 +30,7 @@ The numerical layer follows the [BIPM SI Brochure](https://www.bipm.org/en/publi
 8. Every property claim must name a manufacturer and part number using visible single-line text, and both fields must exactly match the catalogue component identity. This is a binding check, not source authentication or manufacturer verification.
 9. Every property claim must include exactly 64 lowercase hexadecimal characters representing a SHA-256 digest. The gate validates digest syntax and preserves it in replay output; it does not retrieve or hash an artifact itself.
 10. Every property claim must include visible, single-line locator text that points to the claim inside the bound artifact, using the artifact's own page, table, section, figure, row, or stable-anchor notation. The locator is preserved as opaque source wording; FormFactor neither invents it nor asserts that it resolves correctly.
+11. Every property claim must preserve the exact visible, single-line claim wording copied from the bound artifact. The validator rejects absent, whitespace-only, and control-bearing text, but deliberately does not parse prose or assert equivalence between that text and the structured quantity.
 
 ## 3. Measured acceptance results
 
@@ -44,12 +45,12 @@ The catalogue tests cover:
 7. rejection of a catalogue ID containing a forged record line;
 8. suppression of canonical output for every invalid case, including invalid legacy component ratings.
 
-The filter tests additionally cover equivalent units, exact inclusive boundaries, definite non-matches, missing values, qualifier and condition mismatches, incompatible dimensions, invalid enumerations and IDs, deterministic records, and export blocking when source provenance is incomplete. CR-007 verifies valid and unsupported family use, deterministic family-set lookup, `Other` rejection, and complete output suppression. CR-008 verifies exact property-to-component identity, missing, mismatched, and control-bearing identity rejection, deterministic replay, and export suppression. CR-009 verifies the artifact-digest syntax boundary. CR-011 verifies valid, missing, whitespace-only, control-bearing, deterministic/replay, minimum-length, and export-safety locator behavior. All part names, URLs, assets, locators, and numbers in the tests are synthetic fixtures. They are not verified manufacturer components.
+The filter tests additionally cover equivalent units, exact inclusive boundaries, definite non-matches, missing values, qualifier and condition mismatches, incompatible dimensions, invalid enumerations and IDs, deterministic records, and export blocking when source provenance is incomplete. CR-007 verifies valid and unsupported family use, deterministic family-set lookup, `Other` rejection, and complete output suppression. CR-008 verifies exact property-to-component identity, missing, mismatched, and control-bearing identity rejection, deterministic replay, and export suppression. CR-009 verifies the artifact-digest syntax boundary. CR-011 verifies valid, invalid, replay, boundary, and export-safety locator behavior. CR-012 applies the same fail-closed cases to exact source-claim text. All part names, URLs, assets, locators, claim text, and numbers in the tests are synthetic fixtures. They are not verified manufacturer components.
 
 ## 4. Limits kept visible
 
 - Temperature remains unsupported until affine unit conversion is implemented. Tolerance and manufacturer-family applicability beyond exact identity binding remain unsupported until each contract is explicitly added and tested.
 - Qualifier relationships, tolerances, sign/range plausibility, operating ranges, and cross-checks against legacy `double` rating fields are not implemented.
 - Condition text is not machine-interpreted. A future filter must treat a conditioned value conservatively rather than silently ignoring its conditions.
-- A source record, artifact digest, and in-artifact locator are not proof of publisher authenticity, locator correctness, transcription correctness, or measurement accuracy.
+- A source record, artifact digest, in-artifact locator, and preserved claim text are not proof of publisher authenticity, locator correctness, semantic transcription correctness, or measurement accuracy.
 - No multi-constraint catalogue search, graphical card, schematic symbol renderer, safety check, solver, or physical compliance result is added here. The filter evaluates only exact stored claims and does not convert a source claim into manufacturer verification.

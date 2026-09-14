@@ -62,6 +62,10 @@ struct CatalogQuantityProperty {
   // table, section, or stable document anchor. This is preserved as opaque
   // source wording and does not prove that the transcription is correct.
   std::string source_locator;
+  // Exact claim wording copied from the bound source artifact. This evidence
+  // is preserved verbatim for audit; formfactor does not infer engineering
+  // meaning from it or assert that it matches the structured quantity.
+  std::string source_claim_text;
 };
 
 struct CatalogQuantityPropertySchema {

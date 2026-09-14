@@ -300,6 +300,10 @@ CatalogValidationResult validate_catalog_entry(const CatalogEntry& entry) {
       result.errors.emplace_back(prefix +
                                  " requires a non-empty single-line source locator");
     }
+    if (!valid_record_text(property.source_claim_text)) {
+      result.errors.emplace_back(prefix +
+                                 " requires non-empty single-line source claim text");
+    }
   }
 
   if (!result.errors.empty()) return result;
@@ -316,7 +320,7 @@ CatalogValidationResult validate_catalog_entry(const CatalogEntry& entry) {
 
   std::ostringstream output;
   output.imbue(std::locale::classic());
-  output << "formfactor-catalog-quantity-properties-v4\n";
+  output << "formfactor-catalog-quantity-properties-v5\n";
   append_text_field(output, "catalog-id", entry.catalog_id);
   output << "property-count=" << ordered_properties.size() << '\n';
   for (const auto* property : ordered_properties) {
@@ -340,6 +344,7 @@ CatalogValidationResult validate_catalog_entry(const CatalogEntry& entry) {
     append_text_field(output, "source-artifact-sha256",
                       property->source_artifact_sha256);
     append_text_field(output, "source-locator", property->source_locator);
+    append_text_field(output, "source-claim-text", property->source_claim_text);
     output << "end-property\n";
   }
   result.canonical_quantity_property_record = output.str();
