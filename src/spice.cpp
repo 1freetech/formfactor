@@ -24,9 +24,52 @@ std::string number(const double value) {
   return output.str();
 }
 
+void append_field(std::ostringstream& output, const std::string& name,
+                  const std::string& value) {
+  output << name << ':' << value.size() << ':' << value << '\n';
+}
+
 }  // namespace
 
 bool SpiceDeckResult::valid() const { return errors.empty(); }
+
+bool SpiceExecutionRecord::replay_evidence_complete() const {
+  return errors.empty();
+}
+
+SpiceExecutionRecord record_spice_execution(
+    const SpiceExecutionEvidence& evidence) {
+  SpiceExecutionRecord result;
+  if (!valid_token(evidence.solver_name)) {
+    result.errors.emplace_back("solver name must be a non-empty identifier");
+  }
+  if (evidence.solver_version.empty() ||
+      evidence.solver_version.find('\n') != std::string::npos ||
+      evidence.solver_version.find('\r') != std::string::npos) {
+    result.errors.emplace_back("solver version must be non-empty and single-line");
+  }
+  if (evidence.input_deck.empty()) {
+    result.errors.emplace_back("exact SPICE input deck is required");
+  }
+  if (evidence.exit_code < 0 || evidence.exit_code > 255) {
+    result.errors.emplace_back("solver exit code must be in the portable 0..255 range");
+  }
+  if (evidence.standard_output.empty() && evidence.standard_error.empty()) {
+    result.errors.emplace_back("solver output or error evidence is required");
+  }
+  if (!result.errors.empty()) return result;
+
+  std::ostringstream record;
+  record << "formfactor-spice-execution-v1\n";
+  append_field(record, "solver", evidence.solver_name);
+  append_field(record, "version", evidence.solver_version);
+  append_field(record, "input", evidence.input_deck);
+  record << "exit-code:" << evidence.exit_code << '\n';
+  append_field(record, "stdout", evidence.standard_output);
+  append_field(record, "stderr", evidence.standard_error);
+  result.canonical_record = record.str();
+  return result;
+}
 
 SpiceDeckResult export_spice_operating_point(
     const std::string& title, const std::vector<SpiceElement>& elements) {

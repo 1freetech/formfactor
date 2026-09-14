@@ -17,7 +17,7 @@ Build the authoritative, reproducible engineering record before higher-level gam
 - Typed pins, nets, and topology-only electrical-rule validation. (initial slice complete)
 - Deterministic three-state digital event simulator. (initial slice complete)
 - SPICE/model integration. (canonical passive/DC operating-point export slice complete; solver execution and model-library support pending)
-- Reproducible simulation records, solver/version provenance, deterministic inputs, and replayable outputs. (pending)
+- Reproducible simulation records, solver/version provenance, deterministic inputs, and replayable outputs. (initial fail-closed SPICE execution-evidence record complete; solver invocation and semantic output validation pending)
 
 Unit handling follows the BIPM SI Brochure and NIST SP 811. The current exact quantity slice stores decimal SI values without binary floating-point conversion and rejects unsupported exponent ranges rather than rounding them. Offset units such as degrees Celsius remain pending until affine conversion is implemented explicitly.
 

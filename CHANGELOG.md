@@ -4,6 +4,10 @@ This file records published changes without rewriting shared Git history. Histor
 
 ## 2026-09-14
 
+### CR-003 — Deterministic SPICE execution evidence
+
+FormFactor now validates and serializes caller-supplied SPICE execution evidence into an unambiguous, deterministic replay record containing the exact input deck, solver name and version, portable exit status, and raw standard-output and standard-error streams. Missing provenance, missing input, absent output evidence, multiline versions, and out-of-range exit codes fail closed; repeated identical evidence produces an identical record. This records execution evidence only and does not invoke ngspice, authenticate the supplied provenance, interpret solver output, or claim that a circuit is electrically correct.
+
 ### CR-002 — Strict warnings for the complete validation suite
 
 The dependency-free validation script now compiles every implemented FormFactor core target with `-Werror` in addition to the existing C++20, Wall, Wextra, and Wpedantic checks. This makes compiler warnings a failure for component, catalogue, quantity, regression, circuit, digital, SPICE, stackup, layout, impedance, return-path, PDN, decoupling, and executable validation targets; it does not add a new engineering claim or invent an unimplemented gate. The authoritative acceptance criteria are that `python3 scripts/check_identity.py` passes, `sh scripts/validate.sh` completes all existing targets, and the existing workflow continues to run the suite; remote GitHub file updates were applied, but local compiler and sanitizer execution was unavailable in this connector run.

@@ -28,9 +28,29 @@ struct SpiceDeckResult {
   [[nodiscard]] bool valid() const;
 };
 
+struct SpiceExecutionEvidence {
+  std::string solver_name;
+  std::string solver_version;
+  std::string input_deck;
+  int exit_code{};
+  std::string standard_output;
+  std::string standard_error;
+};
+
+struct SpiceExecutionRecord {
+  std::string canonical_record;
+  std::vector<std::string> errors;
+  [[nodiscard]] bool replay_evidence_complete() const;
+};
+
 // Produces a canonical ngspice-compatible operating-point deck. This adapter
 // serializes caller-supplied values only; it does not infer component models.
 [[nodiscard]] SpiceDeckResult export_spice_operating_point(
     const std::string& title, const std::vector<SpiceElement>& elements);
+
+// Records caller-supplied solver execution evidence without interpreting the
+// output or claiming that the simulated circuit is electrically correct.
+[[nodiscard]] SpiceExecutionRecord record_spice_execution(
+    const SpiceExecutionEvidence& evidence);
 
 }  // namespace formfactor
