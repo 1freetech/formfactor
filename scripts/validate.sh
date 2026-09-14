@@ -3,7 +3,7 @@ set -eu
 
 mkdir -p build
 cxx="${CXX:-g++}"
-flags="-std=c++20 -Wall -Wextra -Wpedantic -Iinclude"
+flags="-std=c++20 -Wall -Wextra -Wpedantic -Werror -Iinclude"
 
 sources="src/component.cpp src/catalog.cpp src/quantity.cpp src/circuit.cpp src/digital.cpp src/spice.cpp src/stackup.cpp src/layout.cpp src/impedance.cpp src/return_path.cpp src/pdn.cpp src/decoupling.cpp"
 
