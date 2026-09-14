@@ -34,7 +34,7 @@ formfactor::CatalogEntry entry(formfactor::ComponentFamily family) {
       {{"1", "1", "p"}, {"2", "2", "n"}},
       {{"voltage.maximum", "Maximum voltage", *value,
         formfactor::QuantityValueQualifier::Maximum, std::nullopt,
-        "Fixture", "CR-007", source()}}};
+        "Fixture", "CR-007", source(), std::string(64, 'a')}}};
 }
 
 bool contains(const std::vector<formfactor::ComponentFamily>& families,

@@ -5,10 +5,10 @@ Implemented scope: truth-layer catalogue data and exact numeric filtering. Advan
 ## 1. What is implemented
 
 1. A catalogue entry may contain zero or more `CatalogQuantityProperty` records.
-2. Each record has a stable machine ID, readable name, exact SI `Quantity`, value qualifier, optional source condition, exact claimed manufacturer and part number, and revisioned source metadata.
+2. Each record has a stable machine ID, readable name, exact SI `Quantity`, value qualifier, optional source condition, exact claimed manufacturer and part number, revisioned source metadata, and a lowercase SHA-256 digest of the exact source artifact used for transcription.
 3. Supported qualifiers are `nominal`, `minimum`, `typical`, and `maximum`. They preserve the source's claim; formfactor does not turn a typical value into a guaranteed limit.
 4. An absent condition is encoded separately from a present condition. Condition text is preserved as opaque source wording and is not evaluated or discarded.
-5. A valid entry produces the versioned project-internal record `formfactor-catalog-quantity-properties-v2`. Properties are sorted by ID and text is byte-length-prefixed for deterministic replay. Version 2 adds exact claimed component identity and intentionally replaces version 1 rather than silently changing its layout.
+5. A valid entry produces the versioned project-internal record `formfactor-catalog-quantity-properties-v3`. Properties are sorted by ID and text is byte-length-prefixed for deterministic replay. Version 3 adds the source-artifact digest and intentionally replaces earlier layouts rather than silently changing them.
 6. An entry with no properties exports `property-count=0`. No value is inferred from its component family, legacy scalar ratings, symbol, footprint, pin count, or appearance.
 7. Any catalogue, mapping, component, or quantity-property validation error suppresses the complete canonical property record.
 8. An exact numeric filter selects a property ID and qualifier, then applies `at-least`, `at-most`, or `equal` using the exact SI comparison layer.
@@ -28,6 +28,7 @@ The numerical layer follows the [BIPM SI Brochure](https://www.bipm.org/en/publi
 6. Source metadata requires a title, URL, and revision. This is structural provenance: formfactor does not authenticate the URL, classify the publisher, or verify that the recorded number was copied correctly.
 7. Schema membership and component-family applicability are explicit and are never inferred from spelling, labels, or part appearance. Family exclusion means FormFactor has not implemented that property-family combination; it is not a claim of physical impossibility.
 8. Every property claim must name a manufacturer and part number using visible single-line text, and both fields must exactly match the catalogue component identity. This is a binding check, not source authentication or manufacturer verification.
+9. Every property claim must include exactly 64 lowercase hexadecimal characters representing a SHA-256 digest. The gate validates digest syntax and preserves it in replay output; it does not retrieve or hash an artifact itself.
 
 ## 3. Measured acceptance results
 
@@ -49,5 +50,5 @@ The filter tests additionally cover equivalent units, exact inclusive boundaries
 - Temperature remains unsupported until affine unit conversion is implemented. Tolerance and manufacturer-family applicability beyond exact identity binding remain unsupported until each contract is explicitly added and tested.
 - Qualifier relationships, tolerances, sign/range plausibility, operating ranges, and cross-checks against legacy `double` rating fields are not implemented.
 - Condition text is not machine-interpreted. A future filter must treat a conditioned value conservatively rather than silently ignoring its conditions.
-- A source record is not proof of authenticity or measurement accuracy.
+- A source record and artifact digest are not proof of publisher authenticity, transcription correctness, or measurement accuracy.
 - No multi-constraint catalogue search, graphical card, schematic symbol renderer, safety check, solver, or physical compliance result is added here. The filter evaluates only exact stored claims and does not convert a source claim into manufacturer verification.

@@ -75,6 +75,14 @@ bool valid_property_id(std::string_view identifier) {
   return (last >= 'a' && last <= 'z') || (last >= '0' && last <= '9');
 }
 
+bool valid_sha256(std::string_view digest) {
+  if (digest.size() != 64U) return false;
+  return std::all_of(digest.begin(), digest.end(), [](const char character) {
+    return (character >= '0' && character <= '9') ||
+           (character >= 'a' && character <= 'f');
+  });
+}
+
 const char* qualifier_name(QuantityValueQualifier qualifier) {
   switch (qualifier) {
     case QuantityValueQualifier::Nominal: return "nominal";
@@ -284,6 +292,10 @@ CatalogValidationResult validate_catalog_entry(const CatalogEntry& entry) {
       result.errors.emplace_back(prefix +
                                  " requires complete single-line source metadata");
     }
+    if (!valid_sha256(property.source_artifact_sha256)) {
+      result.errors.emplace_back(prefix +
+                                 " requires a lowercase 64-hex SHA-256 source artifact digest");
+    }
   }
 
   if (!result.errors.empty()) return result;
@@ -300,7 +312,7 @@ CatalogValidationResult validate_catalog_entry(const CatalogEntry& entry) {
 
   std::ostringstream output;
   output.imbue(std::locale::classic());
-  output << "formfactor-catalog-quantity-properties-v2\n";
+  output << "formfactor-catalog-quantity-properties-v3\n";
   append_text_field(output, "catalog-id", entry.catalog_id);
   output << "property-count=" << ordered_properties.size() << '\n';
   for (const auto* property : ordered_properties) {
@@ -321,6 +333,8 @@ CatalogValidationResult validate_catalog_entry(const CatalogEntry& entry) {
     append_text_field(output, "source-title", property->source.title);
     append_text_field(output, "source-url", property->source.url);
     append_text_field(output, "source-revision", property->source.revision);
+    append_text_field(output, "source-artifact-sha256",
+                      property->source_artifact_sha256);
     output << "end-property\n";
   }
   result.canonical_quantity_property_record = output.str();

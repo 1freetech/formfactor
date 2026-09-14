@@ -4,6 +4,10 @@ This file records published changes without rewriting shared Git history. Histor
 
 ## 2026-09-14
 
+### CR-009 — Source-artifact integrity binding
+
+Every exported catalogue quantity claim now requires a lowercase 64-hex SHA-256 digest of the exact source artifact used for transcription. The digest is included in deterministic `formfactor-catalog-quantity-properties-v3` records; missing, short, long, uppercase, and non-hex digests fail closed and suppress export. This integrity binding identifies source bytes but does not fetch the artifact, authenticate its publisher, establish document authority, or prove transcription correctness.
+
 ### CR-008 — Fail-closed property-to-component identity binding
 
 FormFactor now requires every catalogue quantity claim to carry explicit manufacturer and part-number fields that exactly match the catalogue component before the claim can enter the deterministic export record, preventing a sourced value for one part from being silently attached to another part with a plausible label or family. The canonical record advances to `formfactor-catalog-quantity-properties-v2` so the added identity fields cannot be mistaken for the older layout; CR-008 covers valid binding, missing, mismatched, and control-bearing identity rejection, deterministic replay, and complete export suppression, while source URL authentication, transcription verification, publisher classification, physical plausibility, safety, compliance, and solver evaluation remain unimplemented.

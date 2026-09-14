@@ -54,6 +54,10 @@ struct CatalogQuantityProperty {
   std::string claimed_manufacturer;
   std::string claimed_part_number;
   Source source;
+  // Lowercase SHA-256 of the exact source artifact used for transcription.
+  // This binds the claim to bytes; it does not authenticate the publisher or
+  // prove that the claim was transcribed correctly.
+  std::string source_artifact_sha256;
 };
 
 struct CatalogQuantityPropertySchema {

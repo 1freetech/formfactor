@@ -35,6 +35,10 @@ $cxx $flags $sources \
   tests/regression/formfactor_cr_8_property_component_identity.cpp \
   -o build/regression_formfactor_cr_8
 ./build/regression_formfactor_cr_8
+$cxx $flags $sources \
+  tests/regression/formfactor_cr_9_source_artifact_digest.cpp \
+  -o build/regression_formfactor_cr_9
+./build/regression_formfactor_cr_9
 $cxx $flags $sources tests/circuit_tests.cpp -o build/circuit_tests
 ./build/circuit_tests
 $cxx $flags $sources tests/digital_tests.cpp -o build/digital_tests
