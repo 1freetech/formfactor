@@ -60,6 +60,9 @@ jobs:
               path.write_text(text, encoding="utf-8")
           PY
 
+          # Keep generated CMake files out of version control after this migration.
+          grep -qxF '/build-cmake/' .gitignore || printf '/build-cmake/\n' >> .gitignore
+
           # Add a permanent CI guard without storing the retired name as one contiguous string.
           cat > scripts/check_identity.py <<'PY'
           import subprocess
@@ -127,6 +130,7 @@ jobs:
           set -euo pipefail
           git config user.name "1freetech"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          rm -rf build build-cmake
           git add -A
           python3 scripts/check_identity.py
           if git diff --cached --quiet; then
