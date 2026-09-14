@@ -4,6 +4,10 @@ This file records published changes without rewriting shared Git history. Histor
 
 ## 2026-09-14
 
+### CR-006 — Complete supported-dimension catalogue schema coverage
+
+FormFactor now exposes an explicit catalogue-property schema for all four source qualifiers across capacitance, current, frequency, inductance, length, power, resistance, time, and voltage, covering every currently supported non-dimensionless exact quantity without deriving meaning from free-form text or inventing a component value. The new regression fixture checks all 36 identifier, dimension, and qualifier mappings, deterministic repeat lookup, and fail-closed rejection of unsupported temperature and plausible undeclared qualifier names; existing catalogue validation still suppresses export when a property's exact dimension or qualifier conflicts with its schema. Temperature remains unsupported until affine conversion is implemented, and component-family applicability, source authentication, physical plausibility, safety, compliance, and solver evaluation remain explicitly unimplemented.
+
 ### CR-005 — Typed catalogue-property schema gate
 
 FormFactor now requires every exported catalogue quantity property to match an explicit implemented semantic schema that fixes both its physical dimension and value qualifier, preventing a free-form property name from silently assigning engineering meaning to an unrelated value. The initial registry covers nominal capacitance, maximum power, nominal resistance, and all four supported voltage qualifiers; unsupported identifiers, dimension mismatches, and qualifier conflicts fail closed and suppress the complete catalogue record. Tests cover valid lookup, deterministic lookup, unsupported semantics, incorrect units, incorrect qualifiers, and export blocking, while schema expansion, component-family applicability, provenance authentication, and physical safety or compliance decisions remain unimplemented.

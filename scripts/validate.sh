@@ -23,6 +23,10 @@ $cxx $flags $sources \
   tests/regression/formfactor_cr_5_catalog_property_schema.cpp \
   -o build/regression_formfactor_cr_5
 ./build/regression_formfactor_cr_5
+$cxx $flags $sources \
+  tests/regression/formfactor_cr_6_catalog_schema_coverage.cpp \
+  -o build/regression_formfactor_cr_6
+./build/regression_formfactor_cr_6
 $cxx $flags $sources tests/circuit_tests.cpp -o build/circuit_tests
 ./build/circuit_tests
 $cxx $flags $sources tests/digital_tests.cpp -o build/digital_tests

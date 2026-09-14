@@ -50,6 +50,14 @@ add_test(
   NAME regression_formfactor_cr_5_catalog_property_schema
   COMMAND regression_formfactor_cr_5)
 
+add_executable(
+  regression_formfactor_cr_6
+  tests/regression/formfactor_cr_6_catalog_schema_coverage.cpp)
+target_link_libraries(regression_formfactor_cr_6 PRIVATE formfactor_core)
+add_test(
+  NAME regression_formfactor_cr_6_catalog_schema_coverage
+  COMMAND regression_formfactor_cr_6)
+
 add_executable(circuit_tests tests/circuit_tests.cpp)
 target_link_libraries(circuit_tests PRIVATE formfactor_core)
 add_test(NAME circuit_validation COMMAND circuit_tests)

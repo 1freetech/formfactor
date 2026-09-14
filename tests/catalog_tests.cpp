@@ -247,12 +247,12 @@ int main() {
          formfactor::QuantityValueQualifier::Maximum);
   assert(formfactor::catalog_quantity_property_schema("voltage.maximum")
              ->property_id == voltage_schema->property_id);
-  assert(!formfactor::catalog_quantity_property_schema("current.maximum")
-              .has_value());
+  assert(formfactor::catalog_quantity_property_schema("current.maximum")
+             ->dimension == formfactor::Dimension::Current);
 
   auto unsupported_semantics = entry;
   unsupported_semantics.quantity_properties.front().property_id =
-      "current.maximum";
+      "temperature.maximum";
   expect_rejected(unsupported_semantics);
 
   auto wrong_semantic_dimension = entry;

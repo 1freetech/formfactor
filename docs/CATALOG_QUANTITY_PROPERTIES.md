@@ -14,7 +14,7 @@ Implemented scope: truth-layer catalogue data and exact numeric filtering. Advan
 8. An exact numeric filter selects a property ID and qualifier, then applies `at-least`, `at-most`, or `equal` using the exact SI comparison layer.
 9. Missing properties, qualifier mismatches, and source-condition mismatches return `unknown`, never `match`. Conditioned values are eligible only when the filter supplies the exact condition text.
 10. Invalid catalogue provenance, malformed filters, unsupported enumerations, and dimension mismatches fail closed without a decision record. Valid decisions produce the deterministic `formfactor-catalog-filter-v1` record.
-11. Every supported property ID has an implemented semantic schema that fixes its physical dimension and qualifier. Unknown IDs, wrong dimensions, and qualifier conflicts fail closed before catalogue export.
+11. The 36 supported property IDs explicitly cover all four qualifiers for capacitance, current, frequency, inductance, length, power, resistance, time, and voltage. Each schema fixes its physical dimension and qualifier; unknown IDs, wrong dimensions, and qualifier conflicts fail closed before catalogue export.
 
 The numerical layer follows the [BIPM SI Brochure](https://www.bipm.org/en/publications/si-brochure) and [NIST SP 811](https://www.nist.gov/pml/owm/si-units-information). The catalogue record layout and identifier grammar are original formfactor formats, not external standards.
 
@@ -26,7 +26,7 @@ The numerical layer follows the [BIPM SI Brochure](https://www.bipm.org/en/publi
 4. Unknown qualifier identifiers fail closed.
 5. The `Quantity` type can only be created through its validated exact-decimal factory. Equivalent inputs such as `1 V` and `1000 mV` therefore produce the same SI value and the same catalogue record.
 6. Source metadata requires a title, URL, and revision. This is structural provenance: formfactor does not authenticate the URL, classify the publisher, or verify that the recorded number was copied correctly.
-7. The initial schema registry supports only `capacitance.nominal`, `power.maximum`, `resistance.nominal`, and the four minimum, typical, nominal, and maximum voltage forms. Schema membership is explicit and is never inferred from the spelling of an ID.
+7. Schema membership is explicit and is never inferred from the spelling of an ID. The registry supplies semantic types only and never supplies a numeric component value.
 
 ## 3. Measured acceptance results
 
@@ -45,7 +45,7 @@ The filter tests additionally cover equivalent units, exact inclusive boundaries
 
 ## 4. Limits kept visible
 
-- The typed schema covers only the seven implemented identifiers. Current, inductance, frequency, timing, geometry, temperature, tolerance, and component-family applicability remain unsupported until each contract is explicitly added and tested.
+- Temperature remains unsupported until affine unit conversion is implemented. Tolerance and component-family applicability remain unsupported until each contract is explicitly added and tested.
 - Qualifier relationships, tolerances, sign/range plausibility, operating ranges, and cross-checks against legacy `double` rating fields are not implemented.
 - Condition text is not machine-interpreted. A future filter must treat a conditioned value conservatively rather than silently ignoring its conditions.
 - A source record is not proof of authenticity or measurement accuracy.

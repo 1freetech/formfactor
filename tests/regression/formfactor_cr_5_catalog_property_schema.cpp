@@ -14,8 +14,8 @@ int main() {
 
   // A plausible-looking name is still unknown until its semantic contract is
   // implemented. No spelling-based dimension or qualifier inference is safe.
-  assert(!formfactor::catalog_quantity_property_schema("current.maximum")
+  assert(!formfactor::catalog_quantity_property_schema("temperature.maximum")
               .has_value());
-  assert(!formfactor::catalog_quantity_property_schema("current.typical")
+  assert(!formfactor::catalog_quantity_property_schema("temperature.typical")
               .has_value());
 }
