@@ -1,5 +1,9 @@
 # Changelog
 
+## CR-021 — Fail-closed root update sequencing
+
+FormFactor now checks a current policy-key root version N against candidate version exactly N+1 before any future signed rotation can proceed. Repeated or lower versions produce `Rollback`, forward gaps produce `VersionGap`, root-identity changes produce `DifferentRoot`, candidates expire at the exact fixed UTC boundary, and invalid inputs or version overflow fail closed without a record. Deterministic transition records bind both validated roots and explicitly state that signatures and persistence were not evaluated. `Sequential` is a structural precheck only: old-root and new-root signature thresholds, unique signer counting, authenticated distribution, durable persistence, and catalogue-export integration remain unimplemented.
+
 ## CR-020 — Deterministic pinned policy-key trust roots
 
 FormFactor now evaluates exact publisher/key bindings against an explicitly supplied, versioned trust root at an explicit fixed-format UTC instant. Valid roots require CR-017-validated keys, unambiguous publisher/key identities, a nonzero version, and a valid expiry; exact bindings before expiry produce `Trusted`, unknown or removed bindings produce `NotTrusted`, evaluation at or after expiry produces `Expired`, and malformed evidence fails closed as `Invalid` without a record. Deterministic records sort bindings and retain key-record SHA-256 digests without embedding public keys. The supplied root is not authenticated or persisted, so signed distribution, rollback protection, threshold rotation, durable revocation state, and catalogue-export integration remain unimplemented.

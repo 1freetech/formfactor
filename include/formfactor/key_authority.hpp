@@ -37,4 +37,31 @@ struct PolicyKeyTrustResult {
     const PolicyKeyTrustRoot& root, const std::string& publisher_id,
     const PolicySigningKey& candidate, const std::string& evaluation_utc);
 
+enum class PolicyKeyRootTransitionDecision {
+  Sequential,
+  Rollback,
+  VersionGap,
+  DifferentRoot,
+  Expired,
+  Invalid
+};
+
+struct PolicyKeyRootTransitionResult {
+  PolicyKeyRootTransitionDecision decision{
+      PolicyKeyRootTransitionDecision::Invalid};
+  std::vector<std::string> errors;
+  std::string canonical_record;
+
+  [[nodiscard]] bool sequence_valid() const;
+};
+
+// Checks the TUF N-to-N+1 version and final-expiry prerequisites only.
+// Signature thresholds, persistence, and trust-root authenticity are not
+// evaluated here.
+[[nodiscard]] PolicyKeyRootTransitionResult
+validate_policy_key_root_transition(
+    const PolicyKeyTrustRoot& current_root,
+    const PolicyKeyTrustRoot& candidate_root,
+    const std::string& evaluation_utc);
+
 }  // namespace formfactor

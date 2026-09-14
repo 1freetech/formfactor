@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <array>
+#include <limits>
 #include <string_view>
 
 namespace formfactor {
@@ -223,6 +224,110 @@ PolicyKeyTrustResult evaluate_policy_key_trust(
     case PolicyKeyTrustDecision::Invalid:
       break;
   }
+  return result;
+}
+
+bool PolicyKeyRootTransitionResult::sequence_valid() const {
+  return decision == PolicyKeyRootTransitionDecision::Sequential &&
+         errors.empty() && !canonical_record.empty();
+}
+
+PolicyKeyRootTransitionResult validate_policy_key_root_transition(
+    const PolicyKeyTrustRoot& current_root,
+    const PolicyKeyTrustRoot& candidate_root,
+    const std::string& evaluation_utc) {
+  PolicyKeyRootTransitionResult result;
+
+  const auto validate_root =
+      [&](const PolicyKeyTrustRoot& root) -> PolicyKeyTrustResult {
+    if (root.trusted_keys.empty()) {
+      return evaluate_policy_key_trust(
+          root, std::string{}, PolicySigningKey{}, evaluation_utc);
+    }
+    const auto binding = std::min_element(
+        root.trusted_keys.begin(), root.trusted_keys.end(),
+        [](const TrustedPolicyKeyBinding& left,
+           const TrustedPolicyKeyBinding& right) {
+          if (left.publisher_id != right.publisher_id) {
+            return left.publisher_id < right.publisher_id;
+          }
+          return left.signing_key.key_id < right.signing_key.key_id;
+        });
+    return evaluate_policy_key_trust(
+        root, binding->publisher_id, binding->signing_key, evaluation_utc);
+  };
+
+  const auto current = validate_root(current_root);
+  const auto candidate = validate_root(candidate_root);
+  for (const auto& error : current.errors) {
+    result.errors.emplace_back("current trust root: " + error);
+  }
+  for (const auto& error : candidate.errors) {
+    result.errors.emplace_back("candidate trust root: " + error);
+  }
+  if (!result.errors.empty()) return result;
+
+  if (current_root.version == std::numeric_limits<std::uint64_t>::max()) {
+    result.errors.emplace_back(
+        "current trust-root version cannot be incremented");
+    return result;
+  }
+
+  if (current_root.root_id != candidate_root.root_id) {
+    result.decision = PolicyKeyRootTransitionDecision::DifferentRoot;
+  } else if (candidate_root.version <= current_root.version) {
+    result.decision = PolicyKeyRootTransitionDecision::Rollback;
+  } else if (candidate_root.version != current_root.version + 1U) {
+    result.decision = PolicyKeyRootTransitionDecision::VersionGap;
+  } else if (candidate.decision == PolicyKeyTrustDecision::Expired) {
+    result.decision = PolicyKeyRootTransitionDecision::Expired;
+  } else {
+    result.decision = PolicyKeyRootTransitionDecision::Sequential;
+  }
+
+  const auto current_digest = sha256_hex(current.canonical_record);
+  const auto candidate_digest = sha256_hex(candidate.canonical_record);
+  if (!current_digest || !candidate_digest) {
+    result.decision = PolicyKeyRootTransitionDecision::Invalid;
+    result.errors.emplace_back(
+        "trust-root transition evidence exceeds the supported SHA-256 length");
+    return result;
+  }
+
+  result.canonical_record = "formfactor-policy-key-root-transition-v1\n";
+  append_field(result.canonical_record, "root-id", current_root.root_id);
+  result.canonical_record.append("current-version=");
+  result.canonical_record.append(std::to_string(current_root.version));
+  result.canonical_record.push_back('\n');
+  result.canonical_record.append("candidate-version=");
+  result.canonical_record.append(std::to_string(candidate_root.version));
+  result.canonical_record.push_back('\n');
+  append_field(result.canonical_record, "evaluated-at-utc", evaluation_utc);
+  append_field(result.canonical_record, "current-root-record-sha256",
+               *current_digest);
+  append_field(result.canonical_record, "candidate-root-record-sha256",
+               *candidate_digest);
+  switch (result.decision) {
+    case PolicyKeyRootTransitionDecision::Sequential:
+      result.canonical_record.append("decision=sequential\n");
+      break;
+    case PolicyKeyRootTransitionDecision::Rollback:
+      result.canonical_record.append("decision=rollback\n");
+      break;
+    case PolicyKeyRootTransitionDecision::VersionGap:
+      result.canonical_record.append("decision=version-gap\n");
+      break;
+    case PolicyKeyRootTransitionDecision::DifferentRoot:
+      result.canonical_record.append("decision=different-root\n");
+      break;
+    case PolicyKeyRootTransitionDecision::Expired:
+      result.canonical_record.append("decision=expired\n");
+      break;
+    case PolicyKeyRootTransitionDecision::Invalid:
+      break;
+  }
+  result.canonical_record.append("signature-verification=not-performed\n");
+  result.canonical_record.append("persistence=not-performed\n");
   return result;
 }
 

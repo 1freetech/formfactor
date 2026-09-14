@@ -180,6 +180,14 @@ add_test(
   NAME regression_formfactor_cr_20_pinned_key_trust_root
   COMMAND regression_formfactor_cr_20)
 
+add_executable(
+  regression_formfactor_cr_21
+  tests/regression/formfactor_cr_21_root_update_sequence.cpp)
+target_link_libraries(regression_formfactor_cr_21 PRIVATE formfactor_core)
+add_test(
+  NAME regression_formfactor_cr_21_root_update_sequence
+  COMMAND regression_formfactor_cr_21)
+
 if(FORMFACTOR_BUILD_SIGNATURE_VERIFIER)
   add_executable(
     regression_formfactor_cr_19

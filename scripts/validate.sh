@@ -79,6 +79,10 @@ $cxx $flags src/hash.cpp src/policy_trust.cpp src/key_authority.cpp \
   tests/regression/formfactor_cr_20_pinned_key_trust_root.cpp \
   -o build/regression_formfactor_cr_20
 ./build/regression_formfactor_cr_20
+$cxx $flags src/hash.cpp src/policy_trust.cpp src/key_authority.cpp \
+  tests/regression/formfactor_cr_21_root_update_sequence.cpp \
+  -o build/regression_formfactor_cr_21
+./build/regression_formfactor_cr_21
 $cxx $flags $sources tests/circuit_tests.cpp -o build/circuit_tests
 ./build/circuit_tests
 $cxx $flags $sources tests/digital_tests.cpp -o build/digital_tests
