@@ -1,0 +1,115 @@
+name: Manage repository labels
+
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/labels.yml']
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: repository-labels
+  cancel-in-progress: false
+
+jobs:
+  sync-labels:
+    if: github.repository == '1freetech/pcbtech' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    permissions:
+      issues: write
+    steps:
+      # Uses GitHub's automatic repository token; no deploy key or PAT is needed.
+      # This job manages issue metadata only. It is not an engineering gate.
+      - name: Create missing labels and preserve IDs when renaming
+        env:
+          LABEL_TOKEN: ${{ github.token }}
+          LABEL_REPOSITORY: ${{ github.repository }}
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          import urllib.error
+          import urllib.parse
+          import urllib.request
+
+          # To add a label, add one record. To rename it, change name and set
+          # previous_name to its old name. Reruns preserve existing labels.
+          # When both names already exist, neither label is deleted or merged.
+          labels = [
+              {"name": "bug", "color": "d73a4a",
+               "description": "Implemented behavior produced an incorrect result"},
+              {"name": "data-gap", "color": "d876e3",
+               "description": "Required authoritative data or provenance is missing"},
+              {"name": "capability-gap", "color": "a2eeef",
+               "description": "The needed validator, solver, or workflow is not implemented"},
+              {"name": "prompt-gap", "color": "fbca04",
+               "description": "Advisory instructions are missing, unclear, or unsafe"},
+              {"name": "game-layer", "color": "5319e7",
+               "description": "Interaction or visualization is incorrect or unclear"},
+              {"name": "docs", "previous_name": "documentation", "color": "0075ca",
+               "description": "Documentation is incorrect or incomplete"},
+          ]
+
+          repository = os.environ["LABEL_REPOSITORY"]
+          if repository != "1freetech/pcbtech":
+              raise SystemExit("Unexpected repository; no labels were changed")
+          endpoint = f"https://api.github.com/repos/{repository}/labels"
+          headers = {
+              "Accept": "application/vnd.github+json",
+              "Authorization": "Bearer " + os.environ["LABEL_TOKEN"],
+              "X-GitHub-Api-Version": "2022-11-28",
+              "Content-Type": "application/json",
+              "User-Agent": "pcbtech-label-management",
+          }
+
+          def request(method, suffix="", payload=None):
+              data = None if payload is None else json.dumps(payload).encode("utf-8")
+              req = urllib.request.Request(endpoint + suffix, data=data,
+                                           headers=headers, method=method)
+              with urllib.request.urlopen(req, timeout=30) as response:
+                  return json.load(response)
+
+          def label_path(name):
+              return "/" + urllib.parse.quote(name, safe="")
+
+          def find_label(name):
+              try:
+                  return request("GET", label_path(name))
+              except urllib.error.HTTPError as error:
+                  if error.code == 404:
+                      return None
+                  raise  # Permission and service failures must not become "missing".
+
+          outcomes = []
+          for spec in labels:
+              name = spec["name"]
+              existing = find_label(name)
+              previous_name = spec.get("previous_name")
+              if existing is None and previous_name:
+                  existing = find_label(previous_name)
+
+              if existing is None:
+                  payload = {key: spec[key] for key in ("name", "color", "description")}
+                  result = request("POST", payload=payload)
+                  action = "created"
+              elif existing["name"] != name:
+                  result = request("PATCH", label_path(existing["name"]), {"new_name": name})
+                  if result["id"] != existing["id"]:
+                      raise RuntimeError(f"Label ID changed while renaming to {name}")
+                  action = "renamed from " + existing["name"]
+              else:
+                  result = existing
+                  action = "already present"
+
+              verified = find_label(name)
+              if verified is None or verified["name"] != name or verified["id"] != result["id"]:
+                  raise RuntimeError(f"Read-back verification failed for {name}")
+              outcomes.append(f"- `{name}`: {action}; verified ID {verified['id']}")
+              print(outcomes[-1])
+
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as summary:
+              summary.write("## Repository labels verified\n\n" + "\n".join(outcomes) + "\n")
+              summary.write("\nIssue metadata only; this job does not validate engineering behavior.\n")
+          PY
