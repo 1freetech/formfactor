@@ -28,4 +28,24 @@ struct PolicySigningKeyValidationResult {
 [[nodiscard]] PolicySigningKeyValidationResult validate_policy_signing_key(
     const PolicySigningKey& key);
 
+// This envelope preserves exact detached-signature inputs for future
+// cryptographic verification. Structural completeness is not signature
+// validity and does not establish key ownership or policy authority.
+struct DetachedPolicySignatureEvidence {
+  PolicySigningKey signing_key;
+  std::optional<std::string> signed_bytes;
+  std::optional<std::string> signature_bytes;
+};
+
+struct DetachedPolicySignatureEvidenceResult {
+  std::vector<std::string> errors;
+  std::string canonical_record;
+
+  [[nodiscard]] bool evidence_complete() const;
+};
+
+[[nodiscard]] DetachedPolicySignatureEvidenceResult
+validate_detached_policy_signature_evidence(
+    const DetachedPolicySignatureEvidence& evidence);
+
 }  // namespace formfactor

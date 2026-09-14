@@ -156,6 +156,14 @@ add_test(
   NAME regression_formfactor_cr_17_ed25519_trust_anchor
   COMMAND regression_formfactor_cr_17)
 
+add_executable(
+  regression_formfactor_cr_18
+  tests/regression/formfactor_cr_18_ed25519_signature_envelope.cpp)
+target_link_libraries(regression_formfactor_cr_18 PRIVATE formfactor_core)
+add_test(
+  NAME regression_formfactor_cr_18_ed25519_signature_envelope
+  COMMAND regression_formfactor_cr_18)
+
 add_executable(circuit_tests tests/circuit_tests.cpp)
 target_link_libraries(circuit_tests PRIVATE formfactor_core)
 add_test(NAME circuit_validation COMMAND circuit_tests)

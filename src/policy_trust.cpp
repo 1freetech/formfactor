@@ -87,4 +87,54 @@ PolicySigningKeyValidationResult validate_policy_signing_key(
   return result;
 }
 
+bool DetachedPolicySignatureEvidenceResult::evidence_complete() const {
+  return errors.empty() && !canonical_record.empty();
+}
+
+DetachedPolicySignatureEvidenceResult
+validate_detached_policy_signature_evidence(
+    const DetachedPolicySignatureEvidence& evidence) {
+  DetachedPolicySignatureEvidenceResult result;
+
+  const auto key_result = validate_policy_signing_key(evidence.signing_key);
+  for (const auto& error : key_result.errors) {
+    result.errors.emplace_back("policy signing key: " + error);
+  }
+  if (!evidence.signed_bytes.has_value()) {
+    result.errors.emplace_back("exact signed bytes are required");
+  }
+  if (!evidence.signature_bytes.has_value()) {
+    result.errors.emplace_back("detached Ed25519 signature bytes are required");
+  } else if (evidence.signature_bytes->size() != 64U) {
+    result.errors.emplace_back(
+        "detached Ed25519 signature must contain exactly 64 bytes");
+  }
+
+  if (!result.errors.empty()) return result;
+
+  const auto signed_digest = sha256_hex(*evidence.signed_bytes);
+  const auto signature_digest = sha256_hex(*evidence.signature_bytes);
+  if (!signed_digest || !signature_digest) {
+    result.errors.emplace_back(
+        "detached signature evidence exceeds the supported SHA-256 length");
+    return result;
+  }
+
+  result.canonical_record = "formfactor-detached-signature-evidence-v1\n";
+  append_field(result.canonical_record, "algorithm", "ed25519");
+  append_field(result.canonical_record, "key-id", evidence.signing_key.key_id);
+  append_field(result.canonical_record, "public-key-sha256",
+               evidence.signing_key.public_key_sha256);
+  result.canonical_record.append("signed-byte-count=");
+  result.canonical_record.append(
+      std::to_string(evidence.signed_bytes->size()));
+  result.canonical_record.push_back('\n');
+  append_field(result.canonical_record, "signed-bytes-sha256", *signed_digest);
+  result.canonical_record.append("signature-byte-count=64\n");
+  append_field(result.canonical_record, "signature-sha256",
+               *signature_digest);
+  result.canonical_record.append("cryptographic-verification=not-performed\n");
+  return result;
+}
+
 }  // namespace formfactor

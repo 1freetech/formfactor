@@ -1,5 +1,10 @@
 # Changelog
 
+## CR-018 — Fail-closed detached Ed25519 signature envelopes
+
+Detached policy-signature evidence now requires a CR-017-valid Ed25519 key, explicitly present exact signed bytes, and exactly 64 signature octets as specified by RFC 8032. Missing inputs and 63-byte or 65-byte signatures fail closed; empty and binary messages remain distinct valid byte sequences, and deterministic `formfactor-detached-signature-evidence-v1` records bind the exact message and signature through SHA-256 without embedding either. Every record explicitly states that cryptographic verification was not performed, so structural completeness does not establish signature validity, key ownership, publisher authority, revocation status, or catalogue-export eligibility.
+
+
 ## CR-017 — Fail-closed Ed25519 signing-key fingerprints
 
 Policy signing-key records now require the exact Ed25519 algorithm, a visible key ID, exactly 32 public-key bytes as specified by RFC 8032, and a lowercase SHA-256 fingerprint matching those exact bytes. Missing, 31-byte, 33-byte, altered, malformed, and unsupported inputs fail closed without a record; valid binary keys produce deterministic `formfactor-policy-signing-key-v1` replay records. This verifies only the internal integrity of caller-supplied key material and does not verify a policy signature, establish key ownership or authority, distribute trust anchors, handle revocation or rotation, or affect catalogue export.
