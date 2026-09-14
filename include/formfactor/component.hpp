@@ -1,5 +1,6 @@
 #pragma once
 
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -16,6 +17,7 @@ struct Source {
 
 // Validates FormFactor's conservative absolute-HTTPS source profile. The
 // result is structural only; it does not fetch or authenticate the resource.
+[[nodiscard]] std::optional<std::string> source_url_origin(std::string_view url);
 [[nodiscard]] bool valid_source_url(std::string_view url);
 [[nodiscard]] bool valid_source(const Source& source);
 

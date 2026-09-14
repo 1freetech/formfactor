@@ -1,5 +1,9 @@
 # Changelog
 
+## CR-014 — Deterministic publisher-origin authorization
+
+FormFactor now evaluates a source claim against an explicit caller-supplied publisher policy using exact visible publisher IDs and exact canonical HTTPS origins. Valid mismatches, including subdomains and explicit-port differences, produce `NotAuthorized`; malformed sources, publisher IDs, origins, empty policies, and duplicate origins fail closed as `Invalid` with no record. Valid decisions produce deterministic `formfactor-source-authorization-v1` length-prefixed records independent of policy-origin order. This primitive does not authenticate the caller policy, publisher ownership, DNS, TLS, network content, or artifact signatures, and it is not yet connected to catalogue export.
+
 ## CR-013 — Fail-closed canonical HTTPS source URLs
 
 All source metadata now passes one shared conservative absolute-HTTPS URL validator before a verified component or catalogue claim can be exported. The validator follows an intentionally narrow RFC 3986 URI profile: lowercase `https://`, a lowercase ASCII DNS host with an optional numeric port, no credentials, no fragments, and no whitespace or control characters; malformed or unsupported URLs fail closed, deterministic validation is covered, and the one-character host is retained as the structural boundary. URL syntax does not authenticate a host, authorize a publisher, fetch an artifact, or prove any engineering claim.

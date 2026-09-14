@@ -64,19 +64,24 @@ bool valid_dns_host(std::string_view authority) {
 
 }  // namespace
 
-bool valid_source_url(std::string_view url) {
+std::optional<std::string> source_url_origin(std::string_view url) {
   constexpr std::string_view prefix{"https://"};
   if (!url.starts_with(prefix) || url.find('#') != std::string_view::npos) {
-    return false;
+    return std::nullopt;
   }
   for (const unsigned char character : url) {
-    if (character <= 0x20U || character == 0x7fU) return false;
+    if (character <= 0x20U || character == 0x7fU) return std::nullopt;
   }
 
   const auto remainder = url.substr(prefix.size());
   const auto authority_end = remainder.find_first_of("/?");
   const auto authority = remainder.substr(0, authority_end);
-  return valid_dns_host(authority);
+  if (!valid_dns_host(authority)) return std::nullopt;
+  return std::string{prefix} + std::string{authority};
+}
+
+bool valid_source_url(std::string_view url) {
+  return source_url_origin(url).has_value();
 }
 
 bool valid_source(const Source& source) {

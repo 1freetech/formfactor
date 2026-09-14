@@ -15,7 +15,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
   endif()
 endif()
 
-add_library(formfactor_core src/component.cpp src/catalog.cpp src/catalog_filter.cpp src/quantity.cpp src/circuit.cpp src/digital.cpp src/spice.cpp src/stackup.cpp src/layout.cpp src/impedance.cpp src/return_path.cpp src/pdn.cpp src/decoupling.cpp)
+add_library(formfactor_core src/component.cpp src/source_authority.cpp src/catalog.cpp src/catalog_filter.cpp src/quantity.cpp src/circuit.cpp src/digital.cpp src/spice.cpp src/stackup.cpp src/layout.cpp src/impedance.cpp src/return_path.cpp src/pdn.cpp src/decoupling.cpp)
 target_include_directories(formfactor_core PUBLIC include)
 
 add_executable(formfactor_validate src/main.cpp)
@@ -123,6 +123,14 @@ target_link_libraries(regression_formfactor_cr_13 PRIVATE formfactor_core)
 add_test(
   NAME regression_formfactor_cr_13_https_source_urls
   COMMAND regression_formfactor_cr_13)
+
+add_executable(
+  regression_formfactor_cr_14
+  tests/regression/formfactor_cr_14_publisher_origin_authorization.cpp)
+target_link_libraries(regression_formfactor_cr_14 PRIVATE formfactor_core)
+add_test(
+  NAME regression_formfactor_cr_14_publisher_origin_authorization
+  COMMAND regression_formfactor_cr_14)
 
 add_executable(circuit_tests tests/circuit_tests.cpp)
 target_link_libraries(circuit_tests PRIVATE formfactor_core)
