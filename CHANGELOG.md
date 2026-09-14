@@ -4,6 +4,10 @@ This file records published changes without rewriting shared Git history. Histor
 
 ## 2026-09-14
 
+### CR-005 — Typed catalogue-property schema gate
+
+FormFactor now requires every exported catalogue quantity property to match an explicit implemented semantic schema that fixes both its physical dimension and value qualifier, preventing a free-form property name from silently assigning engineering meaning to an unrelated value. The initial registry covers nominal capacitance, maximum power, nominal resistance, and all four supported voltage qualifiers; unsupported identifiers, dimension mismatches, and qualifier conflicts fail closed and suppress the complete catalogue record. Tests cover valid lookup, deterministic lookup, unsupported semantics, incorrect units, incorrect qualifiers, and export blocking, while schema expansion, component-family applicability, provenance authentication, and physical safety or compliance decisions remain unimplemented.
+
 ### CR-004 — Fail-closed exact catalogue filtering
 
 FormFactor can now evaluate one exact numeric catalogue constraint by property identity, value qualifier, comparison relation, and optional source condition while preserving three distinct outcomes: match, no match, and unknown. Exact SI comparison makes equivalent units and inclusive boundaries deterministic, while missing properties, mismatched qualifiers, and mismatched conditions remain unknown and can never satisfy a filter; incompatible dimensions, malformed requests, unsupported enumeration values, invalid catalogue records, and incomplete provenance fail closed without producing a decision record. The new tests cover valid, invalid, boundary, deterministic replay, equivalent-unit, provenance, and export-safety behavior, and the implementation does not claim that a sourced value is authentic, manufacturer-verified, safe, compliant, or physically solved.

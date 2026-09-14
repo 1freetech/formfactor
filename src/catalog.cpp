@@ -1,6 +1,7 @@
 #include "formfactor/catalog.hpp"
 
 #include <algorithm>
+#include <iterator>
 #include <locale>
 #include <sstream>
 #include <string_view>
@@ -72,6 +73,33 @@ void require_asset(const AssetLink& asset, const char* name,
 
 }  // namespace
 
+std::optional<CatalogQuantityPropertySchema> catalog_quantity_property_schema(
+    const std::string& property_id) {
+  // This is deliberately a small, explicit registry. New properties require
+  // a reviewed dimension and qualifier instead of being inferred from text.
+  static const CatalogQuantityPropertySchema schemas[] = {
+      {"capacitance.nominal", Dimension::Capacitance,
+       QuantityValueQualifier::Nominal},
+      {"power.maximum", Dimension::Power, QuantityValueQualifier::Maximum},
+      {"resistance.nominal", Dimension::Resistance,
+       QuantityValueQualifier::Nominal},
+      {"voltage.maximum", Dimension::Voltage,
+       QuantityValueQualifier::Maximum},
+      {"voltage.minimum", Dimension::Voltage,
+       QuantityValueQualifier::Minimum},
+      {"voltage.nominal", Dimension::Voltage,
+       QuantityValueQualifier::Nominal},
+      {"voltage.typical", Dimension::Voltage,
+       QuantityValueQualifier::Typical},
+  };
+  const auto found = std::find_if(
+      std::begin(schemas), std::end(schemas), [&](const auto& schema) {
+        return schema.property_id == property_id;
+      });
+  if (found == std::end(schemas)) return std::nullopt;
+  return *found;
+}
+
 CatalogValidationResult validate_catalog_entry(const CatalogEntry& entry) {
   CatalogValidationResult result;
 
@@ -138,6 +166,23 @@ CatalogValidationResult validate_catalog_entry(const CatalogEntry& entry) {
     } else if (!property_ids.insert(property.property_id).second) {
       result.errors.emplace_back("quantity property ids must be unique: " +
                                  property.property_id);
+    }
+
+    const auto schema = id_is_valid
+                            ? catalog_quantity_property_schema(property.property_id)
+                            : std::nullopt;
+    if (!schema.has_value()) {
+      result.errors.emplace_back(prefix +
+                                 " has no implemented semantic schema");
+    } else {
+      if (property.value.dimension() != schema->dimension) {
+        result.errors.emplace_back(prefix +
+                                   " value has the wrong physical dimension");
+      }
+      if (property.qualifier != schema->qualifier) {
+        result.errors.emplace_back(prefix +
+                                   " qualifier conflicts with its semantic schema");
+      }
     }
 
     if (!valid_record_text(property.display_name)) {

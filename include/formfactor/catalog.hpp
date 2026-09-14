@@ -50,6 +50,17 @@ struct CatalogQuantityProperty {
   Source source;
 };
 
+struct CatalogQuantityPropertySchema {
+  std::string property_id;
+  Dimension dimension{Dimension::Dimensionless};
+  QuantityValueQualifier qualifier{QuantityValueQualifier::Nominal};
+};
+
+// Returns the implemented semantic contract for a property identifier. An
+// absent result means the identifier is unsupported and must remain unknown.
+[[nodiscard]] std::optional<CatalogQuantityPropertySchema>
+catalog_quantity_property_schema(const std::string& property_id);
+
 struct CatalogEntry {
   std::string catalog_id;
   std::string display_name;

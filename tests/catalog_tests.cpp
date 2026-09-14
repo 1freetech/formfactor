@@ -153,6 +153,8 @@ int main() {
   for (const auto& [qualifier, name] : qualifier_cases) {
     auto qualified = one_volt;
     qualified.quantity_properties.front().qualifier = qualifier;
+    qualified.quantity_properties.front().property_id =
+        std::string{"voltage."} + name;
     const auto result = formfactor::validate_catalog_entry(qualified);
     assert(result.quantity_properties_export_allowed());
     assert(result.canonical_quantity_property_record.find(
@@ -234,6 +236,34 @@ int main() {
   assert(boundary_result.canonical_quantity_property_record.find(
              "quantity=power:9223372036854775807e30\n") !=
          std::string::npos);
+
+  // Property text cannot assign its own engineering meaning. Only an exact
+  // implemented schema can bind an identifier to a dimension and qualifier.
+  const auto voltage_schema =
+      formfactor::catalog_quantity_property_schema("voltage.maximum");
+  assert(voltage_schema.has_value());
+  assert(voltage_schema->dimension == formfactor::Dimension::Voltage);
+  assert(voltage_schema->qualifier ==
+         formfactor::QuantityValueQualifier::Maximum);
+  assert(formfactor::catalog_quantity_property_schema("voltage.maximum")
+             ->property_id == voltage_schema->property_id);
+  assert(!formfactor::catalog_quantity_property_schema("current.maximum")
+              .has_value());
+
+  auto unsupported_semantics = entry;
+  unsupported_semantics.quantity_properties.front().property_id =
+      "current.maximum";
+  expect_rejected(unsupported_semantics);
+
+  auto wrong_semantic_dimension = entry;
+  wrong_semantic_dimension.quantity_properties.front().value =
+      quantity(1, 0, formfactor::Unit::Ampere);
+  expect_rejected(wrong_semantic_dimension);
+
+  auto wrong_semantic_qualifier = entry;
+  wrong_semantic_qualifier.quantity_properties.front().qualifier =
+      formfactor::QuantityValueQualifier::Nominal;
+  expect_rejected(wrong_semantic_qualifier);
 
   auto duplicate_pad = entry;
   duplicate_pad.pin_mappings[1].footprint_pad = "1";

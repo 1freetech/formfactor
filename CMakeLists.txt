@@ -42,6 +42,14 @@ add_test(
   NAME regression_formfactor_cr_1_invalid_unit_identifiers
   COMMAND regression_formfactor_cr_1)
 
+add_executable(
+  regression_formfactor_cr_5
+  tests/regression/formfactor_cr_5_catalog_property_schema.cpp)
+target_link_libraries(regression_formfactor_cr_5 PRIVATE formfactor_core)
+add_test(
+  NAME regression_formfactor_cr_5_catalog_property_schema
+  COMMAND regression_formfactor_cr_5)
+
 add_executable(circuit_tests tests/circuit_tests.cpp)
 target_link_libraries(circuit_tests PRIVATE formfactor_core)
 add_test(NAME circuit_validation COMMAND circuit_tests)
