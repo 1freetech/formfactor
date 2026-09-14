@@ -1,5 +1,7 @@
 #include "formfactor/source_authority.hpp"
 
+#include "formfactor/hash.hpp"
+
 #include <algorithm>
 #include <string_view>
 
@@ -16,14 +18,6 @@ bool valid_record_text(std::string_view text) {
     }
   }
   return visible;
-}
-
-bool valid_sha256(std::string_view digest) {
-  if (digest.size() != 64U) return false;
-  return std::all_of(digest.begin(), digest.end(), [](const char character) {
-    return (character >= '0' && character <= '9') ||
-           (character >= 'a' && character <= 'f');
-  });
 }
 
 void append_field(std::string& record, std::string_view name,
@@ -63,9 +57,19 @@ SourceAuthorizationResult authorize_source_publisher(
   if (!valid_source(policy.source)) {
     result.errors.emplace_back("policy requires revisioned HTTPS source metadata");
   }
-  if (!valid_sha256(policy.artifact_sha256)) {
+  const bool digest_is_valid = valid_sha256_hex(policy.artifact_sha256);
+  if (!digest_is_valid) {
     result.errors.emplace_back(
         "policy requires a lowercase 64-hex SHA-256 artifact digest");
+  }
+  if (!policy.artifact_bytes.has_value()) {
+    result.errors.emplace_back("policy artifact bytes are required");
+  } else if (digest_is_valid) {
+    const auto calculated = sha256_hex(*policy.artifact_bytes);
+    if (!calculated || *calculated != policy.artifact_sha256) {
+      result.errors.emplace_back(
+          "policy artifact digest does not match supplied bytes");
+    }
   }
 
   auto origins = policy.authorized_origins;
@@ -95,7 +99,7 @@ SourceAuthorizationResult authorize_source_publisher(
   result.decision = authorized ? SourceAuthorizationDecision::Authorized
                                : SourceAuthorizationDecision::NotAuthorized;
 
-  result.canonical_record = "formfactor-source-authorization-v2\n";
+  result.canonical_record = "formfactor-source-authorization-v3\n";
   append_field(result.canonical_record, "claim-publisher", claim.publisher_id);
   append_field(result.canonical_record, "policy-publisher", policy.publisher_id);
   append_field(result.canonical_record, "policy-source-title", policy.source.title);
@@ -104,6 +108,10 @@ SourceAuthorizationResult authorize_source_publisher(
                policy.source.revision);
   append_field(result.canonical_record, "policy-artifact-sha256",
                policy.artifact_sha256);
+  result.canonical_record.append("policy-artifact-byte-count=");
+  result.canonical_record.append(
+      std::to_string(policy.artifact_bytes->size()));
+  result.canonical_record.push_back('\n');
   append_field(result.canonical_record, "source-url", claim.source.url);
   append_field(result.canonical_record, "source-origin", *source_origin);
   result.canonical_record.append("authorized-origin-count=");

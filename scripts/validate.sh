@@ -5,7 +5,7 @@ mkdir -p build
 cxx="${CXX:-g++}"
 flags="-std=c++20 -Wall -Wextra -Wpedantic -Werror -Iinclude"
 
-sources="src/component.cpp src/source_authority.cpp src/catalog.cpp src/catalog_filter.cpp src/quantity.cpp src/circuit.cpp src/digital.cpp src/spice.cpp src/stackup.cpp src/layout.cpp src/impedance.cpp src/return_path.cpp src/pdn.cpp src/decoupling.cpp"
+sources="src/component.cpp src/hash.cpp src/source_authority.cpp src/catalog.cpp src/catalog_filter.cpp src/quantity.cpp src/circuit.cpp src/digital.cpp src/spice.cpp src/stackup.cpp src/layout.cpp src/impedance.cpp src/return_path.cpp src/pdn.cpp src/decoupling.cpp"
 
 $cxx $flags $sources tests/component_tests.cpp -o build/component_tests
 ./build/component_tests
@@ -59,6 +59,10 @@ $cxx $flags $sources \
   tests/regression/formfactor_cr_15_authorization_policy_provenance.cpp \
   -o build/regression_formfactor_cr_15
 ./build/regression_formfactor_cr_15
+$cxx $flags $sources \
+  tests/regression/formfactor_cr_16_policy_artifact_digest_verification.cpp \
+  -o build/regression_formfactor_cr_16
+./build/regression_formfactor_cr_16
 $cxx $flags $sources tests/circuit_tests.cpp -o build/circuit_tests
 ./build/circuit_tests
 $cxx $flags $sources tests/digital_tests.cpp -o build/digital_tests

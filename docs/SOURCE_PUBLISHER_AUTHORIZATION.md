@@ -24,3 +24,10 @@ The caller supplies the authorization policy. The core does not yet authenticate
 CR-015 requires the supplied policy to name a visible, revisioned HTTPS source and carry a lowercase 64-hex SHA-256 digest for the exact policy artifact. The canonical record advances to `formfactor-source-authorization-v2` and preserves the source title, URL, revision, and digest. The digest syntax represents the 256-bit SHA-256 output defined by [NIST FIPS 180-4](https://csrc.nist.gov/pubs/fips/180-4/upd1/final).
 
 This is an integrity binding supplied by the caller. FormFactor does not yet retrieve the policy artifact, calculate the digest, verify a signature, authenticate the policy publisher, or prove that the policy content authorizes any origin.
+
+
+## Exact policy-byte digest verification
+
+CR-016 computes SHA-256 over the exact caller-supplied policy bytes using the NIST FIPS 180-4 algorithm and compares the lowercase digest before authorization. Missing bytes remain unknown and fail closed. An explicitly supplied empty artifact remains distinct and is verified against the standard empty-message digest. Binary bytes, including zero bytes, are hashed without text conversion. Valid records advance to `formfactor-source-authorization-v3` and preserve the verified byte count without embedding the policy content.
+
+The implementation is checked against NIST's empty-message, `abc`, and multi-block test vectors. Digest equality establishes byte integrity only; it does not verify a digital signature, publisher identity, policy authority, or network transport.

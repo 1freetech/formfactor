@@ -1,5 +1,9 @@
 # Changelog
 
+## CR-016 — Exact authorization-policy digest verification
+
+Publisher-origin authorization now computes SHA-256 over the exact supplied policy artifact bytes and requires equality with the recorded lowercase digest before emitting any decision record. Missing bytes, modified content, and digest mismatches fail closed as `Invalid`; an explicitly supplied empty artifact and embedded zero bytes remain valid byte sequences, and the implementation is checked against the NIST FIPS 180-4 empty-message, `abc`, and multi-block vectors. Valid decisions advance to deterministic `formfactor-source-authorization-v3` records containing the verified byte count. Digest equality proves byte integrity only and does not authenticate a signature, publisher, policy authority, or network source.
+
 ## CR-015 — Fail-closed authorization-policy provenance
 
 Every publisher-origin authorization policy now requires visible revisioned HTTPS source metadata and a lowercase 64-hex SHA-256 digest binding the decision to the exact caller-supplied policy artifact. Missing, insecure, short, long, uppercase, and non-hex evidence fails closed as `Invalid` and suppresses the complete record; valid authorizations and denials advance to deterministic `formfactor-source-authorization-v2` records containing the policy source and digest. The core does not retrieve or hash the policy artifact, verify a signature, authenticate its publisher, or yet enforce the decision during catalogue export.
