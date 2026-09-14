@@ -296,6 +296,10 @@ CatalogValidationResult validate_catalog_entry(const CatalogEntry& entry) {
       result.errors.emplace_back(prefix +
                                  " requires a lowercase 64-hex SHA-256 source artifact digest");
     }
+    if (!valid_record_text(property.source_locator)) {
+      result.errors.emplace_back(prefix +
+                                 " requires a non-empty single-line source locator");
+    }
   }
 
   if (!result.errors.empty()) return result;
@@ -312,7 +316,7 @@ CatalogValidationResult validate_catalog_entry(const CatalogEntry& entry) {
 
   std::ostringstream output;
   output.imbue(std::locale::classic());
-  output << "formfactor-catalog-quantity-properties-v3\n";
+  output << "formfactor-catalog-quantity-properties-v4\n";
   append_text_field(output, "catalog-id", entry.catalog_id);
   output << "property-count=" << ordered_properties.size() << '\n';
   for (const auto* property : ordered_properties) {
@@ -335,6 +339,7 @@ CatalogValidationResult validate_catalog_entry(const CatalogEntry& entry) {
     append_text_field(output, "source-revision", property->source.revision);
     append_text_field(output, "source-artifact-sha256",
                       property->source_artifact_sha256);
+    append_text_field(output, "source-locator", property->source_locator);
     output << "end-property\n";
   }
   result.canonical_quantity_property_record = output.str();

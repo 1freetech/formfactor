@@ -23,7 +23,7 @@ formfactor::CatalogEntry entry() {
       {{"1", "1", "p"}, {"2", "2", "n"}},
       {{"voltage.maximum", "Maximum voltage", *voltage,
         formfactor::QuantityValueQualifier::Maximum, std::nullopt,
-        "Fixture Maker", "FF-008", source(), std::string(64, 'a')}}};
+        "Fixture Maker", "FF-008", source(), std::string(64, 'a'), "table 1"}}};
 }
 
 }  // namespace

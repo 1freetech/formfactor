@@ -58,6 +58,10 @@ struct CatalogQuantityProperty {
   // This binds the claim to bytes; it does not authenticate the publisher or
   // prove that the claim was transcribed correctly.
   std::string source_artifact_sha256;
+  // Exact location of the claim inside the bound artifact, such as a page,
+  // table, section, or stable document anchor. This is preserved as opaque
+  // source wording and does not prove that the transcription is correct.
+  std::string source_locator;
 };
 
 struct CatalogQuantityPropertySchema {

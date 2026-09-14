@@ -1,5 +1,9 @@
 # Changelog
 
+## CR-011 — Fail-closed source-claim locators
+
+Every exported catalogue quantity claim now requires visible, single-line text identifying its exact location inside the SHA-256-bound source artifact, such as a published page, table, section, or stable anchor. The locator is length-prefixed in deterministic `formfactor-catalog-quantity-properties-v4` records; missing, whitespace-only, and control-bearing locators fail closed and suppress the complete export record. The field makes a claim auditable but remains opaque source wording: FormFactor does not infer a location, fetch the artifact, authenticate its publisher, or assert that the transcription is correct.
+
 ## CR-010 — Reproducible CMake and CTest validation
 
 FormFactor can now configure and test its engineering core through CMake even when the optional FreeLab graphics dependencies are unavailable, because `pkg-config` and SDL2 no longer block core configuration and the workbench is skipped with an explicit status message when those packages are missing. A pinned workspace-local bootstrap command provides CMake and CTest without modifying system packages, compiler warnings are treated as errors consistently across CMake targets, and GitHub Actions now configures, builds, and runs the complete CTest suite in addition to the dependency-free validation path. The change was verified locally with CMake 4.4.3, GNU C++ 13.3.0, all 19 registered CTest cases, the identity check, and the complete fallback suite; FreeLab itself still requires the SDL2 development package and was not built in the dependency-limited runner.

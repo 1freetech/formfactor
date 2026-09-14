@@ -44,7 +44,8 @@ formfactor::CatalogQuantityProperty property(
     std::optional<std::string> conditions = std::nullopt) {
   return {id, name, value, qualifier, std::move(conditions), "Vendor", "PART-2",
           property_source(),
-          "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"};
+          "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+          "page 4, table 2"};
 }
 
 }  // namespace
@@ -82,7 +83,7 @@ int main() {
          formfactor::validate_catalog_entry(entry)
              .canonical_quantity_property_record);
   assert(valid.canonical_quantity_property_record.find(
-             "formfactor-catalog-quantity-properties-v3\n") == 0);
+             "formfactor-catalog-quantity-properties-v4\n") == 0);
   assert(valid.canonical_quantity_property_record.find("property-count=2\n") !=
          std::string::npos);
   assert(valid.canonical_quantity_property_record.find(
