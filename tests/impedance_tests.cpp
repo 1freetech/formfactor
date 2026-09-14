@@ -1,9 +1,9 @@
-#include "pcbtech/impedance.hpp"
+#include "formfactor/impedance.hpp"
 
 #include <cassert>
 
 int main() {
-  using namespace pcbtech;
+  using namespace formfactor;
   const std::vector<std::string> traces{"CLK", "USB_P", "USB_N"};
   const std::vector<ImpedanceConstraint> valid{
       {"clock-z", ImpedanceKind::single_ended, "CLK", "", 50000, 5000, "interface-specification"},

@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-namespace pcbtech {
+namespace formfactor {
 
 struct ReturnPathConstraint {
   std::string id;
@@ -27,4 +27,4 @@ struct ReturnPathValidation {
     const std::vector<std::string>& net_names,
     const std::vector<ReturnPathConstraint>& constraints);
 
-}  // namespace pcbtech
+}  // namespace formfactor

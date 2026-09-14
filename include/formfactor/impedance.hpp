@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-namespace pcbtech {
+namespace formfactor {
 
 enum class ImpedanceKind { single_ended, differential };
 
@@ -31,4 +31,4 @@ struct ImpedanceValidation {
     const std::vector<std::string>& trace_ids,
     const std::vector<ImpedanceConstraint>& constraints);
 
-}  // namespace pcbtech
+}  // namespace formfactor

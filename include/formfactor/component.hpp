@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-namespace pcbtech {
+namespace formfactor {
 
 enum class AccuracyTier { VisualOnly, Partial, Verified };
 
@@ -36,4 +36,4 @@ struct ValidationResult {
 
 [[nodiscard]] ValidationResult validate(const Component& component);
 
-}  // namespace pcbtech
+}  // namespace formfactor

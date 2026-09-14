@@ -1,13 +1,13 @@
 #pragma once
 
-#include "pcbtech/component.hpp"
-#include "pcbtech/quantity.hpp"
+#include "formfactor/component.hpp"
+#include "formfactor/quantity.hpp"
 
 #include <optional>
 #include <string>
 #include <vector>
 
-namespace pcbtech {
+namespace formfactor {
 
 enum class ComponentFamily {
   Passive,
@@ -34,7 +34,7 @@ struct PinMapping {
 };
 
 // Describes what a sourced value claims. This is metadata, not a statement
-// that pcbtech has independently measured or verified the value.
+// that formfactor has independently measured or verified the value.
 enum class QuantityValueQualifier { Nominal, Minimum, Typical, Maximum };
 
 struct CatalogQuantityProperty {
@@ -80,4 +80,4 @@ struct CatalogValidationResult {
 [[nodiscard]] CatalogValidationResult validate_catalog_entry(
     const CatalogEntry& entry);
 
-}  // namespace pcbtech
+}  // namespace formfactor

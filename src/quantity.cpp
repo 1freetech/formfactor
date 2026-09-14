@@ -1,9 +1,9 @@
-#include "pcbtech/quantity.hpp"
+#include "formfactor/quantity.hpp"
 
 #include <cstdint>
 #include <string>
 
-namespace pcbtech {
+namespace formfactor {
 namespace {
 
 constexpr int kMinExponent10 = -30;
@@ -100,7 +100,7 @@ std::uint64_t magnitude(std::int64_t value) {
   return static_cast<std::uint64_t>(-(value + 1)) + 1U;
 }
 
-// pcbtech currently targets GCC/Clang on Linux and already requires 128-bit
+// formfactor currently targets GCC/Clang on Linux and already requires 128-bit
 // integer support for exact geometry comparisons. __extension__ prevents the
 // known compiler extension from being reported as a pedantic warning here.
 __extension__ using Int128 = __int128;
@@ -209,4 +209,4 @@ std::string canonical_quantity_record(const Quantity& quantity) {
          std::to_string(quantity.exponent10());
 }
 
-}  // namespace pcbtech
+}  // namespace formfactor

@@ -1,4 +1,4 @@
-#include "pcbtech/quantity.hpp"
+#include "formfactor/quantity.hpp"
 
 #include <array>
 #include <cassert>
@@ -7,79 +7,79 @@
 #include <utility>
 
 int main() {
-  using pcbtech::Dimension;
-  using pcbtech::Unit;
+  using formfactor::Dimension;
+  using formfactor::Unit;
 
   // Equivalent SI prefixes compare exactly without binary floating point.
-  const auto one_volt = pcbtech::make_quantity(1, 0, Unit::Volt);
-  const auto thousand_mv = pcbtech::make_quantity(1000, 0, Unit::Millivolt);
+  const auto one_volt = formfactor::make_quantity(1, 0, Unit::Volt);
+  const auto thousand_mv = formfactor::make_quantity(1000, 0, Unit::Millivolt);
   assert(one_volt && thousand_mv);
-  assert(pcbtech::equivalent(*one_volt, *thousand_mv));
+  assert(formfactor::equivalent(*one_volt, *thousand_mv));
 
-  const auto one_uf = pcbtech::make_quantity(1, 0, Unit::Microfarad);
-  const auto thousand_nf = pcbtech::make_quantity(1000, 0, Unit::Nanofarad);
-  const auto million_pf = pcbtech::make_quantity(1000000, 0, Unit::Picofarad);
+  const auto one_uf = formfactor::make_quantity(1, 0, Unit::Microfarad);
+  const auto thousand_nf = formfactor::make_quantity(1000, 0, Unit::Nanofarad);
+  const auto million_pf = formfactor::make_quantity(1000000, 0, Unit::Picofarad);
   assert(one_uf && thousand_nf && million_pf);
-  assert(pcbtech::equivalent(*one_uf, *thousand_nf));
-  assert(pcbtech::equivalent(*one_uf, *million_pf));
+  assert(formfactor::equivalent(*one_uf, *thousand_nf));
+  assert(formfactor::equivalent(*one_uf, *million_pf));
 
   // Decimal values remain exact: 2.2 kohm == 2200 ohm.
   const auto two_point_two_kohm =
-      pcbtech::make_quantity(22, -1, Unit::Kiloohm);
+      formfactor::make_quantity(22, -1, Unit::Kiloohm);
   const auto twenty_two_hundred_ohm =
-      pcbtech::make_quantity(2200, 0, Unit::Ohm);
+      formfactor::make_quantity(2200, 0, Unit::Ohm);
   assert(two_point_two_kohm && twenty_two_hundred_ohm);
-  assert(pcbtech::equivalent(*two_point_two_kohm,
+  assert(formfactor::equivalent(*two_point_two_kohm,
                              *twenty_two_hundred_ohm));
-  assert(pcbtech::canonical_quantity_record(*two_point_two_kohm) ==
+  assert(formfactor::canonical_quantity_record(*two_point_two_kohm) ==
          "resistance:22e2");
 
   // Physical dimensions are never silently compared.
-  const auto volts = pcbtech::make_quantity(5, 0, Unit::Volt);
-  const auto amps = pcbtech::make_quantity(5, 0, Unit::Ampere);
+  const auto volts = formfactor::make_quantity(5, 0, Unit::Volt);
+  const auto amps = formfactor::make_quantity(5, 0, Unit::Ampere);
   assert(volts && amps);
-  assert(!pcbtech::compare(*volts, *amps).has_value());
-  assert(!pcbtech::equivalent(*volts, *amps));
+  assert(!formfactor::compare(*volts, *amps).has_value());
+  assert(!formfactor::equivalent(*volts, *amps));
 
   // Ordering works across prefixes and for signed exact quantities.
-  const auto low = pcbtech::make_quantity(999, 0, Unit::Millivolt);
-  assert(low && pcbtech::compare(*low, *one_volt) == -1);
+  const auto low = formfactor::make_quantity(999, 0, Unit::Millivolt);
+  assert(low && formfactor::compare(*low, *one_volt) == -1);
 
   const auto negative =
-      pcbtech::make_si_quantity(-15, -9, Dimension::Time);
+      formfactor::make_si_quantity(-15, -9, Dimension::Time);
   const auto less_negative =
-      pcbtech::make_si_quantity(-14, -9, Dimension::Time);
+      formfactor::make_si_quantity(-14, -9, Dimension::Time);
   assert(negative && less_negative);
-  assert(pcbtech::compare(*negative, *less_negative) == -1);
+  assert(formfactor::compare(*negative, *less_negative) == -1);
 
   // Zero has one deterministic canonical representation regardless of input.
   const auto zero_a =
-      pcbtech::make_si_quantity(0, -30, Dimension::Current);
+      formfactor::make_si_quantity(0, -30, Dimension::Current);
   const auto zero_b =
-      pcbtech::make_si_quantity(0, 30, Dimension::Current);
-  assert(zero_a && zero_b && pcbtech::equivalent(*zero_a, *zero_b));
-  assert(pcbtech::canonical_quantity_record(*zero_a) == "current:0e0");
+      formfactor::make_si_quantity(0, 30, Dimension::Current);
+  assert(zero_a && zero_b && formfactor::equivalent(*zero_a, *zero_b));
+  assert(formfactor::canonical_quantity_record(*zero_a) == "current:0e0");
 
   // Boundary coefficients, including INT64_MIN, remain orderable exactly.
-  const auto huge = pcbtech::make_si_quantity(
+  const auto huge = formfactor::make_si_quantity(
       std::numeric_limits<std::int64_t>::max(), 9, Dimension::Frequency);
-  const auto smaller = pcbtech::make_si_quantity(
+  const auto smaller = formfactor::make_si_quantity(
       std::numeric_limits<std::int64_t>::max() - 1, 9,
       Dimension::Frequency);
-  assert(huge && smaller && pcbtech::compare(*huge, *smaller) == 1);
+  assert(huge && smaller && formfactor::compare(*huge, *smaller) == 1);
 
-  const auto most_negative = pcbtech::make_si_quantity(
+  const auto most_negative = formfactor::make_si_quantity(
       std::numeric_limits<std::int64_t>::min(), 0, Dimension::Power);
-  const auto next_negative = pcbtech::make_si_quantity(
+  const auto next_negative = formfactor::make_si_quantity(
       std::numeric_limits<std::int64_t>::min() + 1, 0,
       Dimension::Power);
   assert(most_negative && next_negative);
-  assert(pcbtech::compare(*most_negative, *next_negative) == -1);
+  assert(formfactor::compare(*most_negative, *next_negative) == -1);
 
   // Unsupported exponent ranges are rejected rather than rounded/clamped.
-  assert(!pcbtech::make_si_quantity(1, -31, Dimension::Length));
-  assert(!pcbtech::make_si_quantity(1, 31, Dimension::Length));
-  assert(!pcbtech::make_quantity(1, 30, Unit::Gigahertz));
+  assert(!formfactor::make_si_quantity(1, -31, Dimension::Length));
+  assert(!formfactor::make_si_quantity(1, 31, Dimension::Length));
+  assert(!formfactor::make_quantity(1, 30, Unit::Gigahertz));
 
   // Every declared unit maps to its physical dimension. These checks guard
   // the fail-closed switch from accidentally rejecting or remapping a unit.
@@ -119,12 +119,12 @@ int main() {
       {Unit::Milliwatt, Dimension::Power},
   }};
   for (const auto& [unit, expected_dimension] : supported_units) {
-    const auto quantity = pcbtech::make_quantity(1, 0, unit);
-    const auto replay = pcbtech::make_quantity(1, 0, unit);
+    const auto quantity = formfactor::make_quantity(1, 0, unit);
+    const auto replay = formfactor::make_quantity(1, 0, unit);
     assert(quantity && replay);
     assert(quantity->dimension() == expected_dimension);
-    assert(pcbtech::canonical_quantity_record(*quantity) ==
-           pcbtech::canonical_quantity_record(*replay));
+    assert(formfactor::canonical_quantity_record(*quantity) ==
+           formfactor::canonical_quantity_record(*replay));
   }
 
   const std::array supported_dimensions{
@@ -133,7 +133,7 @@ int main() {
       Dimension::Frequency, Dimension::Length, Dimension::Time,
       Dimension::Power};
   for (const auto dimension : supported_dimensions) {
-    const auto quantity = pcbtech::make_si_quantity(1, 0, dimension);
+    const auto quantity = formfactor::make_si_quantity(1, 0, dimension);
     assert(quantity && quantity->dimension() == dimension);
   }
 
@@ -152,8 +152,8 @@ int main() {
     const auto dimension = static_cast<Dimension>(raw);
     for (const auto coefficient : coefficients) {
       for (const auto exponent : exponents) {
-        assert(!pcbtech::make_si_quantity(coefficient, exponent, dimension));
-        assert(!pcbtech::make_si_quantity(coefficient, exponent, dimension));
+        assert(!formfactor::make_si_quantity(coefficient, exponent, dimension));
+        assert(!formfactor::make_si_quantity(coefficient, exponent, dimension));
       }
     }
   }
@@ -161,8 +161,8 @@ int main() {
     const auto unit = static_cast<Unit>(raw);
     for (const auto coefficient : coefficients) {
       for (const auto exponent : exponents) {
-        assert(!pcbtech::make_quantity(coefficient, exponent, unit));
-        assert(!pcbtech::make_quantity(coefficient, exponent, unit));
+        assert(!formfactor::make_quantity(coefficient, exponent, unit));
+        assert(!formfactor::make_quantity(coefficient, exponent, unit));
       }
     }
   }

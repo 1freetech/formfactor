@@ -1,9 +1,9 @@
-#include "pcbtech/layout.hpp"
+#include "formfactor/layout.hpp"
 
 #include <cassert>
 
 int main() {
-  using namespace pcbtech;
+  using namespace formfactor;
   const LayoutRules rules{100000, 200000, 75000, "fabricator-capability-document", 100000};
   const std::vector<std::string> layers{"F_Cu", "B_Cu"};
   const std::vector<PadGeometry> pads{{"P1", "F_Cu", {0, 0}, 600000, "GND"}};

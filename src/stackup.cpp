@@ -1,4 +1,4 @@
-#include "pcbtech/stackup.hpp"
+#include "formfactor/stackup.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -6,7 +6,7 @@
 #include <set>
 #include <sstream>
 
-namespace pcbtech {
+namespace formfactor {
 namespace {
 
 bool single_line(const std::string& value) {
@@ -74,7 +74,7 @@ StackupValidation validate_stackup(const std::string& name,
   if (!result.errors.empty()) return result;
 
   std::ostringstream record;
-  record << "pcbtech-stackup-v1 " << name << '\n';
+  record << "formfactor-stackup-v1 " << name << '\n';
   for (const auto& layer : layers) {
     record << (layer.kind == StackupLayerKind::copper ? "copper" : "dielectric")
            << ' ' << layer.name << ' ' << number(layer.thickness_micrometres)
@@ -87,4 +87,4 @@ StackupValidation validate_stackup(const std::string& name,
   return result;
 }
 
-}  // namespace pcbtech
+}  // namespace formfactor

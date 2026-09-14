@@ -1,9 +1,9 @@
-#include "pcbtech/return_path.hpp"
+#include "formfactor/return_path.hpp"
 
 #include <cassert>
 
 int main() {
-  using namespace pcbtech;
+  using namespace formfactor;
   const std::vector<std::string> traces{"CLK", "DATA"};
   const std::vector<std::string> nets{"GND", "VCC"};
   const std::vector<ReturnPathConstraint> valid{

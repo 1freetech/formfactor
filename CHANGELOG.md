@@ -10,19 +10,19 @@ The repository now has a durable changelog location for tracing published commit
 
 ### Historical commit: a06e724
 
-[Add token-free repository label management](https://github.com/1freetech/pcbtech/commit/a06e724ede96e0fb311f10cf6d94af8fb614d3a7) added repository label-management support. The published commit message does not include enough validation detail to claim that label state or any engineering gate was verified here; the behavior remains documented as historical implementation evidence pending a direct diff and live label readback.
+[Add token-free repository label management](https://github.com/1freetech/formfactor/commit/a06e724ede96e0fb311f10cf6d94af8fb614d3a7) added repository label-management support. The published commit message does not include enough validation detail to claim that label state or any engineering gate was verified here; the behavior remains documented as historical implementation evidence pending a direct diff and live label readback.
 
 ### Historical commit: b2da870
 
-[Add pcbtech-cr-1 regression fixture](https://github.com/1freetech/pcbtech/commit/b2da87089fd203b4ff79db15b3a1aa37a91e6ea5) added a regression fixture associated with PCBTech change request 1. The published title identifies the fixture but does not establish its expected core output or test result, so this ledger records the fixture as historical evidence without claiming a new engineering capability passed.
+[Add formfactor-cr-1 regression fixture](https://github.com/1freetech/formfactor/commit/b2da87089fd203b4ff79db15b3a1aa37a91e6ea5) added a regression fixture associated with FormFactor change request 1. The published title identifies the fixture but does not establish its expected core output or test result, so this ledger records the fixture as historical evidence without claiming a new engineering capability passed.
 
 ### Historical commit: 10e098d
 
-[Add canonical pcbtech signal template](https://github.com/1freetech/pcbtech/commit/10e098d69c59910b2dddf45e5e37c8f6b7e3eba7) added the canonical change-request signal template. This is a documentation and governance change; it does not authorize issue text to override the core and does not represent a physical, electrical, manufacturing, or simulation validation result.
+[Add canonical formfactor signal template](https://github.com/1freetech/formfactor/commit/10e098d69c59910b2dddf45e5e37c8f6b7e3eba7) added the canonical change-request signal template. This is a documentation and governance change; it does not authorize issue text to override the core and does not represent a physical, electrical, manufacturing, or simulation validation result.
 
 ### Historical commit: 9050ceb
 
-[Add exact sourced catalogue properties](https://github.com/1freetech/pcbtech/commit/9050ceb26612126bec2f72f12545ec5a3193a43b) added exact sourced catalogue-property behavior according to its published title. The title alone does not provide the complete acceptance evidence, so this ledger does not claim specific property values, sources, filters, or tests beyond the existence of the published commit.
+[Add exact sourced catalogue properties](https://github.com/1freetech/formfactor/commit/9050ceb26612126bec2f72f12545ec5a3193a43b) added exact sourced catalogue-property behavior according to its published title. The title alone does not provide the complete acceptance evidence, so this ledger does not claim specific property values, sources, filters, or tests beyond the existence of the published commit.
 
 ## Accuracy and traceability rules
 

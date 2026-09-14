@@ -1,10 +1,10 @@
-#include "pcbtech/return_path.hpp"
+#include "formfactor/return_path.hpp"
 
 #include <algorithm>
 #include <set>
 #include <sstream>
 
-namespace pcbtech {
+namespace formfactor {
 namespace {
 bool token(const std::string& value) {
   return !value.empty() && std::all_of(value.begin(), value.end(), [](const unsigned char c) {
@@ -69,10 +69,10 @@ ReturnPathValidation validate_return_path_constraints(
   if (!result.errors.empty()) return result;
   std::sort(records.begin(), records.end());
   std::ostringstream output;
-  output << "pcbtech-return-path-constraints-v1\n";
+  output << "formfactor-return-path-constraints-v1\n";
   for (const auto& record : records) output << record << '\n';
   result.canonical_record = output.str();
   return result;
 }
 
-}  // namespace pcbtech
+}  // namespace formfactor

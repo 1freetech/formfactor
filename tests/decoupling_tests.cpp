@@ -1,9 +1,9 @@
-#include "pcbtech/decoupling.hpp"
+#include "formfactor/decoupling.hpp"
 
 #include <cassert>
 
 int main() {
-  using namespace pcbtech;
+  using namespace formfactor;
   const std::vector<std::string> nets{"VCORE", "GND"};
   const std::vector<std::string> components{"C1", "C2"};
   const std::vector<DecouplingRequirement> valid{

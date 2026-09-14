@@ -6,13 +6,13 @@ Implemented scope: truth-layer catalogue data. Advanced-PCB connection: exact, s
 
 1. A catalogue entry may contain zero or more `CatalogQuantityProperty` records.
 2. Each record has a stable machine ID, readable name, exact SI `Quantity`, value qualifier, optional source condition, and revisioned source metadata.
-3. Supported qualifiers are `nominal`, `minimum`, `typical`, and `maximum`. They preserve the source's claim; pcbtech does not turn a typical value into a guaranteed limit.
+3. Supported qualifiers are `nominal`, `minimum`, `typical`, and `maximum`. They preserve the source's claim; formfactor does not turn a typical value into a guaranteed limit.
 4. An absent condition is encoded separately from a present condition. Condition text is preserved as opaque source wording and is not evaluated or discarded.
-5. A valid entry produces the versioned project-internal record `pcbtech-catalog-quantity-properties-v1`. Properties are sorted by ID and text is byte-length-prefixed for deterministic replay.
+5. A valid entry produces the versioned project-internal record `formfactor-catalog-quantity-properties-v1`. Properties are sorted by ID and text is byte-length-prefixed for deterministic replay.
 6. An entry with no properties exports `property-count=0`. No value is inferred from its component family, legacy scalar ratings, symbol, footprint, pin count, or appearance.
 7. Any catalogue, mapping, component, or quantity-property validation error suppresses the complete canonical property record.
 
-The numerical layer follows the [BIPM SI Brochure](https://www.bipm.org/en/publications/si-brochure) and [NIST SP 811](https://www.nist.gov/pml/owm/si-units-information). The catalogue record layout and identifier grammar are original pcbtech formats, not external standards.
+The numerical layer follows the [BIPM SI Brochure](https://www.bipm.org/en/publications/si-brochure) and [NIST SP 811](https://www.nist.gov/pml/owm/si-units-information). The catalogue record layout and identifier grammar are original formfactor formats, not external standards.
 
 ## 2. Validation contract
 
@@ -21,7 +21,7 @@ The numerical layer follows the [BIPM SI Brochure](https://www.bipm.org/en/publi
 3. Display names, present conditions, and all source fields must contain visible, single-line text. Control characters are rejected so they cannot forge fields in an exported record.
 4. Unknown qualifier identifiers fail closed.
 5. The `Quantity` type can only be created through its validated exact-decimal factory. Equivalent inputs such as `1 V` and `1000 mV` therefore produce the same SI value and the same catalogue record.
-6. Source metadata requires a title, URL, and revision. This is structural provenance: pcbtech does not authenticate the URL, classify the publisher, or verify that the recorded number was copied correctly.
+6. Source metadata requires a title, URL, and revision. This is structural provenance: formfactor does not authenticate the URL, classify the publisher, or verify that the recorded number was copied correctly.
 
 ## 3. Measured acceptance results
 

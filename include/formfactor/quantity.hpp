@@ -4,7 +4,7 @@
 #include <optional>
 #include <string>
 
-namespace pcbtech {
+namespace formfactor {
 
 // Exact decimal SI quantity support for truth-layer records.
 // Authoritative unit references:
@@ -109,4 +109,4 @@ class Quantity {
 // tests. This is intentionally not a user-facing engineering formatter.
 [[nodiscard]] std::string canonical_quantity_record(const Quantity& quantity);
 
-}  // namespace pcbtech
+}  // namespace formfactor

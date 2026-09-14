@@ -1,8 +1,8 @@
-# pcbtech
+# FormFactor
 
-pcbtech is an open-source, physics-grounded PCB construction game and engineering simulator. The long-term goal is an interactive board builder whose designs are accepted only when engineering solvers and manufacturing checks support them.
+formfactor is an open-source, physics-grounded PCB construction game and engineering simulator. The long-term goal is an interactive board builder whose designs are accepted only when engineering solvers and manufacturing checks support them.
 
-Start with [Run pcbtech in VS Code](docs/GETTING_STARTED.md) for simple, numbered setup instructions. The current build runs in a terminal; the graphical workbench is still planned.
+Start with [Run FormFactor in VS Code](docs/GETTING_STARTED.md) for simple, numbered setup instructions. The current build runs in a terminal; the graphical workbench is still planned.
 
 All setup help and future game screens follow the [simple instructions and component selection rules](docs/INTERACTION_RULES.md): visible buttons, one action per step, and accurate links between component names, schematic symbols, physical packages, and simulation models.
 
@@ -11,7 +11,7 @@ All setup help and future game screens follow the [simple instructions and compo
 - The renderer never decides whether a circuit works.
 - Every component carries provenance and an accuracy tier: `verified`, `partial`, or `visual-only`.
 - `verified` requires authoritative pinout, electrical limits, package, thermal data, and a simulation model.
-- Missing data remains explicitly unknown. PCBTech must not invent electrical values.
+- Missing data remains explicitly unknown. FormFactor must not invent electrical values.
 - Manufacturing export is blocked unless all required validation gates pass.
 
 ## First vertical slice
@@ -30,7 +30,7 @@ The initial layout model records pads, vias, and straight trace segments in exac
 
 Circular pad and via clearance and straight-trace-to-circular-copper clearance are checked exactly across overlapping copper layers using 128-bit distance comparisons inside a declared safe numeric domain. Different nets must meet the sourced clearance; same-net copper is exempt. Trace-to-trace and polygon clearance remain pending and are not approximated.
 
-Every trace also carries an explicit current load and sourced current limit in integer microamperes. Loads at the limit pass; overloads, missing values, and missing provenance block fabrication export. pcbtech does not yet calculate ampacity or current density because those require validated copper-thickness, temperature-rise, and thermal-boundary inputs.
+Every trace also carries an explicit current load and sourced current limit in integer microamperes. Loads at the limit pass; overloads, missing values, and missing provenance block fabrication export. formfactor does not yet calculate ampacity or current density because those require validated copper-thickness, temperature-rise, and thermal-boundary inputs.
 
 Controlled-impedance requirements can be recorded for single-ended traces and differential pairs in exact integer milliohms. Constraints require trace references, positive target/tolerance intervals, and authoritative sources. The current slice validates requirements only; it does not claim a routed structure meets them without a validated field solver.
 
@@ -44,7 +44,7 @@ Decoupling requirements bind known capacitor references to power nets with expli
 cmake -S . -B build
 cmake --build build
 ctest --test-dir build --output-on-failure
-./build/pcbtech_validate
+./build/formfactor_validate
 ```
 
 If CMake is unavailable, run the dependency-free fallback:
@@ -55,7 +55,7 @@ sh scripts/validate.sh
 
 ## Engineering pipeline
 
-pcbtech follows a straightforward engineering flow. Each stage must produce trustworthy information before the next stage can rely on it.
+formfactor follows a straightforward engineering flow. Each stage must produce trustworthy information before the next stage can rely on it.
 
 **Component data → Validation → Circuit → Simulation → PCB checks → Visualization → Gated export**
 

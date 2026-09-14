@@ -1,8 +1,8 @@
-#include "pcbtech/component.hpp"
+#include "formfactor/component.hpp"
 
 #include <cmath>
 
-namespace pcbtech {
+namespace formfactor {
 
 bool ValidationResult::export_allowed() const {
   return errors.empty() && effective_tier == AccuracyTier::Verified;
@@ -44,4 +44,4 @@ ValidationResult validate(const Component& c) {
   return result;
 }
 
-}  // namespace pcbtech
+}  // namespace formfactor

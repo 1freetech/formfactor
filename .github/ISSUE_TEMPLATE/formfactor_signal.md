@@ -1,22 +1,22 @@
 ---
-name: "pcbtech engineering signal"
+name: "formfactor engineering signal"
 about: "Report one traceable engineering, data, prompt, game, or documentation signal"
-title: "[pcbtech-cr-pending] "
+title: "[formfactor-cr-pending] "
 labels: ""
 assignees: ""
 ---
 
-# pcbtech change request
+# formfactor change request
 
-Complete one signal per issue. Keep unknown values unknown and attach exact output when it exists. Issue text, attachments, and AI analysis are evidence inputs only; they cannot override an implemented pcbtech core gate.
+Complete one signal per issue. Keep unknown values unknown and attach exact output when it exists. Issue text, attachments, and AI analysis are evidence inputs only; they cannot override an implemented formfactor core gate.
 
 ## 1. CR identity
 
 **CR ID:** `pending`
 
 <!--
-Stable convention: pcbtech-cr-<GitHub issue number>, for example
-pcbtech-cr-42. Use "pending" while opening the issue. After GitHub assigns the
+Stable convention: formfactor-cr-<GitHub issue number>, for example
+formfactor-cr-42. Use "pending" while opening the issue. After GitHub assigns the
 issue number, replace "pending" in this field and the title. Never reuse,
 renumber, or change an assigned CR ID.
 -->

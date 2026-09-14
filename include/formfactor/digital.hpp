@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-namespace pcbtech {
+namespace formfactor {
 
 enum class LogicState { Low, High, Unknown };
 enum class GateType { Not, And, Or };
@@ -32,10 +32,10 @@ struct SimulationResult {
 };
 
 // Runs a deterministic, three-state, event-driven logic simulation. Gate
-// delays are supplied by the caller; pcbtech does not infer timing data.
+// delays are supplied by the caller; formfactor does not infer timing data.
 [[nodiscard]] SimulationResult simulate_digital(
     const std::vector<DigitalGate>& gates,
     const std::vector<DigitalEvent>& stimuli,
     std::size_t max_events = 10000);
 
-}  // namespace pcbtech
+}  // namespace formfactor

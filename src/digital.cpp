@@ -1,10 +1,10 @@
-#include "pcbtech/digital.hpp"
+#include "formfactor/digital.hpp"
 
 #include <algorithm>
 #include <queue>
 #include <set>
 
-namespace pcbtech {
+namespace formfactor {
 namespace {
 
 struct QueuedEvent {
@@ -105,4 +105,4 @@ SimulationResult simulate_digital(const std::vector<DigitalGate>& gates,
   return result;
 }
 
-}  // namespace pcbtech
+}  // namespace formfactor
