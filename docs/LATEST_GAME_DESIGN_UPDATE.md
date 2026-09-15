@@ -2,7 +2,7 @@
 
 Updated: September 15, 2026
 
-This page is the short version of the latest FormFactor game-design direction. It combines the useful lessons from the game research without copying proprietary code, art, audio, characters, missions, branding, menus, broadcast packages, or protected level design.
+This page is the short version of the latest FormFactor game-design direction. It combines the useful lessons from the game research without copying proprietary code, art, audio, characters, missions, branding, menus, broadcast packages, maps, or protected level design.
 
 ## What FormFactor should feel like
 
@@ -16,6 +16,9 @@ The player should be able to:
 - fail, understand why, and retry quickly;
 - move between schematic, PCB, instruments, validation, and later 3D without losing context;
 - build from working templates instead of always starting from an empty screen;
+- see the known strengths, limits, and missing evidence of a design before final validation;
+- save useful subsystems as reusable Engineering Blueprints;
+- navigate very large projects without loading every visual detail at once;
 - eventually create and share safe custom engineering challenges;
 - see clear feedback after important actions;
 - improve through real engineering evidence instead of cosmetic points.
@@ -79,6 +82,59 @@ The MLB The Show research adds training and performance feedback:
 - long-term mastery tracking based on real completed work;
 - polished camera, overlay, audio, and replay presentation for important engineering moments.
 
+### NBA 2K
+
+NBA 2K adds clearer build planning and visible tradeoffs:
+
+- a **Design Scouting Report** before final validation;
+- show known strengths, limits, missing data, and blocked requirements;
+- let a player choose goals such as low cost, small area, lower power, or repairability;
+- show requirement thresholds only when FormFactor has authoritative data for them;
+- make tradeoffs between cost, size, thermal margin, repairability, and performance easy to understand;
+- use project milestones to celebrate real recorded engineering progress;
+- support clearly labelled fast/standard/full analysis profiles where validated backends allow them.
+
+The scouting report explains what is known. It never predicts a pass that the engineering core has not proven.
+
+### Spore
+
+Spore adds modular creation and project evolution:
+
+- direct manipulation should make component placement and editing feel simple;
+- parts must change behavior through real component data, not cosmetic RPG stats;
+- one project should grow naturally from component to circuit to PCB to tested system;
+- keep a **Project Evolution Timeline** of important changes, measurements, failures, repairs, and validation results;
+- procedural visuals may be used later, but generated approximations remain partial or visual-only unless authoritative data supports them.
+
+### Space Engineers
+
+Space Engineers adds several especially relevant engineering-game ideas:
+
+- FreeLab and constrained contracts should use the same physics/validation rules;
+- save reusable subsystems as **Engineering Blueprints**;
+- treat damage, diagnosis, repair, and re-validation as one continuous system;
+- use inspection markers and measurement bookmarks across linked views;
+- support community scenarios and blueprints with strong provenance, license, dependency, and trust metadata;
+- allow future automation/scripting only through safe FormFactor APIs;
+- keep creator/community content separate from authoritative engineering truth.
+
+### Extreme-scale game worlds
+
+There is no honest single ranking for the biggest game map because games measure scale differently. For FormFactor, three useful extreme-scale references are:
+
+- **Elite Dangerous**: hierarchical indexing, search, filters, region grouping, route planning, and navigation across a huge data space;
+- **No Man's Sky**: procedural generation, LOD, asset streaming, memory control, and seamless movement between scales;
+- **Minecraft**: chunk-based loading and a clean separation between render distance and simulation distance.
+
+FormFactor translation:
+
+- large projects are divided into logical project regions;
+- heavy 3D assets can load only when needed;
+- far-away visual detail can use lower LOD;
+- analysis scope is separate from presentation loading;
+- global engineering state remains authoritative even when a region is not visible;
+- navigation should support whole-project -> subsystem -> component zoom levels.
+
 ## Combined FormFactor game systems
 
 The current design direction now includes these major game-facing systems:
@@ -88,21 +144,27 @@ The current design direction now includes these major game-facing systems:
 3. **Engineering Practice Lab** - short focused drills for one skill at a time.
 4. **Evidence feedback** - clear feedback explaining what happened and why.
 5. **Reproducible checkpoints** - quick retries without repeating unrelated work.
-6. **Mastery profile** - progress based on validated work and recorded practice evidence.
-7. **Working templates** - editable examples that already function.
-8. **Creator modules** - reusable objectives, faults, instruments, budgets, timers, and validation triggers.
-9. **Creator playtest** - fast testing using the exact same validators as normal gameplay.
-10. **2D Lite + full presentation** - same engineering truth, different visual cost.
-11. **High-quality 3D inspection** - added only after component identity and physical models are trustworthy.
-12. **Future safe scripting** - only after deterministic replay, permissions, provenance, and security rules are complete.
+6. **Design Scouting Report** - known strengths, limits, unknowns, and blocked requirements before final validation.
+7. **Mastery profile** - progress based on validated work and recorded practice evidence.
+8. **Project Evolution Timeline** - reproducible history of important project changes and results.
+9. **Working templates** - editable examples that already function.
+10. **Engineering Blueprints** - reusable versioned subsystems with dependencies, provenance, and stale-result handling.
+11. **Creator modules** - reusable objectives, faults, instruments, budgets, timers, and validation triggers.
+12. **Creator playtest** - fast testing using the exact same validators as normal gameplay.
+13. **Repair-state gameplay** - explicit faults, diagnosis, repair, and final re-validation.
+14. **Inspection markers** - saved measurement and repair locations across linked views.
+15. **Large-project streaming and LOD** - presentation can scale without weakening engineering state.
+16. **2D Lite + full presentation** - same engineering truth, different visual cost.
+17. **High-quality 3D inspection** - added only after component identity and physical models are trustworthy.
+18. **Future safe scripting** - only after deterministic replay, permissions, provenance, and security rules are complete.
 
 ## The rule that never changes
 
-The game layer can teach, guide, score, animate, recommend, and present.
+The game layer can teach, guide, score, animate, recommend, stream, generate presentation assets, and present.
 
 It cannot decide engineering truth.
 
-A failed circuit stays failed. An unknown result stays unknown. A visual effect, score, difficulty level, creator script, or progression system can never turn an invalid engineering result into a pass.
+A failed circuit stays failed. An unknown result stays unknown. A visual effect, score, difficulty level, creator script, blueprint, procedural model, progression system, or unloaded visual region can never turn an invalid engineering result into a pass.
 
 ## Development order
 
@@ -113,7 +175,8 @@ The research does not change the current engineering priority order:
 3. formalize the engineering-truth and component-data model;
 4. build the responsive 2D workbench;
 5. add feedback, instruments, practice, contracts, checkpoints, and accessibility;
-6. add creator tools and verified high-quality presentation in dependency order.
+6. add scouting reports, project timelines, blueprints, repair-state systems, and large-project navigation only after the underlying state model can support them correctly;
+7. add creator tools and verified high-quality presentation in dependency order.
 
 The research gives FormFactor a clearer destination. It does not justify skipping the engineering foundation required to reach it safely.
 
@@ -123,3 +186,4 @@ The research gives FormFactor a clearer destination. It does not justify skippin
 - [GTA and Open-World Design Research](GTA_OPEN_WORLD_RESEARCH.md)
 - [Fortnite and Roblox Creator-System Research](FORTNITE_ROBLOX_CREATOR_RESEARCH.md)
 - [MLB The Show Design Research](MLB_THE_SHOW_DESIGN_RESEARCH.md)
+- [NBA 2K, Spore, Space Engineers, and Extreme-Scale World Research](NBA2K_SPORE_SPACE_SCALE_RESEARCH.md)
