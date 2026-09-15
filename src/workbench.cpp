@@ -133,7 +133,10 @@ void draw_workbench(SDL_Renderer* renderer, int width, int height) {
 
 }  // namespace
 
-int main() {
+int main(int argc, char* argv[]) {
+    (void)argc;
+    (void)argv;
+
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         SDL_Log("SDL_Init failed: %s", SDL_GetError());
         return 1;
