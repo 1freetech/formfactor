@@ -1,0 +1,90 @@
+name: ios-prototype
+
+on:
+  push:
+    branches:
+      - ios-prototype
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: formfactor-ios-prototype
+  cancel-in-progress: true
+
+jobs:
+  build-ios:
+    runs-on: macos-latest
+    steps:
+      - name: Check out iOS prototype branch
+        uses: actions/checkout@v4
+
+      - name: Show Apple build tools
+        run: |
+          xcodebuild -version
+          cmake --version
+
+      - name: Configure iPhone simulator build
+        run: >-
+          cmake -S ios -B build-ios-sim -G Xcode
+          -DCMAKE_SYSTEM_NAME=iOS
+          -DCMAKE_OSX_SYSROOT=iphonesimulator
+          -DCMAKE_OSX_ARCHITECTURES=arm64
+          -DCMAKE_OSX_DEPLOYMENT_TARGET=15.0
+
+      - name: Build iPhone simulator app
+        run: cmake --build build-ios-sim --config Release --target FormFactor -- -sdk iphonesimulator CODE_SIGNING_ALLOWED=NO
+
+      - name: Verify simulator app exists
+        run: |
+          set -euo pipefail
+          APP="$(find build-ios-sim -type d -name 'FormFactor.app' | head -n 1)"
+          test -n "$APP"
+          test -x "$APP/FormFactor"
+          echo "Simulator app: $APP"
+          mkdir -p dist/simulator
+          ditto "$APP" dist/simulator/FormFactor.app
+          ditto -c -k --sequesterRsrc --keepParent dist/simulator/FormFactor.app FormFactor-iOS-Simulator.zip
+
+      - name: Configure unsigned iPhone device build
+        run: >-
+          cmake -S ios -B build-ios-device -G Xcode
+          -DCMAKE_SYSTEM_NAME=iOS
+          -DCMAKE_OSX_SYSROOT=iphoneos
+          -DCMAKE_OSX_ARCHITECTURES=arm64
+          -DCMAKE_OSX_DEPLOYMENT_TARGET=15.0
+
+      - name: Compile unsigned iPhone app
+        run: cmake --build build-ios-device --config Release --target FormFactor -- -sdk iphoneos CODE_SIGNING_ALLOWED=NO
+
+      - name: Package unsigned iPhone build for signing later
+        run: |
+          set -euo pipefail
+          APP="$(find build-ios-device -type d -name 'FormFactor.app' | head -n 1)"
+          test -n "$APP"
+          test -f "$APP/FormFactor"
+          mkdir -p dist/device
+          ditto "$APP" dist/device/FormFactor.app
+          cat > dist/device/README.txt <<'TXT'
+          FormFactor iOS prototype - unsigned development build
+
+          This proves the app compiles for a real arm64 iPhone.
+          iPhone will not install this copy directly because Apple requires a signed app and provisioning profile.
+          The next distribution step is Apple Developer signing and TestFlight or an approved ad-hoc profile.
+          TXT
+          ditto -c -k --sequesterRsrc --keepParent dist/device FormFactor-iOS-Unsigned-Device-Build.zip
+
+      - name: Upload iOS simulator app
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-simulator-prototype
+          path: FormFactor-iOS-Simulator.zip
+          if-no-files-found: error
+
+      - name: Upload unsigned iPhone build
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-device-unsigned
+          path: FormFactor-iOS-Unsigned-Device-Build.zip
+          if-no-files-found: error
