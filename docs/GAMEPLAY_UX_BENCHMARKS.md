@@ -27,6 +27,20 @@ Difficulty should come from engineering decisions, not confusing menus or hidden
 5. **Sandbox stays open.** Guided lessons and challenges sit beside unrestricted experimentation.
 6. **No fake wins.** Animation, score, or UI state can never turn an engineering failure or unknown result into a pass.
 
+## Open-world sandbox and contract rules
+
+Research into the released Grand Theft Auto series and related open-source engine work reinforces several general patterns that fit FormFactor without copying GTA content or code. See [GTA and Open-World Design Research](GTA_OPEN_WORLD_RESEARCH.md) for the detailed source-by-source study and license guardrails.
+
+- **FreeLab stays available.** Guided Engineering Contracts and unrestricted sandbox work use the same project format and engineering truth layer.
+- **Contracts are multi-stage, not one long script.** A contract can move through planning, part choice, building, power-up, testing, diagnosis, repair, and final validation with checkpoints at meaningful engineering states.
+- **Retry cost stays low.** A failed challenge should normally resume from the nearest reproducible checkpoint instead of making the player repeat unrelated steps.
+- **One project, many perspectives.** Schematic, PCB, 3D, instrument, firmware, and validation views must preserve selection, current objective, measurement target, and validation state when switching views.
+- **Mastery comes from evidence.** Any proficiency or progression system is based on validated completed work, correct measurements, diagnoses, or safe procedures. Progress meters never override engineering truth.
+- **Lite is a presentation profile, not a weaker simulator.** `formfactor 2D Lite` uses the same project files and truth/validation gates while reducing optional visual cost.
+- **Dynamic faults are explicit.** Training scenarios may inject faults only through reproducible scenario records; the game cannot secretly alter circuit state.
+- **Heavy presentation assets load on demand.** Large 3D models, thumbnails, environments, and waveform history should be lazy-loaded independently of authoritative project state.
+- **Open-source GTA projects are research references only.** OpenRW's GPL code is not imported under the current licensing plan, and reverse-engineered re3/reVC code is not copied, vendored, ported, or derived from.
+
 ## Presentation rules
 
 The interface should feel polished and tactile without hiding engineering information.
@@ -116,16 +130,22 @@ Third-party samples, shaders, fonts, controller databases, assets, and bundled s
 - Changing a component, package, or value invalidates stale results visibly.
 - Rendering/UI code cannot set engineering pass/fail results.
 - 2D Lite and full presentation profiles use the same truth and validation gates.
+- Switching between schematic, PCB, instrument, validation, and later 3D views preserves the same selected object and current contract context.
+- A contract failure can restore the nearest valid reproducible checkpoint when that checkpoint exists.
+- A dynamic training fault is visible in the scenario/replay record and produces the same starting fault state when replayed.
 
 ## Research translation
 
 The research pass found recurring strengths among highly reviewed games across different genres: responsive interaction, a satisfying repeatable loop, player agency, strong visual cohesion, meaningful variety, and presentation that makes actions feel tangible. Those are adopted here only as general design principles.
+
+The GTA/open-world pass adds a second recurring lesson: structured objectives are strongest when they live inside the same sandbox the player is free to explore. For FormFactor, that means Engineering Contracts should guide the player through real project state rather than loading a separate simplified training simulator.
 
 Accessibility guidance independently supports remappable controls, readable/resizable interfaces, high contrast, large interactive targets, and redundant status communication instead of color-only signals.
 
 ## Reference starting points
 
 - Metacritic platform browse pages supplied/searched for PC, PS5, Xbox Series X/S, Nintendo Switch, and Nintendo Switch 2.
+- [GTA and Open-World Design Research](GTA_OPEN_WORLD_RESEARCH.md).
 - Game Accessibility Guidelines: https://gameaccessibilityguidelines.com/
 - bgfx documentation: https://bkaradzic.github.io/bgfx/
 - SDL3 wiki: https://wiki.libsdl.org/SDL3/
