@@ -25,23 +25,29 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libsdl2-dev libssl-dev patchelf
 
-      - name: Configure release build
-        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+      - name: Configure test build
+        run: cmake -S . -B build-check
 
-      - name: Build FormFactor
-        run: cmake --build build --parallel 2
+      - name: Build test targets
+        run: cmake --build build-check --parallel 2
 
       - name: Run tests before publishing
-        run: ctest --test-dir build --output-on-failure
+        run: ctest --test-dir build-check --output-on-failure
+
+      - name: Configure optimized playable build
+        run: cmake -S . -B build-release -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build graphical FreeLab target
+        run: cmake --build build-release --target formfactor_freelab --parallel 2
 
       - name: Package portable Linux build
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p package-linux/lib
-          cp build/formfactor_freelab package-linux/FormFactor
+          cp build-release/formfactor_freelab package-linux/FormFactor
 
-          ldd build/formfactor_freelab \
+          ldd build-release/formfactor_freelab \
             | awk '/=> \/.*\.so/ {print $3}' \
             | sort -u \
             | while read -r lib; do
@@ -98,26 +104,34 @@ jobs:
             mingw-w64-x86_64-openssl
             mingw-w64-x86_64-pkgconf
 
-      - name: Configure release build
+      - name: Configure test build
         shell: msys2 {0}
-        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+        run: cmake -S . -B build-check -G Ninja
 
-      - name: Build FormFactor
+      - name: Build test targets
         shell: msys2 {0}
-        run: cmake --build build --parallel 2
+        run: cmake --build build-check --parallel 2
 
       - name: Run tests before publishing
         shell: msys2 {0}
-        run: ctest --test-dir build --output-on-failure
+        run: ctest --test-dir build-check --output-on-failure
+
+      - name: Configure optimized playable build
+        shell: msys2 {0}
+        run: cmake -S . -B build-release -G Ninja -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build graphical FreeLab target
+        shell: msys2 {0}
+        run: cmake --build build-release --target formfactor_freelab --parallel 2
 
       - name: Collect Windows executable and DLLs
         shell: msys2 {0}
         run: |
           set -euo pipefail
           mkdir -p package-windows
-          cp build/formfactor_freelab.exe package-windows/FormFactor.exe
+          cp build-release/formfactor_freelab.exe package-windows/FormFactor.exe
 
-          ldd build/formfactor_freelab.exe \
+          ldd build-release/formfactor_freelab.exe \
             | awk '/\/mingw64\/bin\// {print $3}' \
             | sort -u \
             | while read -r dll; do
