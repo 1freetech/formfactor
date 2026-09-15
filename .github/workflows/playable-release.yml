@@ -66,13 +66,18 @@ jobs:
           done
 
           cat > package-linux/README.txt <<'TXT'
-          FormFactor Linux playable build
+          FormFactor Linux playable prototype
 
-          1. Extract this archive.
-          2. Double-click FormFactor, or run ./FormFactor.
-          3. Press Esc to close the current FreeLab prototype.
+          PLAY
+          1. Extract this archive and open FormFactor.
+          2. Left-click a component in the left panel to choose it.
+          3. Left-click the green board to place the component.
+          4. Right-click one placed component, then right-click another to connect them.
+          5. Press V or click the top-right test button to check the board.
+          6. A first valid circuit needs a Power part wired to a load such as a resistor, LED, chip, or connector.
+          7. Press C to clear the board and try again. Press Esc to exit.
 
-          This package is built automatically from the latest main-branch commit after the test suite passes.
+          This package is built automatically from the latest main-branch commit only after the test suite passes.
           TXT
 
           chmod +x package-linux/FormFactor
@@ -139,13 +144,18 @@ jobs:
               done
 
           cat > package-windows/README.txt <<'TXT'
-          FormFactor Windows playable build
+          FormFactor Windows playable prototype
 
-          1. Extract this ZIP.
-          2. Double-click FormFactor.exe.
-          3. Press Esc to close the current FreeLab prototype.
+          PLAY
+          1. Extract this ZIP and double-click FormFactor.exe.
+          2. Left-click a component in the left panel to choose it.
+          3. Left-click the green board to place the component.
+          4. Right-click one placed component, then right-click another to connect them.
+          5. Press V or click the top-right test button to check the board.
+          6. A first valid circuit needs a Power part wired to a load such as a resistor, LED, chip, or connector.
+          7. Press C to clear the board and try again. Press Esc to exit.
 
-          This package is built automatically from the latest main-branch commit after the test suite passes.
+          This package is built automatically from the latest main-branch commit only after the test suite passes.
           TXT
 
       - name: Create Windows ZIP
