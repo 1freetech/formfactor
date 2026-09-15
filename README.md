@@ -16,6 +16,8 @@ Start with the downloads above if you only want to run the current graphical Fre
 
 All setup help and future game screens follow the [simple instructions and component selection rules](docs/INTERACTION_RULES.md): visible buttons, one action per step, and accurate links between component names, schematic symbols, physical packages, and simulation models.
 
+The game-facing design now also follows the [Gameplay, Graphics, Presentation, and UX Benchmarks](docs/GAMEPLAY_UX_BENCHMARKS.md), including an always-available FreeLab sandbox, multi-stage Engineering Contracts, reproducible checkpoints, context-preserving view switching, Lite-mode parity, and accessibility requirements. The detailed [GTA and Open-World Design Research](docs/GTA_OPEN_WORLD_RESEARCH.md) records the open-world lessons and license guardrails behind those choices; GTA assets, missions, branding, and reverse-engineered source code are not copied into FormFactor.
+
 ## Accuracy contract
 
 - The renderer never decides whether a circuit works.
