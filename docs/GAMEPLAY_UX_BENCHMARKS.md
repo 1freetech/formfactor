@@ -41,6 +41,20 @@ Research into the released Grand Theft Auto series and related open-source engin
 - **Heavy presentation assets load on demand.** Large 3D models, thumbnails, environments, and waveform history should be lazy-loaded independently of authoritative project state.
 - **Open-source GTA projects are research references only.** OpenRW's GPL code is not imported under the current licensing plan, and reverse-engineered re3/reVC code is not copied, vendored, ported, or derived from.
 
+## Creator-platform rules
+
+Fortnite Creative / UEFN and Roblox are useful references for making creation itself easy to learn and repeat. FormFactor adopts only general creator-system ideas. See [Fortnite and Roblox Creator-System Research](FORTNITE_ROBLOX_CREATOR_RESEARCH.md) for the detailed study and license guardrails.
+
+- **Working templates beat empty screens.** New users should be able to open editable, already-working engineering examples and learn by modifying them.
+- **Reusable scenario modules.** Objectives, checkpoints, instruments, faults, timers, budgets, scoring rules, and validation triggers should become reusable modules instead of being hard-coded into each lesson.
+- **Creator and player use the same truth.** Engineering Contracts, FreeLab, playtest mode, and later community-authored content must call the same core validation APIs.
+- **Fast edit -> playtest -> edit loop.** Authors should be able to launch a contract exactly as a learner experiences it, then return to editing without rebuilding unrelated project state.
+- **Form-factor preview.** The UI should be testable at multiple window sizes/input profiles before a release is published.
+- **Streaming is presentation-only.** Heavy models, textures, waveform history, and optional lesson media may load on demand; engineering records, validation state, and replay evidence must not disappear with streamed visuals.
+- **Creator flexibility has hard safety boundaries.** Authors may change instructions, available tools, visible panels, objectives, and presentation, but cannot hide required safety information or override validation results.
+- **Scripting comes later and is least-privilege.** A future embedded scripting layer may be evaluated only after capability, determinism, replay, provenance, and security contracts exist. Luau is a possible MIT-licensed candidate, not a current dependency.
+- **Shareable content must be trustworthy.** Community templates or contracts require explicit version, origin, license, dependencies, and trust/provenance metadata before entering a trusted catalogue.
+
 ## Presentation rules
 
 The interface should feel polished and tactile without hiding engineering information.
@@ -104,6 +118,7 @@ Pin dependency versions when integration lands and ship notices required by each
 - bgfx: BSD 2-Clause.
 - SDL3: zlib license.
 - Dear ImGui: MIT license.
+- Luau: MIT license; **candidate only**, not currently integrated.
 
 Third-party samples, shaders, fonts, controller databases, assets, and bundled subdependencies require their own license review.
 
@@ -115,8 +130,11 @@ Third-party samples, shaders, fonts, controller databases, assets, and bundled s
 4. Build the responsive 2D workbench around the loop.
 5. Add input remapping, UI scaling, high contrast, reduced motion, and full focus navigation before broad content expansion.
 6. Add instrument feedback and replay.
-7. Add verified high-fidelity physical assets and 3D inspection after package/footprint/model linkage is authoritative.
-8. Optimize presentation after startup time, input latency, frame time, memory, and project-open time can be measured repeatably.
+7. Add Engineering Contract templates and reusable scenario modules using only existing validated core APIs.
+8. Add creator playtest and form-factor preview after project/save formats are stable.
+9. Add verified high-fidelity physical assets and 3D inspection after package/footprint/model linkage is authoritative.
+10. Evaluate safe creator scripting only after an explicit least-privilege capability model, deterministic/replay constraints, and content trust model exist.
+11. Optimize presentation after startup time, input latency, frame time, memory, and project-open time can be measured repeatably.
 
 ## Frontend acceptance tests
 
@@ -133,6 +151,11 @@ Third-party samples, shaders, fonts, controller databases, assets, and bundled s
 - Switching between schematic, PCB, instrument, validation, and later 3D views preserves the same selected object and current contract context.
 - A contract failure can restore the nearest valid reproducible checkpoint when that checkpoint exists.
 - A dynamic training fault is visible in the scenario/replay record and produces the same starting fault state when replayed.
+- An editable template can be saved as a new project without changing the original.
+- Creator playtest uses the exact same validation APIs as normal FreeLab.
+- Streaming out optional presentation assets does not change engineering state.
+- Creator-authored modules cannot directly set pass/fail engineering truth.
+- Any future script runtime is denied arbitrary engineering-state mutation unless an explicit FormFactor API permits that exact operation.
 
 ## Research translation
 
@@ -140,12 +163,15 @@ The research pass found recurring strengths among highly reviewed games across d
 
 The GTA/open-world pass adds a second recurring lesson: structured objectives are strongest when they live inside the same sandbox the player is free to explore. For FormFactor, that means Engineering Contracts should guide the player through real project state rather than loading a separate simplified training simulator.
 
+The Fortnite/Roblox creator-platform pass adds a third lesson: the product becomes much easier to learn and extend when working examples, reusable building blocks, rapid playtesting, multi-form-factor preview, and safe creator tooling all operate on the same underlying project model.
+
 Accessibility guidance independently supports remappable controls, readable/resizable interfaces, high contrast, large interactive targets, and redundant status communication instead of color-only signals.
 
 ## Reference starting points
 
 - Metacritic platform browse pages supplied/searched for PC, PS5, Xbox Series X/S, Nintendo Switch, and Nintendo Switch 2.
 - [GTA and Open-World Design Research](GTA_OPEN_WORLD_RESEARCH.md).
+- [Fortnite and Roblox Creator-System Research](FORTNITE_ROBLOX_CREATOR_RESEARCH.md).
 - Game Accessibility Guidelines: https://gameaccessibilityguidelines.com/
 - bgfx documentation: https://bkaradzic.github.io/bgfx/
 - SDL3 wiki: https://wiki.libsdl.org/SDL3/
