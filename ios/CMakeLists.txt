@@ -16,9 +16,8 @@ set(SDL_INSTALL OFF CACHE BOOL "" FORCE)
 
 FetchContent_Declare(
   SDL2
-  GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-  GIT_TAG release-2.32.10
-  GIT_SHALLOW TRUE
+  URL https://github.com/libsdl-org/SDL/releases/download/release-2.32.10/SDL2-2.32.10.tar.gz
+  DOWNLOAD_EXTRACT_TIMESTAMP TRUE
 )
 FetchContent_MakeAvailable(SDL2)
 
