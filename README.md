@@ -1,8 +1,18 @@
 # FormFactor
 
+## Play FormFactor
+
+No compiler or terminal setup is needed for the packaged builds.
+
+- **Windows:** [Download the latest FormFactor Windows build](https://github.com/1freetech/formfactor/releases/download/latest/FormFactor-Windows-x64.zip), extract the ZIP, then double-click `FormFactor.exe`.
+- **Linux:** [Download the latest FormFactor Linux build](https://github.com/1freetech/formfactor/releases/download/latest/FormFactor-Linux-x64.tar.gz), extract it, then open `FormFactor`.
+- **Latest release page:** [FormFactor - Latest Playable Build](https://github.com/1freetech/formfactor/releases/tag/latest)
+
+Every push to `main` now builds Windows and Linux packages, runs the implemented CTest suite on both platforms, and refreshes the `latest` release only after both builds pass.
+
 formfactor is an open-source, physics-grounded PCB construction game and engineering simulator. The long-term goal is an interactive board builder whose designs are accepted only when engineering solvers and manufacturing checks support them.
 
-Start with [Run FormFactor in VS Code](docs/GETTING_STARTED.md) for simple, numbered setup instructions. The current build runs in a terminal; the graphical workbench is still planned.
+Start with the downloads above if you only want to run the current graphical FreeLab prototype. Developers can use [Run FormFactor in VS Code](docs/GETTING_STARTED.md) for simple, numbered source-build instructions.
 
 All setup help and future game screens follow the [simple instructions and component selection rules](docs/INTERACTION_RULES.md): visible buttons, one action per step, and accurate links between component names, schematic symbols, physical packages, and simulation models.
 
@@ -84,16 +94,24 @@ formfactor follows a straightforward engineering flow. Each stage must produce t
 6. **Show the results.** The game engine presents solver output so users can see what passed, what failed, and what is still unknown. The renderer never decides engineering truth.
 7. **Export only validated work.** KiCad and manufacturing artifacts become eligible for export only after every required implemented validation gate passes.
 
-
 ## Pinned policy-key trust evaluation
 
 CR-020 can evaluate an exact publisher/key binding against a caller-supplied, versioned trust root at a caller-supplied UTC instant. The root must contain valid CR-017 key material, a nonzero version, a fixed-format UTC expiry, and unambiguous publisher/key identities. Unknown or removed keys are not trusted, expired roots cannot authorize keys, malformed inputs fail closed, and deterministic records omit raw public-key bytes.
 
 This gate does not authenticate or distribute the trust root, preserve a previously trusted version, prevent rollback, verify threshold rotation, or authorize catalogue export. Those stateful and signed-root dependencies remain required before a caller-supplied root can become authoritative.
 
-
 ## Root update sequence precheck
 
 CR-021 rejects rollback, repeated-version, skipped-version, different-root, expired-candidate, malformed, and overflowing key-root transitions. Only an exact N-to-N+1 transition can produce `Sequential`, and deterministic records state that signature verification and persistence were not performed.
 
 A sequential result is not a trusted root update. FormFactor still requires old-root and new-root signature thresholds, unique signer counting, authenticated distribution, durable trusted-state persistence, and catalogue-export integration.
+
+---
+
+## Download the latest playable build
+
+- **Windows:** [FormFactor-Windows-x64.zip](https://github.com/1freetech/formfactor/releases/download/latest/FormFactor-Windows-x64.zip)
+- **Linux:** [FormFactor-Linux-x64.tar.gz](https://github.com/1freetech/formfactor/releases/download/latest/FormFactor-Linux-x64.tar.gz)
+- **Release page:** [Latest playable release](https://github.com/1freetech/formfactor/releases/tag/latest)
+
+These links stay the same while GitHub replaces the files with the newest tested build from `main`.
