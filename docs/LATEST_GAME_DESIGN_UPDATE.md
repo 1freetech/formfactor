@@ -16,6 +16,8 @@ The player should be able to:
 - fail, understand why, and retry quickly;
 - move between schematic, PCB, instruments, validation, and later 3D without losing context;
 - build from working templates instead of always starting from an empty screen;
+- search a large component library instead of scrolling through a tiny fixed palette;
+- favorite, filter, and quickly reuse common parts;
 - see the known strengths, limits, and missing evidence of a design before final validation;
 - save useful subsystems as reusable Engineering Blueprints;
 - navigate very large projects without loading every visual detail at once;
@@ -118,6 +120,27 @@ Space Engineers adds several especially relevant engineering-game ideas:
 - allow future automation/scripting only through safe FormFactor APIs;
 - keep creator/community content separate from authoritative engineering truth.
 
+### Stationeers + Satisfactory
+
+These two games add the strongest inventory-library ideas for FormFactor.
+
+**Stationeers** contributes technical depth: electronics are organized into meaningful families instead of one flat list. FormFactor should likewise separate passive components, semiconductors, logic/ICs, power/protection, connectors, sensors, electromechanical parts, and tools.
+
+**Satisfactory** contributes findability: large build libraries remain usable through categories, subcategories, quick search, hotbars, a Codex, sorting, contextual shortcuts, and copy/eyedropper behavior.
+
+FormFactor translation:
+
+- replace the production six-item palette with a catalogue-driven component library;
+- add Favorites and Recent groups;
+- add search by name, manufacturer part number, package, family, function, and tags;
+- add filters for package, through-hole/SMD, electrical ranges, model availability, and trust state when catalogue data exists;
+- show symbol + physical/package preview together;
+- show `verified`, `partial`, or `visual-only` on every part card;
+- add several quick-slot banks for commonly used parts;
+- add **Pick Same Part** to select the exact same catalogue identity from an already placed component;
+- add a Details / engineering-Codex view with pinout, footprint, limits, provenance, models, and missing-data status;
+- make adding a catalogue record independent from adding a new hard-coded renderer enum.
+
 ### Extreme-scale game worlds
 
 There is no honest single ranking for the biggest game map because games measure scale differently. For FormFactor, three useful extreme-scale references are:
@@ -142,21 +165,22 @@ The current design direction now includes these major game-facing systems:
 1. **FreeLab sandbox** - unrestricted experimentation using the real engineering core.
 2. **Engineering Contracts** - guided multi-stage jobs using the same project state as FreeLab.
 3. **Engineering Practice Lab** - short focused drills for one skill at a time.
-4. **Evidence feedback** - clear feedback explaining what happened and why.
-5. **Reproducible checkpoints** - quick retries without repeating unrelated work.
-6. **Design Scouting Report** - known strengths, limits, unknowns, and blocked requirements before final validation.
-7. **Mastery profile** - progress based on validated work and recorded practice evidence.
-8. **Project Evolution Timeline** - reproducible history of important project changes and results.
-9. **Working templates** - editable examples that already function.
-10. **Engineering Blueprints** - reusable versioned subsystems with dependencies, provenance, and stale-result handling.
-11. **Creator modules** - reusable objectives, faults, instruments, budgets, timers, and validation triggers.
-12. **Creator playtest** - fast testing using the exact same validators as normal gameplay.
-13. **Repair-state gameplay** - explicit faults, diagnosis, repair, and final re-validation.
-14. **Inspection markers** - saved measurement and repair locations across linked views.
-15. **Large-project streaming and LOD** - presentation can scale without weakening engineering state.
-16. **2D Lite + full presentation** - same engineering truth, different visual cost.
-17. **High-quality 3D inspection** - added only after component identity and physical models are trustworthy.
-18. **Future safe scripting** - only after deterministic replay, permissions, provenance, and security rules are complete.
+4. **Scalable Component Library** - searchable catalogue with technical categories, Favorites, Recent, filters, quick slots, Details, and stable component identity.
+5. **Evidence feedback** - clear feedback explaining what happened and why.
+6. **Reproducible checkpoints** - quick retries without repeating unrelated work.
+7. **Design Scouting Report** - known strengths, limits, unknowns, and blocked requirements before final validation.
+8. **Mastery profile** - progress based on validated work and recorded practice evidence.
+9. **Project Evolution Timeline** - reproducible history of important project changes and results.
+10. **Working templates** - editable examples that already function.
+11. **Engineering Blueprints** - reusable versioned subsystems with dependencies, provenance, and stale-result handling.
+12. **Creator modules** - reusable objectives, faults, instruments, budgets, timers, and validation triggers.
+13. **Creator playtest** - fast testing using the exact same validators as normal gameplay.
+14. **Repair-state gameplay** - explicit faults, diagnosis, repair, and final re-validation.
+15. **Inspection markers** - saved measurement and repair locations across linked views.
+16. **Large-project streaming and LOD** - presentation can scale without weakening engineering state.
+17. **2D Lite + full presentation** - same engineering truth, different visual cost.
+18. **High-quality 3D inspection** - added only after component identity and physical models are trustworthy.
+19. **Future safe scripting** - only after deterministic replay, permissions, provenance, and security rules are complete.
 
 ## The rule that never changes
 
@@ -164,7 +188,7 @@ The game layer can teach, guide, score, animate, recommend, stream, generate pre
 
 It cannot decide engineering truth.
 
-A failed circuit stays failed. An unknown result stays unknown. A visual effect, score, difficulty level, creator script, blueprint, procedural model, progression system, or unloaded visual region can never turn an invalid engineering result into a pass.
+A failed circuit stays failed. An unknown result stays unknown. A visual effect, score, difficulty level, creator script, blueprint, procedural model, progression system, inventory card, or unloaded visual region can never turn an invalid engineering result into a pass.
 
 ## Development order
 
@@ -173,7 +197,7 @@ The research does not change the current engineering priority order:
 1. bulletproof the build and test pipeline;
 2. lock the minimum playable loop: **Place -> Connect -> Power -> Test -> Diagnose -> Repair -> Validate**;
 3. formalize the engineering-truth and component-data model;
-4. build the responsive 2D workbench;
+4. build the responsive 2D workbench and catalogue-driven component library;
 5. add feedback, instruments, practice, contracts, checkpoints, and accessibility;
 6. add scouting reports, project timelines, blueprints, repair-state systems, and large-project navigation only after the underlying state model can support them correctly;
 7. add creator tools and verified high-quality presentation in dependency order.
@@ -187,3 +211,4 @@ The research gives FormFactor a clearer destination. It does not justify skippin
 - [Fortnite and Roblox Creator-System Research](FORTNITE_ROBLOX_CREATOR_RESEARCH.md)
 - [MLB The Show Design Research](MLB_THE_SHOW_DESIGN_RESEARCH.md)
 - [NBA 2K, Spore, Space Engineers, and Extreme-Scale World Research](NBA2K_SPORE_SPACE_SCALE_RESEARCH.md)
+- [Inventory and Component Library Design](INVENTORY_COMPONENT_LIBRARY_DESIGN.md)
