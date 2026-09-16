@@ -25,7 +25,8 @@ func _run_validation() -> void:
         "debug_last_test_path_length", "debug_player_led_lit", "debug_lexicon_count",
         "debug_lexicon_complete", "debug_lexicon_panel_ready", "debug_select_first_placed",
         "debug_active_rotation_y", "debug_tutorial_count", "debug_certificate_tier_count",
-        "debug_difficulty_for_lesson", "debug_move_component", "debug_tutorial_panel_ready"
+        "debug_difficulty_for_lesson", "debug_move_component", "debug_tutorial_panel_ready",
+        "debug_top_certificate_title"
     ]
     for method_name: String in required_methods:
         if not scene.has_method(method_name):
@@ -48,11 +49,25 @@ func _run_validation() -> void:
     if int(scene.call("debug_certificate_tier_count")) != 5:
         _fail("expected five certificate milestones at 10/25/50/75/100 lessons")
         return
+    if str(scene.call("debug_top_certificate_title")) != "Open Source Engineer Certificate":
+        _fail("the 100-lesson top certificate must be Open Source Engineer Certificate")
+        return
     if not is_equal_approx(float(scene.call("debug_difficulty_for_lesson", 1)), 1.0):
         _fail("lesson 1 difficulty should equal 1.00")
         return
-    if not is_equal_approx(float(scene.call("debug_difficulty_for_lesson", 100)), 1.99):
-        _fail("lesson 100 difficulty should be 99 percent harder than lesson 1")
+
+    var previous_difficulty := float(scene.call("debug_difficulty_for_lesson", 1))
+    for lesson_number in range(2, 101):
+        var current_difficulty := float(scene.call("debug_difficulty_for_lesson", lesson_number))
+        var step_ratio := current_difficulty / previous_difficulty
+        if absf(step_ratio - 1.0125) > 0.00001:
+            _fail("lesson %d is not exactly 1.25 percent harder than lesson %d" % [lesson_number, lesson_number - 1])
+            return
+        previous_difficulty = current_difficulty
+
+    var lesson_100_difficulty := float(scene.call("debug_difficulty_for_lesson", 100))
+    if lesson_100_difficulty < 3.41 or lesson_100_difficulty > 3.43:
+        _fail("lesson 100 difficulty should compound to about 3.42 times lesson 1")
         return
     if not bool(scene.call("debug_tutorial_panel_ready")):
         _fail("100-lesson tutorial panel did not initialize")
@@ -135,5 +150,5 @@ func _run_validation() -> void:
         _fail("inventory, schematic mirror, build controls, lexicon, or tutorial panel is missing")
         return
 
-    print("GODOT GAMEPLAY PASS: FormFactor 1.10 verified with draggable + rotatable parts, live wire redraw, 25-component menu/lexicon, 100 progressive lessons, five certificate milestones, schematic mirror, and connected-circuit testing.")
+    print("GODOT GAMEPLAY PASS: FormFactor 1.10 verified with draggable + rotatable parts, live wire redraw, 25-component menu/lexicon, 100 progressive lessons at 1.25 percent compounding difficulty, five certificate milestones, Open Source Engineer as the top certificate, schematic mirror, and connected-circuit testing.")
     quit(0)

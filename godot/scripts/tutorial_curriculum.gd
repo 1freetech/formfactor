@@ -6,7 +6,7 @@ const CERTIFICATE_TIERS := [
     {"lessons":25, "grade":"Grade II", "title":"Circuit Builder Certificate"},
     {"lessons":50, "grade":"Grade III", "title":"Electronics Technician Certificate"},
     {"lessons":75, "grade":"Grade IV", "title":"Advanced Board Technician Certificate"},
-    {"lessons":100, "grade":"Grade V", "title":"PCB Systems Specialist Certificate"}
+    {"lessons":100, "grade":"Grade V", "title":"Open Source Engineer Certificate"}
 ]
 
 const MODULES := [
@@ -23,7 +23,7 @@ const MODULES := [
 ]
 
 static func difficulty_for_lesson(lesson_number: int) -> float:
-    return 1.0 + max(0, lesson_number - 1) * 0.01
+    return pow(1.0125, float(max(0, lesson_number - 1)))
 
 static func lessons() -> Array:
     var output: Array = []
@@ -85,5 +85,5 @@ static func next_certificate_for_completed(completed_lessons: int) -> Dictionary
 
 static func _objective_text(lesson_number: int, module_name: String, title: String, required_parts: Array[String], minimum_wires: int) -> String:
     var part_names := ", ".join(required_parts)
-    var difficulty_percent := lesson_number - 1
-    return "Lesson %d — %s / %s. Build on the PCB using: %s. Make at least %d wire connection(s). Difficulty is +%d%% versus Lesson 1. Use the live schematic mirror and TEST before completion." % [lesson_number, module_name, title, part_names, minimum_wires, difficulty_percent]
+    var cumulative_percent := (difficulty_for_lesson(lesson_number) - 1.0) * 100.0
+    return "Lesson %d — %s / %s. Build on the PCB using: %s. Make at least %d wire connection(s). Each lesson is 1.25%% harder than the previous lesson; cumulative difficulty is +%.1f%% versus Lesson 1. Use the live schematic mirror and TEST before completion." % [lesson_number, module_name, title, part_names, minimum_wires, cumulative_percent]

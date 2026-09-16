@@ -77,8 +77,8 @@ jobs:
           4. Click a placed component and use Q/E or the on-screen buttons to rotate the component.
           5. Use WIRE to connect parts and TEST to validate a connected power-to-LED path.
           6. Open LEARN // 100 LESSONS for the guided PCB curriculum from basics through capstone boards.
-          7. Every lesson increases in designed difficulty by 1 percent. Training certificates unlock at 10, 25, 50, 75, and 100 completed lessons.
-          8. The live schematic mirror and 25-family component lexicon stay available while you build.
+          7. Every lesson is 1.25 percent harder than the lesson before it using a compounding curve. Training certificates unlock at 10, 25, 50, 75, and 100 completed lessons.
+          8. The 100-lesson top certificate is Open Source Engineer. The live schematic mirror and 25-family component lexicon stay available while you build.
 
           Certificate note: the game can generate a named local digital completion certificate. Automatic email delivery requires a separately configured secure FORMFACTOR_CERTIFICATE_API service so mail credentials are never embedded in the game executable.
 
@@ -158,8 +158,8 @@ jobs:
           4. Click a placed component and use Q/E or the on-screen buttons to rotate the component.
           5. Use WIRE to connect parts and TEST to validate a connected power-to-LED path.
           6. Open LEARN // 100 LESSONS for the guided PCB curriculum from basics through capstone boards.
-          7. Every lesson increases in designed difficulty by 1 percent. Training certificates unlock at 10, 25, 50, 75, and 100 completed lessons.
-          8. The live schematic mirror and 25-family component lexicon stay available while you build.
+          7. Every lesson is 1.25 percent harder than the lesson before it using a compounding curve. Training certificates unlock at 10, 25, 50, 75, and 100 completed lessons.
+          8. The 100-lesson top certificate is Open Source Engineer. The live schematic mirror and 25-family component lexicon stay available while you build.
 
           Certificate note: the game can generate a named local digital completion certificate. Automatic email delivery requires a separately configured secure FORMFACTOR_CERTIFICATE_API service so mail credentials are never embedded in the game executable.
 
@@ -225,7 +225,7 @@ jobs:
           set -euo pipefail
           VERSION="$(tr -d '\r\n' < VERSION)"
           VERSION_TAG="v${VERSION}"
-          NOTES="FormFactor ${VERSION} adds movable player-placed components, component rotation, connected-wire redraw, an in-game quick-start guide, 100 progressive PCB lessons across 10 modules, a one-percent-per-lesson difficulty curve, persistent training progress, and five digital training certificate milestones at 10, 25, 50, 75, and 100 lessons. The 25-family component lexicon and live schematic mirror remain integrated. Named certificates can be generated locally; automatic email delivery is supported through a separately configured secure certificate API rather than embedding mail credentials in the game. Both packaged builds are launch-tested before publication."
+          NOTES="FormFactor ${VERSION} includes movable player-placed components, component rotation, connected-wire redraw, an in-game quick-start guide, 100 progressive PCB lessons across 10 modules, a 1.25-percent-per-lesson compounding difficulty curve, persistent training progress, and five digital training certificate milestones at 10, 25, 50, 75, and 100 lessons. Lesson 100 is about 3.42 times the Lesson 1 difficulty, and the 100-lesson top credential is the Open Source Engineer Certificate. The 25-family component lexicon and live schematic mirror remain integrated. Named certificates can be generated locally; automatic email delivery is supported through a separately configured secure certificate API rather than embedding mail credentials in the game. Both packaged builds are launch-tested before publication."
 
           if gh release view "$VERSION_TAG" >/dev/null 2>&1; then
             gh release upload "$VERSION_TAG" dist/* --clobber
