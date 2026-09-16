@@ -1,0 +1,11 @@
+[package]
+name = "formfactor_bridge"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+description = "Deterministic frontend snapshot and bridge helpers for FormFactor"
+
+[lib]
+name = "formfactor_bridge"
+path = "src/lib.rs"
+crate-type = ["rlib"]
