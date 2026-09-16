@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - 'validation/**'
+      - 'update/**'
   pull_request:
 
 jobs:
@@ -14,7 +15,7 @@ jobs:
       - name: Check out FormFactor
         uses: actions/checkout@v4
 
-      - name: Install FreeLab build dependency
+      - name: Install legacy SDL workbench build dependency
         run: |
           sudo apt-get update
           sudo apt-get install -y libsdl2-dev
@@ -22,13 +23,16 @@ jobs:
       - name: Verify FormFactor identity
         run: python3 scripts/check_identity.py
 
+      - name: Verify Unity 6.3 C# frontend structure
+        run: python3 scripts/check_unity_frontend.py
+
       - name: Run complete direct-compiler validation suite
         run: sh scripts/validate.sh
 
-      - name: Configure CMake engineering and FreeLab targets
+      - name: Configure CMake engineering and legacy SDL workbench targets
         run: cmake -S . -B build-cmake
 
-      - name: Build CMake engineering and FreeLab targets
+      - name: Build CMake engineering and legacy SDL workbench targets
         run: cmake --build build-cmake --parallel 2
 
       - name: Run complete CTest suite
