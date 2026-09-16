@@ -15,3 +15,14 @@
 /unity/FormFactor/*.csproj
 /unity/FormFactor/*.sln
 /unity/FormFactor/*.suo
+
+# Godot prototype generated state.
+/godot/FormFactorPrototype/.godot/
+/godot/FormFactorPrototype/.import/
+
+# Rust bridge build output.
+/rust/formfactor_bridge/target/
+
+# TypeScript inspector dependencies and compiled output.
+/web/formfactor-inspector/node_modules/
+/web/formfactor-inspector/dist/
