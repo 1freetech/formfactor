@@ -140,11 +140,6 @@ void update_drag(WorkbenchState& s, InteractionState& interaction, const RectF& 
     }
 }
 
-bool mouse_over_existing_part(const WorkbenchState& s, float x, float y) {
-    std::size_t ignored = 0;
-    return find_part(s, x, y, ignored);
-}
-
 void draw_double_rect(SDL_Renderer* r, const RectF& q) {
     draw_rect(r, q);
     if (q.w > 4.0F && q.h > 4.0F) {
