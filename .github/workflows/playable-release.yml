@@ -68,18 +68,19 @@ jobs:
           exec ./FormFactor --path .
           SH
           cat > package-linux/README.txt <<TXT
-          FormFactor ${VERSION} - Interactive 3D Build Lab
-
-          Version 1.09 repairs the bricked 1.08 download by including the full Godot script chain.
+          FormFactor ${VERSION} - PCB Training + Build Lab
 
           PLAY
-          1. Extract the archive.
-          2. Run ./PLAY_FORMFACTOR.sh.
-          3. Pick a component from the left component menu, then click the PCB to place it.
-          4. Click a placed component and use Q/E or the on-screen rotation buttons to rotate it.
-          5. Click + drag rotates the workbench view. Mouse wheel zooms. Arrow keys/A/D pan.
-          6. Use WIRE to connect placed components, then TEST a real path from a DC power source to an LED.
-          7. The live schematic mirror follows your placed parts. The component lexicon contains an entry for all 25 component families.
+          1. Extract the archive and run ./PLAY_FORMFACTOR.sh.
+          2. Pick a component from the left component menu and click the PCB to place it.
+          3. Drag a placed component to move it. Drag empty board/workbench space to rotate the camera.
+          4. Click a placed component and use Q/E or the on-screen buttons to rotate the component.
+          5. Use WIRE to connect parts and TEST to validate a connected power-to-LED path.
+          6. Open LEARN // 100 LESSONS for the guided PCB curriculum from basics through capstone boards.
+          7. Every lesson increases in designed difficulty by 1 percent. Training certificates unlock at 10, 25, 50, 75, and 100 completed lessons.
+          8. The live schematic mirror and 25-family component lexicon stay available while you build.
+
+          Certificate note: the game can generate a named local digital completion certificate. Automatic email delivery requires a separately configured secure FORMFACTOR_CERTIFICATE_API service so mail credentials are never embedded in the game executable.
 
           Godot is open source under the MIT license: https://godotengine.org/license/
           TXT
@@ -148,18 +149,19 @@ jobs:
           "FormFactor.exe" --path "%~dp0"
           '@ | Set-Content -Encoding ASCII package-windows\PLAY_FORMFACTOR.bat
           @"
-          FormFactor $version - Interactive 3D Build Lab
-
-          Version 1.09 repairs the bricked 1.08 download by including the full Godot script chain.
+          FormFactor $version - PCB Training + Build Lab
 
           PLAY
-          1. Extract this ZIP.
-          2. Double-click PLAY_FORMFACTOR.bat.
-          3. Pick a component from the left component menu, then click the PCB to place it.
-          4. Click a placed component and use Q/E or the on-screen rotation buttons to rotate it.
-          5. Click + drag rotates the workbench view. Mouse wheel zooms. Arrow keys/A/D pan.
-          6. Use WIRE to connect placed components, then TEST a real path from a DC power source to an LED.
-          7. The live schematic mirror follows your placed parts. The component lexicon contains an entry for all 25 component families.
+          1. Extract this ZIP and double-click PLAY_FORMFACTOR.bat.
+          2. Pick a component from the left component menu and click the PCB to place it.
+          3. Drag a placed component to move it. Drag empty board/workbench space to rotate the camera.
+          4. Click a placed component and use Q/E or the on-screen buttons to rotate the component.
+          5. Use WIRE to connect parts and TEST to validate a connected power-to-LED path.
+          6. Open LEARN // 100 LESSONS for the guided PCB curriculum from basics through capstone boards.
+          7. Every lesson increases in designed difficulty by 1 percent. Training certificates unlock at 10, 25, 50, 75, and 100 completed lessons.
+          8. The live schematic mirror and 25-family component lexicon stay available while you build.
+
+          Certificate note: the game can generate a named local digital completion certificate. Automatic email delivery requires a separately configured secure FORMFACTOR_CERTIFICATE_API service so mail credentials are never embedded in the game executable.
 
           Godot is open source under the MIT license: https://godotengine.org/license/
           "@ | Set-Content -Encoding UTF8 package-windows\README.txt
@@ -215,7 +217,7 @@ jobs:
           git push origin "refs/tags/$VERSION_TAG" --force
           git push origin refs/tags/latest --force
 
-      - name: Publish versioned 1.09 release and refresh latest
+      - name: Publish versioned training release and refresh latest
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -223,7 +225,7 @@ jobs:
           set -euo pipefail
           VERSION="$(tr -d '\r\n' < VERSION)"
           VERSION_TAG="v${VERSION}"
-          NOTES="FormFactor ${VERSION} repairs the bricked 1.08 download by shipping the complete Godot script chain. It includes the clickable interactive 3D PCB, click-and-drag workbench rotation, zoom/pan controls, rotatable player-placed components, the 25-family component inventory, a complete built-in component lexicon, live schematic mirror, wiring, collision-safe placement, and connected power-to-LED testing. Both packaged builds are launched from their packaged files before publication."
+          NOTES="FormFactor ${VERSION} adds movable player-placed components, component rotation, connected-wire redraw, an in-game quick-start guide, 100 progressive PCB lessons across 10 modules, a one-percent-per-lesson difficulty curve, persistent training progress, and five digital training certificate milestones at 10, 25, 50, 75, and 100 lessons. The 25-family component lexicon and live schematic mirror remain integrated. Named certificates can be generated locally; automatic email delivery is supported through a separately configured secure certificate API rather than embedding mail credentials in the game. Both packaged builds are launch-tested before publication."
 
           if gh release view "$VERSION_TAG" >/dev/null 2>&1; then
             gh release upload "$VERSION_TAG" dist/* --clobber
