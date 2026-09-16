@@ -25,6 +25,14 @@ The current priority is:
 
 See [Gameplay Feel Requirements](GAMEPLAY_FEEL_REQUIREMENTS.md) for the fresh all-time gameplay scan and the concrete production requirements.
 
+## Implemented in the latest gameplay update
+
+The first direct-control pass is now merged into `main` through [PR #12](https://github.com/1freetech/formfactor/pull/12) and [merge commit 3eeed3d](https://github.com/1freetech/formfactor/commit/3eeed3df8e72eaff27c6a757c8ce75994b68c031).
+
+FreeLab now supports click-and-drag movement for placed components, snapped placement previews before a part is committed, Delete/Backspace removal for the focused part, safer Escape behavior that cancels help/move/wire actions before quitting, live wire previews, compatible-target highlighting, and hover feedback. The FreeLab target now builds from `src/workbench_plus.cpp`, and normal validation installs SDL2 so frontend compilation is included in CI instead of checking only the engineering core.
+
+The custom window/header drag experiment was removed before merge. The gameplay drag feature remains focused on moving placed board components.
+
 ## What FormFactor should feel like
 
 FormFactor should be easy to start, satisfying to use, and deep enough to grow with the player.
