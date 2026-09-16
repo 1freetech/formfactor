@@ -4,10 +4,22 @@ func _initialize() -> void:
     call_deferred("_run_validation")
 
 func _fail(message: String) -> void:
-    push_error("GODOT 1.121 GAMEPLAY FAIL: " + message)
+    push_error("GODOT 1.122 GAMEPLAY FAIL: " + message)
     quit(1)
 
+func _has_label_prefix(scene: Node, type_name: String, prefix: String) -> bool:
+    for child in scene.find_children("*", type_name, true, false):
+        if child is Label and str((child as Label).text).begins_with(prefix):
+            return true
+        if child is Label3D and str((child as Label3D).text).begins_with(prefix):
+            return true
+    return false
+
 func _run_validation() -> void:
+    if str(ProjectSettings.get_setting("application/config/name", "")) != "FormFactor 1.122":
+        _fail("Godot application identity is not synchronized to FormFactor 1.122")
+        return
+
     var packed := load("res://scenes/main.tscn") as PackedScene
     if packed == null:
         _fail("main.tscn did not load")
@@ -30,13 +42,25 @@ func _run_validation() -> void:
         "debug_set_active_by_refdes",
         "debug_focus_active",
         "debug_last_focus_target",
-        "debug_workspace_zone"
+        "debug_workspace_zone",
+        "debug_set_hover_by_refdes",
+        "debug_focus_best_target",
+        "debug_set_dragging_by_refdes",
+        "debug_move_dragging_to",
+        "debug_clear_dragging",
+        "debug_track_history"
     ]
     for method_name in required_methods:
         if not scene.has_method(method_name):
-            _fail("missing FormFactor 1.121 method: %s" % method_name)
+            _fail("missing FormFactor 1.122 method: %s" % method_name)
             return
 
+    if not _has_label_prefix(scene, "Label", "FORMFACTOR 1.122"):
+        _fail("visible HUD version label did not advance to 1.122")
+        return
+    if not _has_label_prefix(scene, "Label3D", "1.122 //"):
+        _fail("visible 3D workbench version label did not advance to 1.122")
+        return
     if not bool(scene.call("debug_context_panel_ready")):
         _fail("smart-target context HUD did not initialize")
         return
@@ -112,13 +136,47 @@ func _run_validation() -> void:
     if not bool(scene.call("debug_set_active_by_refdes", "PWR1")):
         _fail("could not select a restored component for smart focus")
         return
-    if not bool(scene.call("debug_focus_active")):
-        _fail("smart focus did not accept the active component")
+    if not bool(scene.call("debug_set_hover_by_refdes", "R1")):
+        _fail("could not set the resistor as the visible hover target")
         return
-    var focus_target := scene.call("debug_last_focus_target") as Vector3
-    if not focus_target.is_equal_approx(Vector3(redone_position.x, 0.0, redone_position.z)):
-        _fail("smart focus target did not match the active component position")
+    var resistor_position := scene.call("debug_component_position", "R1") as Vector3
+    scene.call("debug_focus_best_target")
+    var hover_focus_target := scene.call("debug_last_focus_target") as Vector3
+    var expected_hover_focus := Vector3(resistor_position.x, 0.0, resistor_position.z)
+    if not hover_focus_target.is_equal_approx(expected_hover_focus):
+        _fail("F/FOCUS ignored the visibly hovered component and used the older active selection")
         return
 
-    print("GODOT 1.121 GAMEPLAY PASS: smart targeting HUD, pulsing world marker, smooth component/board focus, workspace zone state, and replay-style board undo/redo all validated against the real scene.")
+    var history_before_drag := int(scene.call("debug_history_count"))
+    if not bool(scene.call("debug_set_dragging_by_refdes", "PWR1")):
+        _fail("could not start the drag-history regression")
+        return
+    var drag_target := redone_position + Vector3(0.0, 0.0, 0.65)
+    if not bool(scene.call("debug_move_dragging_to", drag_target)):
+        _fail("could not move the dragging component")
+        return
+    scene.call("debug_track_history", 1.0)
+    if int(scene.call("debug_history_count")) != history_before_drag:
+        _fail("undo history recorded an intermediate position while the component was still being dragged")
+        return
+
+    scene.call("debug_clear_dragging")
+    scene.call("debug_track_history", 0.0)
+    scene.call("debug_track_history", 0.20)
+    if int(scene.call("debug_history_count")) != history_before_drag + 1:
+        _fail("one completed drag should create exactly one new undo snapshot")
+        return
+    if not (scene.call("debug_component_position", "PWR1") as Vector3).is_equal_approx(drag_target):
+        _fail("dragged component did not remain at its released position")
+        return
+    if not bool(scene.call("debug_undo_board_edit")):
+        _fail("clean drag snapshot could not be undone")
+        return
+    await process_frame
+    await process_frame
+    if not (scene.call("debug_component_position", "PWR1") as Vector3).is_equal_approx(redone_position):
+        _fail("one undo after one drag did not restore the pre-drag position")
+        return
+
+    print("GODOT 1.122 GAMEPLAY PASS: visible version identity is synchronized, hover focus follows the bright smart target, drag movement creates one clean undo step, and the existing smart-target plus board-history systems remain valid.")
     quit(0)

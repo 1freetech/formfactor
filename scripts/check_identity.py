@@ -22,6 +22,16 @@ for raw in tracked:
     data = path.read_bytes()
     if any(token in data for token in retired):
         failures.append(f"content: {path_text}")
+
+version = Path("VERSION").read_text(encoding="utf-8").strip()
+project_text = Path("godot/project.godot").read_text(encoding="utf-8")
+expected_name = f'config/name="FormFactor {version}"'
+if expected_name not in project_text:
+    failures.append(
+        "version mismatch: VERSION is "
+        f"{version!r} but godot/project.godot does not contain {expected_name!r}"
+    )
+
 if failures:
-    raise SystemExit("Retired project identity remains:\n" + "\n".join(failures))
-print("FormFactor identity check: PASS")
+    raise SystemExit("FormFactor identity check failed:\n" + "\n".join(failures))
+print(f"FormFactor identity check: PASS ({version})")
