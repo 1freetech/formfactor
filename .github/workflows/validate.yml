@@ -63,3 +63,32 @@ jobs:
             tests/regression/formfactor_cr_21_root_update_sequence.cpp \
             -o build/root_transition_sanitizer_tests
           ASAN_OPTIONS=detect_leaks=1 ./build/root_transition_sanitizer_tests
+
+  frontend-layers:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out FormFactor
+        uses: actions/checkout@v4
+
+      - name: Set up Node for TypeScript inspector
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify five-language layer structure
+        run: python3 scripts/check_language_layers.py
+
+      - name: Verify Python-generated Unity and Godot visual manifests
+        run: python3 tools/visual_pipeline/build_visual_manifest.py --check
+
+      - name: Install pinned TypeScript compiler
+        working-directory: web/formfactor-inspector
+        run: npm install --ignore-scripts --no-audit --no-fund
+
+      - name: Type-check browser inspector
+        working-directory: web/formfactor-inspector
+        run: npm run typecheck
+
+      - name: Build browser inspector
+        working-directory: web/formfactor-inspector
+        run: npm run build
