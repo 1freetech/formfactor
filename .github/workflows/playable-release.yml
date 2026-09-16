@@ -46,6 +46,8 @@ jobs:
           "$GODOT" --headless --path godot --editor --quit-after 1
           "$GODOT" --headless --path godot --script res://scripts/validate_3d.gd
           "$GODOT" --headless --path godot --script res://scripts/validate_gameplay.gd
+          "$GODOT" --headless --path godot --script res://scripts/validate_cad.gd
+          "$GODOT" --headless --path godot --script res://scripts/validate_gameplay_1121.gd
 
       - name: Verify engineering core identity
         run: python3 scripts/check_identity.py
@@ -76,9 +78,13 @@ jobs:
           3. Drag a placed component to move it. Drag empty board/workbench space to rotate the camera.
           4. Click a placed component and use Q/E or the on-screen buttons to rotate the component.
           5. Use WIRE to connect parts and TEST to validate a connected power-to-LED path.
-          6. Open LEARN // 100 LESSONS for the guided PCB curriculum from basics through capstone boards.
-          7. Every lesson is 1.25 percent harder than the lesson before it using a compounding curve. Training certificates unlock at 10, 25, 50, 75, and 100 completed lessons.
-          8. The 100-lesson top certificate is Open Source Engineer. The live schematic mirror and 25-family component lexicon stay available while you build.
+          6. Hover a placed component to see the smart-target marker and context information.
+          7. Press F to smoothly focus the active or hovered component. Press B to return to the full PCB board view.
+          8. Press Ctrl+Z to undo board edits and Ctrl+Y to redo them. Placement, movement, rotation, removal, and wiring are restored as board snapshots.
+          9. Open CAD // PARAMETRIC to edit a plate in 3D, generate OpenSCAD source, and use optional OpenSCAD or FreeCAD exports when those tools are installed.
+          10. Open LEARN // 100 LESSONS for the guided PCB curriculum from basics through capstone boards.
+          11. Every lesson is 1.25 percent harder than the lesson before it using a compounding curve. Training certificates unlock at 10, 25, 50, 75, and 100 completed lessons.
+          12. The 100-lesson top certificate is Open Source Engineer. The live schematic mirror and 25-family component lexicon stay available while you build.
 
           Certificate note: the game can generate a named local digital completion certificate. Automatic email delivery requires a separately configured secure FORMFACTOR_CERTIFICATE_API service so mail credentials are never embedded in the game executable.
 
@@ -130,6 +136,10 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "3D validation failed with code $LASTEXITCODE" }
           & $godot --headless --path godot --script res://scripts/validate_gameplay.gd
           if ($LASTEXITCODE -ne 0) { throw "Gameplay validation failed with code $LASTEXITCODE" }
+          & $godot --headless --path godot --script res://scripts/validate_cad.gd
+          if ($LASTEXITCODE -ne 0) { throw "CAD validation failed with code $LASTEXITCODE" }
+          & $godot --headless --path godot --script res://scripts/validate_gameplay_1121.gd
+          if ($LASTEXITCODE -ne 0) { throw "FormFactor 1.121 gameplay validation failed with code $LASTEXITCODE" }
 
       - name: Package and launch-test complete Godot Windows game
         shell: pwsh
@@ -157,9 +167,13 @@ jobs:
           3. Drag a placed component to move it. Drag empty board/workbench space to rotate the camera.
           4. Click a placed component and use Q/E or the on-screen buttons to rotate the component.
           5. Use WIRE to connect parts and TEST to validate a connected power-to-LED path.
-          6. Open LEARN // 100 LESSONS for the guided PCB curriculum from basics through capstone boards.
-          7. Every lesson is 1.25 percent harder than the lesson before it using a compounding curve. Training certificates unlock at 10, 25, 50, 75, and 100 completed lessons.
-          8. The 100-lesson top certificate is Open Source Engineer. The live schematic mirror and 25-family component lexicon stay available while you build.
+          6. Hover a placed component to see the smart-target marker and context information.
+          7. Press F to smoothly focus the active or hovered component. Press B to return to the full PCB board view.
+          8. Press Ctrl+Z to undo board edits and Ctrl+Y to redo them. Placement, movement, rotation, removal, and wiring are restored as board snapshots.
+          9. Open CAD // PARAMETRIC to edit a plate in 3D, generate OpenSCAD source, and use optional OpenSCAD or FreeCAD exports when those tools are installed.
+          10. Open LEARN // 100 LESSONS for the guided PCB curriculum from basics through capstone boards.
+          11. Every lesson is 1.25 percent harder than the lesson before it using a compounding curve. Training certificates unlock at 10, 25, 50, 75, and 100 completed lessons.
+          12. The 100-lesson top certificate is Open Source Engineer. The live schematic mirror and 25-family component lexicon stay available while you build.
 
           Certificate note: the game can generate a named local digital completion certificate. Automatic email delivery requires a separately configured secure FORMFACTOR_CERTIFICATE_API service so mail credentials are never embedded in the game executable.
 
@@ -225,7 +239,7 @@ jobs:
           set -euo pipefail
           VERSION="$(tr -d '\r\n' < VERSION)"
           VERSION_TAG="v${VERSION}"
-          NOTES="FormFactor ${VERSION} includes movable player-placed components, component rotation, connected-wire redraw, an in-game quick-start guide, 100 progressive PCB lessons across 10 modules, a 1.25-percent-per-lesson compounding difficulty curve, persistent training progress, and five digital training certificate milestones at 10, 25, 50, 75, and 100 lessons. Lesson 100 is about 3.42 times the Lesson 1 difficulty, and the 100-lesson top credential is the Open Source Engineer Certificate. The 25-family component lexicon and live schematic mirror remain integrated. Named certificates can be generated locally; automatic email delivery is supported through a separately configured secure certificate API rather than embedding mail credentials in the game. Both packaged builds are launch-tested before publication."
+          NOTES="FormFactor ${VERSION} is a material gameplay-control update. Hovered PCB parts now get a visible smart-target marker and context readout. F smoothly focuses the active or hovered part, B returns to the full board, and new on-screen buttons provide the same actions. Ctrl+Z and Ctrl+Y now undo and redo real player-board snapshots, including placed components, movement, rotation, removal, and wire relationships. The parametric CAD workbench from 1.11 remains integrated alongside the 25-family component library, live schematic mirror, connected-circuit test, and 100-lesson training path. The gameplay ideas were independently implemented from general open-world interaction patterns; GTA game data, maps, assets, names, animations, proprietary content, and unlicensed reversed source are not included. Both Windows and Linux packages are source-validated and launch-tested before publication."
 
           if gh release view "$VERSION_TAG" >/dev/null 2>&1; then
             gh release upload "$VERSION_TAG" dist/* --clobber
