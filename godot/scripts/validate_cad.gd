@@ -53,7 +53,7 @@ func _run_validation() -> void:
     await process_frame
     await process_frame
 
-    var dimensions := scene.call("debug_cad_dimensions") as Vector3
+    var dimensions: Vector3 = scene.call("debug_cad_dimensions")
     if not dimensions.is_equal_approx(Vector3(120.0, 80.0, 2.4)):
         _fail("plain-language dimensions were not applied to the parameter inspector")
         return
@@ -70,7 +70,7 @@ func _run_validation() -> void:
     await process_frame
     await process_frame
 
-    dimensions = scene.call("debug_cad_dimensions") as Vector3
+    dimensions = scene.call("debug_cad_dimensions")
     if not dimensions.is_equal_approx(Vector3(80.0, 50.0, 1.6)):
         _fail("solid-plate prompt dimensions were not applied")
         return
