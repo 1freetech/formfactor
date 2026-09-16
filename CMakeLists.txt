@@ -36,7 +36,7 @@ if(FORMFACTOR_BUILD_FREELAB)
   endif()
 
   if(TARGET PkgConfig::SDL2)
-    add_executable(formfactor_freelab src/workbench.cpp)
+    add_executable(formfactor_freelab src/workbench_plus.cpp)
     target_link_libraries(formfactor_freelab PRIVATE formfactor_core PkgConfig::SDL2)
   else()
     message(STATUS "FreeLab disabled: pkg-config and SDL2 development files were not found")
