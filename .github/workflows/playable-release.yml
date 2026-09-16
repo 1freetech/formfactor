@@ -70,7 +70,7 @@ jobs:
           cat > package-linux/README.txt <<TXT
           FormFactor ${VERSION} - Interactive 3D Build Lab
 
-          This package contains the complete Godot runtime script chain. Version 1.08 was missing gameplay scripts in the downloadable package; 1.09 fixes that packaging error.
+          Version 1.09 repairs the bricked 1.08 download by including the full Godot script chain.
 
           PLAY
           1. Extract the archive.
@@ -112,21 +112,25 @@ jobs:
             throw "Godot Windows SHA256 mismatch: $actual"
           }
           Expand-Archive godot-windows.zip -DestinationPath godot-engine -Force
-          & .\godot-engine\Godot_v4.7.2-stable_win64.exe --version
+          if (-not (Test-Path .\godot-engine\Godot_v4.7.2-stable_win64_console.exe)) {
+            throw 'Godot console executable is missing from the official archive.'
+          }
+          & .\godot-engine\Godot_v4.7.2-stable_win64_console.exe --version
+          if ($LASTEXITCODE -ne 0) { throw "Godot console version check failed with code $LASTEXITCODE" }
 
-      - name: Validate source gameplay on Windows
+      - name: Validate source gameplay on Windows console runtime
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          $godot = '.\godot-engine\Godot_v4.7.2-stable_win64.exe'
+          $godot = '.\godot-engine\Godot_v4.7.2-stable_win64_console.exe'
           & $godot --headless --path godot --editor --quit-after 1
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if ($LASTEXITCODE -ne 0) { throw "Godot editor scan failed with code $LASTEXITCODE" }
           & $godot --headless --path godot --script res://scripts/validate_3d.gd
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if ($LASTEXITCODE -ne 0) { throw "3D validation failed with code $LASTEXITCODE" }
           & $godot --headless --path godot --script res://scripts/validate_gameplay.gd
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if ($LASTEXITCODE -ne 0) { throw "Gameplay validation failed with code $LASTEXITCODE" }
 
-      - name: Package complete Godot Windows game
+      - name: Package and launch-test complete Godot Windows game
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
@@ -146,7 +150,7 @@ jobs:
           @"
           FormFactor $version - Interactive 3D Build Lab
 
-          This package contains the complete Godot runtime script chain. Version 1.08 was missing gameplay scripts in the downloadable package; 1.09 fixes that packaging error.
+          Version 1.09 repairs the bricked 1.08 download by including the full Godot script chain.
 
           PLAY
           1. Extract this ZIP.
@@ -160,8 +164,10 @@ jobs:
           Godot is open source under the MIT license: https://godotengine.org/license/
           "@ | Set-Content -Encoding UTF8 package-windows\README.txt
 
-          & .\package-windows\FormFactor.exe --headless --path package-windows --quit-after 3
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $exePath = (Resolve-Path package-windows\FormFactor.exe).Path
+          $projectPath = (Resolve-Path package-windows).Path
+          $process = Start-Process -FilePath $exePath -ArgumentList @('--headless', '--path', $projectPath, '--quit-after', '3') -Wait -PassThru
+          if ($process.ExitCode -ne 0) { throw "Packaged FormFactor.exe failed its launch gate with code $($process.ExitCode)" }
 
           $archive = Join-Path (Resolve-Path dist-windows) "FormFactor-$version-Windows-x64.zip"
           Compress-Archive -Path package-windows\* -DestinationPath $archive -Force
@@ -217,7 +223,7 @@ jobs:
           set -euo pipefail
           VERSION="$(tr -d '\r\n' < VERSION)"
           VERSION_TAG="v${VERSION}"
-          NOTES="FormFactor ${VERSION} repairs the bricked 1.08 download by shipping the complete Godot script chain. It includes the clickable interactive 3D PCB, click-and-drag workbench rotation, zoom/pan controls, rotatable player-placed components, the 25-family component inventory, a complete built-in component lexicon, live schematic mirror, wiring, collision-safe placement, and connected power-to-LED testing. Both packaged builds are launched headlessly from their packaged files before publication."
+          NOTES="FormFactor ${VERSION} repairs the bricked 1.08 download by shipping the complete Godot script chain. It includes the clickable interactive 3D PCB, click-and-drag workbench rotation, zoom/pan controls, rotatable player-placed components, the 25-family component inventory, a complete built-in component lexicon, live schematic mirror, wiring, collision-safe placement, and connected power-to-LED testing. Both packaged builds are launched from their packaged files before publication."
 
           if gh release view "$VERSION_TAG" >/dev/null 2>&1; then
             gh release upload "$VERSION_TAG" dist/* --clobber
