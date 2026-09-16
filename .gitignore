@@ -20,9 +20,6 @@
 /godot/FormFactorPrototype/.godot/
 /godot/FormFactorPrototype/.import/
 
-# Rust bridge build output.
-/rust/formfactor_bridge/target/
-
 # TypeScript inspector dependencies and compiled output.
 /web/formfactor-inspector/node_modules/
 /web/formfactor-inspector/dist/
