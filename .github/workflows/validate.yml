@@ -41,6 +41,7 @@ jobs:
           "$GODOT" --headless --path godot --editor --quit-after 1
           "$GODOT" --headless --path godot --script res://scripts/validate_3d.gd
           "$GODOT" --headless --path godot --script res://scripts/validate_gameplay.gd
+          "$GODOT" --headless --path godot --script res://scripts/validate_gameplay_108.gd
 
       - name: Run complete direct-compiler validation suite
         run: sh scripts/validate.sh
