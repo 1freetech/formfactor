@@ -18,6 +18,23 @@ void mark_board_changed(WorkbenchState& s) {
     s.wire_start = 0;
 }
 
+bool pick_same_part(WorkbenchState& s) {
+    if (!focused_board_part_valid(s)) {
+        s.status = "FOCUS A BOARD PART BEFORE USING PICK SAME PART.";
+        return false;
+    }
+
+    const std::size_t index = s.board_focus;
+    const PartKind picked = s.parts[index].kind;
+    s.selected_kind = picked;
+    s.palette_focus = static_cast<std::size_t>(picked);
+    s.focus = FocusZone::Palette;
+    s.status = std::string("PICKED ") + info(picked).code + " " + info(picked).name +
+               " FROM " + reference_for(s.parts, index) +
+               ". CLICK AN OPEN BOARD SPOT TO PLACE THE SAME PART.";
+    return true;
+}
+
 bool nudge_focused_part(WorkbenchState& s, EditHistory& history,
                         const RectF& board, int dx, int dy) {
     if (!focused_board_part_valid(s)) {
@@ -131,14 +148,14 @@ void draw_controls_help_overlay(SDL_Renderer* r, float w, float h) {
     const float column_w = q.w * 0.42F;
 
     set_color(r, 3, 6, 7, 252);
-    fill_rect(r, {right - 4.0F, q.y + 82.0F, column_w + 8.0F, 305.0F});
+    fill_rect(r, {right - 4.0F, q.y + 82.0F, column_w + 8.0F, 330.0F});
 
     set_color(r, 57, 255, 20);
     draw_text(r, "KEYBOARD", right, q.y + 92.0F, 1.45F);
     set_color(r, 224, 232, 234);
     draw_wrapped_text(
         r,
-        "CTRL+Z: UNDO. CTRL+Y OR CTRL+SHIFT+Z: REDO. CTRL+D: DUPLICATE THE FOCUSED PART INTO THE NEAREST OPEN GRID SPOT. SHIFT+ARROWS: NUDGE THE FOCUSED PART ONE GRID STEP. X: DISCONNECT ALL WIRES FROM THE FOCUSED PART WITHOUT DELETING IT. DELETE OR BACKSPACE: REMOVE PART. V: TEST. C: CLEAR. H OR F1: HELP. ESC: CANCEL ACTIVE ACTION FIRST, THEN EXIT.",
+        "CTRL+Z: UNDO. CTRL+Y OR CTRL+SHIFT+Z: REDO. CTRL+D: DUPLICATE THE FOCUSED PART INTO THE NEAREST OPEN GRID SPOT. E: PICK THE SAME PART TYPE FROM THE FOCUSED BOARD PART, LIKE AN EYEDROPPER. SHIFT+ARROWS: NUDGE THE FOCUSED PART ONE GRID STEP. X: DISCONNECT ALL WIRES FROM THE FOCUSED PART WITHOUT DELETING IT. DELETE OR BACKSPACE: REMOVE PART. V: TEST. C: CLEAR. H OR F1: HELP. ESC: CANCEL ACTIVE ACTION FIRST, THEN EXIT.",
         right, q.y + 120.0F, column_w, 1.0F, 5.0F);
 }
 
@@ -190,7 +207,7 @@ int main(int argc, char* argv[]) {
 
     WorkbenchState state;
     state.show_help = false;
-    state.status = "READY - SHIFT+ARROWS NUDGE. CTRL+D DUPLICATES. X DISCONNECTS.";
+    state.status = "READY - E PICKS SAME PART. SHIFT+ARROWS NUDGE. CTRL+D DUPLICATES. X DISCONNECTS.";
     InteractionState interaction;
     EditHistory history;
     update_window_title(window, state);
@@ -248,6 +265,9 @@ int main(int argc, char* argv[]) {
                         state, history,
                         board_rect_for(static_cast<float>(width),
                                        static_cast<float>(height)));
+                } else if (key == SDLK_e && !command) {
+                    cancel_drag_silently(state, interaction);
+                    pick_same_part(state);
                 } else if (nudge_key) {
                     cancel_drag_silently(state, interaction);
                     int width = 0;
