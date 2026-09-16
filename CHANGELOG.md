@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-09-15 — FreeLab direct-manipulation gameplay update
+
+[PR #12](https://github.com/1freetech/formfactor/pull/12) merged into `main` as [commit 3eeed3d](https://github.com/1freetech/formfactor/commit/3eeed3df8e72eaff27c6a757c8ce75994b68c031). FreeLab now supports click-and-drag movement for placed components, snapped placement previews, Delete/Backspace removal of the focused part and its wires, safer Escape cancellation for help/move/wire actions, live wire previews, compatible-target highlighting, and hover feedback. The CMake FreeLab target now builds `src/workbench_plus.cpp`, and normal validation installs SDL2 so the graphical frontend is included in CI compilation. The temporary custom window/header drag experiment was removed before merge and is not part of this update. The engineering core remains authoritative; these are game-control and presentation improvements only.
+
 ## CR-021 — Fail-closed root update sequencing
 
 FormFactor now checks a current policy-key root version N against candidate version exactly N+1 before any future signed rotation can proceed. Repeated or lower versions produce `Rollback`, forward gaps produce `VersionGap`, root-identity changes produce `DifferentRoot`, candidates expire at the exact fixed UTC boundary, and invalid inputs or version overflow fail closed without a record. Deterministic transition records bind both validated roots and explicitly state that signatures and persistence were not evaluated. `Sequential` is a structural precheck only: old-root and new-root signature thresholds, unique signer counting, authenticated distribution, durable persistence, and catalogue-export integration remain unimplemented.
@@ -73,7 +77,7 @@ FormFactor now exposes an explicit catalogue-property schema for all four source
 
 ### CR-005 — Typed catalogue-property schema gate
 
-FormFactor now requires every exported catalogue quantity property to match an explicit implemented semantic schema that fixes both its physical dimension and value qualifier, preventing a free-form property name from silently assigning engineering meaning to an unrelated value. The initial registry covers nominal capacitance, maximum power, nominal resistance, and all four supported voltage qualifiers; unsupported identifiers, dimension mismatches, and qualifier conflicts fail closed and suppress the complete catalogue record. Tests cover valid lookup, deterministic lookup, unsupported semantics, incorrect units, incorrect qualifiers, and export blocking, while schema expansion, component-family applicability, provenance authentication, and physical safety or compliance decisions remain unimplemented.
+FormFactor now requires every exported catalogue quantity property to match an explicit implemented semantic schema that fixes both its physical dimension and value qualifier, preventing a free-form property name from silently assigning engineering meaning to an unrelated value. The initial registry covers nominal capacitance, maximum power, nominal resistance, and all four supported voltage qualifiers; unsupported identifiers, dimension mismatches, qualifier conflicts fail closed and suppress the complete catalogue record. Tests cover valid lookup, deterministic lookup, unsupported semantics, incorrect units, incorrect qualifiers, and export blocking, while schema expansion, component-family applicability, provenance authentication, and physical safety or compliance decisions remain unimplemented.
 
 ### CR-004 — Fail-closed exact catalogue filtering
 
