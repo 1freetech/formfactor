@@ -14,16 +14,21 @@ jobs:
       - name: Check out FormFactor
         uses: actions/checkout@v4
 
+      - name: Install FreeLab build dependency
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libsdl2-dev
+
       - name: Verify FormFactor identity
         run: python3 scripts/check_identity.py
 
       - name: Run complete direct-compiler validation suite
         run: sh scripts/validate.sh
 
-      - name: Configure CMake engineering targets
-        run: cmake -S . -B build-cmake -DFORMFACTOR_BUILD_FREELAB=OFF
+      - name: Configure CMake engineering and FreeLab targets
+        run: cmake -S . -B build-cmake
 
-      - name: Build CMake engineering targets
+      - name: Build CMake engineering and FreeLab targets
         run: cmake --build build-cmake --parallel 2
 
       - name: Run complete CTest suite
