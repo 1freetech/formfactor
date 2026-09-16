@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.22)
-project(formfactor VERSION 0.1.0 LANGUAGES C CXX)
+cmake_minimum_required(VERSION 3.20)
+project(formfactor VERSION 0.1.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -11,6 +11,10 @@ option(FORMFACTOR_BUILD_SIGNATURE_VERIFIER "Build the OpenSSL-backed Ed25519 pol
 option(FORMFACTOR_ENABLE_BOX3D_PHYSICS "Build the optional Box3D 3D physics backend" OFF)
 
 if(FORMFACTOR_ENABLE_BOX3D_PHYSICS)
+  if(CMAKE_VERSION VERSION_LESS 3.22)
+    message(FATAL_ERROR "Box3D physics requires CMake 3.22 or newer")
+  endif()
+  enable_language(C)
   include(FetchContent)
   FetchContent_Declare(
     box3d
