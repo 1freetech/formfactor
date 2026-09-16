@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.20)
-project(formfactor VERSION 0.1.0 LANGUAGES CXX)
+cmake_minimum_required(VERSION 3.22)
+project(formfactor VERSION 0.1.0 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -8,6 +8,17 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 option(FORMFACTOR_BUILD_FREELAB "Build the SDL2 graphical workbench when dependencies are available" ON)
 option(FORMFACTOR_WARNINGS_AS_ERRORS "Treat FormFactor compiler warnings as errors" ON)
 option(FORMFACTOR_BUILD_SIGNATURE_VERIFIER "Build the OpenSSL-backed Ed25519 policy signature verifier" ON)
+option(FORMFACTOR_ENABLE_BOX3D_PHYSICS "Build the optional Box3D 3D physics backend" OFF)
+
+if(FORMFACTOR_ENABLE_BOX3D_PHYSICS)
+  include(FetchContent)
+  FetchContent_Declare(
+    box3d
+    GIT_REPOSITORY https://github.com/erincatto/box3d.git
+    GIT_TAG v0.1.0
+    GIT_SHALLOW TRUE)
+  FetchContent_MakeAvailable(box3d)
+endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -18,6 +29,12 @@ endif()
 
 add_library(formfactor_core src/component.cpp src/hash.cpp src/policy_trust.cpp src/key_authority.cpp src/source_authority.cpp src/catalog.cpp src/catalog_filter.cpp src/quantity.cpp src/circuit.cpp src/digital.cpp src/spice.cpp src/stackup.cpp src/layout.cpp src/impedance.cpp src/return_path.cpp src/pdn.cpp src/decoupling.cpp)
 target_include_directories(formfactor_core PUBLIC include)
+
+if(FORMFACTOR_ENABLE_BOX3D_PHYSICS)
+  add_library(formfactor_box3d_physics src/box3d_physics.cpp)
+  target_include_directories(formfactor_box3d_physics PUBLIC include)
+  target_link_libraries(formfactor_box3d_physics PUBLIC box3d::box3d)
+endif()
 
 if(FORMFACTOR_BUILD_SIGNATURE_VERIFIER)
   find_package(OpenSSL 1.1.1 REQUIRED COMPONENTS Crypto)
@@ -38,6 +55,10 @@ if(FORMFACTOR_BUILD_FREELAB)
   if(TARGET PkgConfig::SDL2)
     add_executable(formfactor_freelab src/workbench_plus.cpp)
     target_link_libraries(formfactor_freelab PRIVATE formfactor_core PkgConfig::SDL2)
+    if(FORMFACTOR_ENABLE_BOX3D_PHYSICS)
+      target_link_libraries(formfactor_freelab PRIVATE formfactor_box3d_physics)
+      target_compile_definitions(formfactor_freelab PRIVATE FORMFACTOR_HAS_BOX3D=1)
+    endif()
   else()
     message(STATUS "FreeLab disabled: pkg-config and SDL2 development files were not found")
   endif()
@@ -234,3 +255,9 @@ add_test(NAME pdn_constraints COMMAND pdn_tests)
 add_executable(decoupling_tests tests/decoupling_tests.cpp)
 target_link_libraries(decoupling_tests PRIVATE formfactor_core)
 add_test(NAME decoupling_requirements COMMAND decoupling_tests)
+
+if(FORMFACTOR_ENABLE_BOX3D_PHYSICS)
+  add_executable(box3d_physics_tests tests/box3d_physics_tests.cpp)
+  target_link_libraries(box3d_physics_tests PRIVATE formfactor_box3d_physics)
+  add_test(NAME box3d_physics_smoke COMMAND box3d_physics_tests)
+endif()
