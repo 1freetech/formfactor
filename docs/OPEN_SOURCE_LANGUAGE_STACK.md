@@ -1,60 +1,96 @@
-# FormFactor Open-Source Game Language Stack
+# FormFactor Game Language Stack
 
 Updated: September 15, 2026
 
-There is no single authoritative internet ranking of programming languages for open-source games. FormFactor therefore uses a transparent proxy: major active open-source game engines/frameworks, their public GitHub adoption, and the primary language a game developer uses with them.
+There is no single authoritative worldwide ranking of "game programming languages." FormFactor therefore uses a reproducible mix of evidence instead of pretending one list is definitive:
 
-## Current proxy ranking
+- JetBrains' 2025 game-development survey for languages actually used on game projects;
+- GitHub's current `game-engine` topic for open-source engine/framework activity by primary repository language;
+- major active game engines and platforms for important game-specific languages that primary-repository statistics undercount, such as GDScript, Lua, GML, and Luau.
 
-The ranking below is not a claim about every open-source game repository on the internet. It is a practical ecosystem signal for engine/language adoption.
+## Top-20 candidate pool reviewed
 
-1. **C++** — already FormFactor's engineering-core language. Godot's engine repository is primarily C++ and currently has roughly 117k GitHub stars. C++ also remains central to native engines such as Cocos2d-x.
-2. **Rust** — Bevy is an open-source Rust game engine with roughly 48.2k GitHub stars.
-3. **TypeScript** — Babylon.js is an Apache-2.0 open game/rendering engine written primarily in TypeScript with roughly 26.1k GitHub stars.
-4. **GDScript** — Godot's official demo-project repository is primarily GDScript and has roughly 9.5k GitHub stars. GDScript is Godot's first-party gameplay scripting language.
-5. **Lua** — LÖVE is a widely used open-source Lua game framework; its main repository has roughly 8.7k GitHub stars. Lua also has a long history as an embedded game scripting language.
+The first six have direct recent game-project usage figures from JetBrains: **C# 40%, C++ 29%, Python 19%, JavaScript 17%, Java 14%, TypeScript 10%**. GitHub's current open-source `game-engine` topic separately shows strong repository activity for C++, C, C#, JavaScript, Python, Java, TypeScript, Rust, and Go. Godot's growth makes GDScript materially important even though engine repositories themselves are mostly counted as C++.
 
-C# remains important and is already represented in FormFactor through Unity. Stride is a free/open-source C# engine with roughly 7.8k GitHub stars.
+The 20-language candidate pool reviewed for FormFactor is:
+
+1. C#
+2. C++
+3. Python
+4. JavaScript
+5. Java
+6. TypeScript
+7. GDScript
+8. C
+9. Rust
+10. Lua
+11. Go
+12. Kotlin
+13. Swift
+14. Objective-C
+15. Dart
+16. Haxe
+17. GML / GameMaker Language
+18. Luau
+19. GPU shader languages such as HLSL / GLSL
+20. Zig
+
+The ordering after the directly measured leaders is intentionally not presented as false precision. The purpose of the pool is to make sure FormFactor considered the major current game-language ecosystems before adding another dependency.
 
 ## Sources
 
-- Godot Engine: https://github.com/godotengine/godot
-- Godot demo projects: https://github.com/godotengine/godot-demo-projects
+- JetBrains, State of Game Development 2025: https://lp.jetbrains.com/the-state-of-gamedev-2025/
+- GitHub `game-engine` topic: https://github.com/topics/game-engine
+- Godot Engine: https://godotengine.org/
+- Godot repository: https://github.com/godotengine/godot
 - Bevy: https://github.com/bevyengine/bevy
 - Babylon.js: https://github.com/BabylonJS/Babylon.js
 - LÖVE: https://github.com/love2d/love
-- Stride: https://github.com/stride3d/stride
+- Roblox Luau: https://github.com/luau-lang/luau
+- Haxe: https://github.com/HaxeFoundation/haxe
 
-Star counts are snapshots and will change. They are used only as one public adoption signal, not as a quality score.
+## The five languages FormFactor is actively using
 
-## FormFactor implementation choice
+FormFactor does **not** rewrite the same game five times. Each language must have a narrow job that makes the project simpler or more capable.
 
-FormFactor does **not** rewrite the same game independently in every language. Each language gets a narrow job.
+### 1. C++ — authoritative engineering core
 
-### C++ — authoritative engineering core
+C++ owns component data, electrical and physical rules, simulation evidence, deterministic engineering gates, and final pass/fail/unknown decisions. Nothing in a game engine is allowed to overrule it.
 
-C++ owns validated component data, circuit rules, simulation evidence, deterministic engineering gates, and final pass/fail/unknown decisions.
+### 2. C# / Unity — production 3D game frontend
 
-### C# / Unity — production 3D game frontend
+Unity + C# is the production 3D presentation and gameplay layer. It handles scenes, camera, component interaction, UI, effects, player-facing workflows, undo/redo, direct manipulation, and future production graphics. The Unity bridge fails closed when the C++ core is unavailable.
 
-Unity + C# is the production 3D presentation and gameplay layer. It handles scenes, camera, interaction, visuals, UI, and player-facing workflow. It consumes engineering results; it does not create them.
+### 3. Python — shared content and visualization pipeline
 
-### GDScript / Godot — open-source interaction prototype lab
+Python is already part of FormFactor's repository tooling and is now explicitly used to keep frontend visual data synchronized. `tools/visual_pipeline/build_visual_manifest.py` validates one visual-only component source file and deterministically generates matching Unity and Godot manifests.
 
-Godot + GDScript is used for fast open-source experiments with placement, camera feel, direct manipulation, accessibility, and Workbench UX. Successful interaction ideas can later be promoted into the Unity production frontend.
+The Python pipeline is **presentation only**. It contains shape, color, and display scale. It must never contain or invent electrical ratings, safety claims, or validation results.
 
-### Rust — deterministic native bridge helper
+### 4. GDScript / Godot — open-source interaction prototype lab
 
-Rust is used where memory safety and deterministic native data handling are useful around the engine/core boundary. `rust/formfactor_bridge/` currently provides stable frontend snapshot ordering and fail-closed behavior when an authoritative C++ result is unavailable. It does not replace the C++ core.
+Godot 4.7.2 + GDScript is the fast open-source proving ground for placement, selection, camera feel, nudge/duplicate controls, accessibility, and Workbench UX. Successful interaction ideas can be promoted into the Unity production frontend.
 
-### TypeScript — browser inspector and development tooling
+Godot validation currently returns **UNKNOWN** until connected to the authoritative C++ core.
 
-TypeScript is used for browser-based component/snapshot inspection and lightweight developer tools in `web/formfactor-inspector/`. The inspector displays evidence and state without being part of the authoritative validation path.
+### 5. TypeScript — browser/debug visualization
 
-### Lua — reserved, not implemented yet
+TypeScript powers `web/formfactor-inspector/`, a small browser inspector for frontend snapshots and engineering evidence. It is useful for component/catalog inspection, debugging, and future browser-side visualization without adding those tools to the main Unity executable.
 
-Lua is not being added simply because it ranks highly. Its strongest FormFactor use would be future sandboxed creator/challenge scripting. FormFactor's current roadmap says user scripting comes only after deterministic replay, permissions, provenance, and security controls are complete, so adding Lua now would be premature.
+The TypeScript UI uses DOM text APIs rather than constructing user-visible data through `innerHTML`, and it defaults missing engineering results to **UNKNOWN**.
 
-## Non-negotiable rule
+## Why the other candidates are not active languages now
 
-A frontend, prototype, web tool, or scripting layer may display, request, transform, or explain engineering evidence. It may never turn missing evidence into PASS. If the C++ core has not proven a result, every other language layer must preserve that result as UNKNOWN or FAIL as appropriate.
+- **JavaScript:** TypeScript covers the same browser role with stronger type checks.
+- **Java/Kotlin/Swift/Objective-C/Dart:** native mobile languages add little while Unity already targets the relevant platforms.
+- **C:** the C++ core already covers native low-level work.
+- **Rust:** useful and promising, but a second native systems layer is unnecessary while the C++ engineering core already owns that boundary.
+- **Lua/Luau:** strong future candidates for sandboxed creator/challenge scripting, but only after permissions, deterministic replay, provenance, and security controls are ready.
+- **Go:** useful for servers, but FormFactor does not yet need a separate backend service language.
+- **Haxe/GML:** useful ecosystems, but they would duplicate gameplay/runtime responsibilities already covered by Unity and Godot.
+- **HLSL/GLSL:** shader work will be added inside the production rendering pipeline when visual fidelity reaches that stage; it does not need to become a separate general gameplay stack today.
+- **Zig:** promising native tooling, but no current FormFactor subsystem needs another low-level language.
+
+## Non-negotiable engineering rule
+
+A frontend, prototype, content tool, or web inspector may display, request, transform, or explain engineering evidence. It may never turn missing evidence into PASS. If the C++ core has not proven a result, every other language layer must preserve the result as UNKNOWN or FAIL as appropriate.
