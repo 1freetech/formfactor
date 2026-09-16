@@ -8,6 +8,10 @@ on:
       - 'update/**'
   pull_request:
 
+concurrency:
+  group: validate-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   engineering-core:
     runs-on: ubuntu-latest
