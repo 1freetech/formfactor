@@ -127,10 +127,10 @@ func _find_connected_power_led_path() -> Dictionary:
         visited[power_id] = true
 
     while not queue.is_empty():
-        var current := queue.pop_front()
+        var current: int = int(queue.pop_front())
         if led_ids.has(current):
             var path_wires: Array = []
-            var cursor := current
+            var cursor: int = current
             while previous_node.has(cursor):
                 path_wires.push_front(previous_wire[cursor])
                 cursor = int(previous_node[cursor])
