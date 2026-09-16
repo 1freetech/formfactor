@@ -4,14 +4,20 @@ on:
   push:
     branches:
       - main
+      - 'validation/**'
   workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: formfactor-playable-release
+  group: formfactor-playable-release-${{ github.ref }}
   cancel-in-progress: true
+
+env:
+  GODOT_VERSION: 4.7.2-stable
+  GODOT_LINUX_SHA256: cadd3204e728a35d3f13adb7fd0d7902636b79f6b95c40c265eb73b6c35329e4
+  GODOT_WINDOWS_SHA256: 731980f9608d61333e5baf54a2ef17210acc7a538446c0cb9969f002aca1e953
 
 jobs:
   build-linux:
@@ -20,70 +26,64 @@ jobs:
       - name: Check out FormFactor
         uses: actions/checkout@v4
 
-      - name: Install Linux build dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libsdl2-dev libssl-dev patchelf
-
-      - name: Configure test build
-        run: cmake -S . -B build-check
-
-      - name: Build test targets
-        run: cmake --build build-check --parallel 2
-
-      - name: Run tests before publishing
-        run: ctest --test-dir build-check --output-on-failure
-
-      - name: Configure optimized playable build
-        run: cmake -S . -B build-release -DCMAKE_BUILD_TYPE=Release
-
-      - name: Build graphical FreeLab target
-        run: cmake --build build-release --target formfactor_freelab --parallel 2
-
-      - name: Package portable Linux build
+      - name: Download official Godot 4.7.2 Linux engine
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p package-linux/lib
-          cp build-release/formfactor_freelab package-linux/FormFactor
+          curl -L --fail --retry 3 \
+            -o godot-linux.zip \
+            https://github.com/godotengine/godot-builds/releases/download/${GODOT_VERSION}/Godot_v4.7.2-stable_linux.x86_64.zip
+          echo "${GODOT_LINUX_SHA256}  godot-linux.zip" | sha256sum -c -
+          unzip -q godot-linux.zip -d godot-engine
+          chmod +x godot-engine/Godot_v4.7.2-stable_linux.x86_64
+          godot-engine/Godot_v4.7.2-stable_linux.x86_64 --version
 
-          ldd build-release/formfactor_freelab \
-            | awk '/=> \/.*\.so/ {print $3}' \
-            | sort -u \
-            | while read -r lib; do
-                case "$(basename "$lib")" in
-                  libc.so.*|libm.so.*|libdl.so.*|libpthread.so.*|librt.so.*)
-                    continue
-                    ;;
-                esac
-                cp -L "$lib" package-linux/lib/
-              done
+      - name: Prove the playable client contains real 3D meshes and materials
+        shell: bash
+        run: |
+          set -euo pipefail
+          GODOT=godot-engine/Godot_v4.7.2-stable_linux.x86_64
+          "$GODOT" --headless --path godot --editor --quit-after 1
+          "$GODOT" --headless --path godot --script res://scripts/validate_3d.gd
 
-          patchelf --set-rpath '$ORIGIN/lib' package-linux/FormFactor
-          for lib in package-linux/lib/*.so*; do
-            [ -e "$lib" ] || continue
-            patchelf --set-rpath '$ORIGIN' "$lib" || true
-          done
+      - name: Verify engineering core identity
+        run: python3 scripts/check_identity.py
 
+      - name: Package real Godot 3D Linux game
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p package-linux/scenes package-linux/scripts
+          cp godot-engine/Godot_v4.7.2-stable_linux.x86_64 package-linux/FormFactor
+          cp godot/project.godot package-linux/project.godot
+          cp godot/scenes/main.tscn package-linux/scenes/main.tscn
+          cp godot/scripts/material_lab.gd package-linux/scripts/material_lab.gd
+          cp godot/scripts/validate_3d.gd package-linux/scripts/validate_3d.gd
+          cat > package-linux/PLAY_FORMFACTOR.sh <<'SH'
+          #!/usr/bin/env bash
+          set -e
+          cd "$(dirname "$0")"
+          exec ./FormFactor --path .
+          SH
           cat > package-linux/README.txt <<'TXT'
-          FormFactor Linux playable prototype
+          FormFactor 1.06 - Material 3D Lab
+
+          This is the real Godot 4.7.2 3D client, not the older flat SDL prototype.
 
           PLAY
-          1. Extract this archive and open FormFactor.
-          2. Left-click a component in the left panel to choose it.
-          3. Left-click the green board to place the component.
-          4. Right-click one placed component, then right-click another to connect them.
-          5. Press V or click the top-right test button to check the board.
-          6. A first valid circuit needs a Power part wired to a load such as a resistor, LED, chip, or connector.
-          7. Press C to clear the board and try again. Press Esc to exit.
+          1. Extract the archive.
+          2. Double-click PLAY_FORMFACTOR.sh if your desktop allows it, or run ./PLAY_FORMFACTOR.sh.
+          3. Left-click the physical 3D power source, then the 3D LED.
+          4. Right-drag or middle-drag to orbit the board. Use the mouse wheel to zoom.
+          5. When the training path completes, the LED changes to an emissive 3D material and a current marker moves along the 3D connection.
 
-          This package is built automatically from the latest main-branch commit only after the test suite passes.
+          The engineering C++ core remains separately validated. The 3D client does not invent missing electrical values.
+          Godot is open source under the MIT license: https://godotengine.org/license/
           TXT
-
-          chmod +x package-linux/FormFactor
+          chmod +x package-linux/FormFactor package-linux/PLAY_FORMFACTOR.sh
           tar -czf FormFactor-Linux-x64.tar.gz -C package-linux .
 
-      - name: Upload Linux package
+      - name: Upload Linux 3D package
         uses: actions/upload-artifact@v4
         with:
           name: linux-playable
@@ -96,73 +96,63 @@ jobs:
       - name: Check out FormFactor
         uses: actions/checkout@v4
 
-      - name: Install MinGW, CMake, SDL2, and OpenSSL
-        uses: msys2/setup-msys2@v2
-        with:
-          msystem: MINGW64
-          update: true
-          install: >-
-            mingw-w64-x86_64-gcc
-            mingw-w64-x86_64-cmake
-            mingw-w64-x86_64-ninja
-            mingw-w64-x86_64-SDL2
-            mingw-w64-x86_64-openssl
-            mingw-w64-x86_64-pkgconf
-
-      - name: Configure test build
-        shell: msys2 {0}
-        run: cmake -S . -B build-check -G Ninja
-
-      - name: Build test targets
-        shell: msys2 {0}
-        run: cmake --build build-check --parallel 2
-
-      - name: Run tests before publishing
-        shell: msys2 {0}
-        run: ctest --test-dir build-check --output-on-failure
-
-      - name: Configure optimized playable build
-        shell: msys2 {0}
-        run: cmake -S . -B build-release -G Ninja -DCMAKE_BUILD_TYPE=Release
-
-      - name: Build graphical FreeLab target
-        shell: msys2 {0}
-        run: cmake --build build-release --target formfactor_freelab --parallel 2
-
-      - name: Collect Windows executable and DLLs
-        shell: msys2 {0}
+      - name: Download official Godot 4.7.2 Windows engine
+        shell: pwsh
         run: |
-          set -euo pipefail
-          mkdir -p package-windows
-          cp build-release/formfactor_freelab.exe package-windows/FormFactor.exe
+          $ErrorActionPreference = 'Stop'
+          $url = "https://github.com/godotengine/godot-builds/releases/download/$env:GODOT_VERSION/Godot_v4.7.2-stable_win64.exe.zip"
+          Invoke-WebRequest -Uri $url -OutFile godot-windows.zip
+          $actual = (Get-FileHash godot-windows.zip -Algorithm SHA256).Hash.ToLower()
+          if ($actual -ne $env:GODOT_WINDOWS_SHA256) {
+            throw "Godot Windows SHA256 mismatch: $actual"
+          }
+          Expand-Archive godot-windows.zip -DestinationPath godot-engine -Force
+          & .\godot-engine\Godot_v4.7.2-stable_win64.exe --version
 
-          ldd build-release/formfactor_freelab.exe \
-            | awk '/\/mingw64\/bin\// {print $3}' \
-            | sort -u \
-            | while read -r dll; do
-                cp "$dll" package-windows/
-              done
+      - name: Prove the Windows client loads real Godot 3D materials
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $godot = '.\godot-engine\Godot_v4.7.2-stable_win64.exe'
+          & $godot --headless --path godot --editor --quit-after 1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & $godot --headless --path godot --script res://scripts/validate_3d.gd
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-          cat > package-windows/README.txt <<'TXT'
-          FormFactor Windows playable prototype
+      - name: Package real Godot 3D Windows game
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          New-Item -ItemType Directory -Force package-windows\scenes | Out-Null
+          New-Item -ItemType Directory -Force package-windows\scripts | Out-Null
+          Copy-Item godot-engine\Godot_v4.7.2-stable_win64.exe package-windows\FormFactor.exe
+          Copy-Item godot\project.godot package-windows\project.godot
+          Copy-Item godot\scenes\main.tscn package-windows\scenes\main.tscn
+          Copy-Item godot\scripts\material_lab.gd package-windows\scripts\material_lab.gd
+          Copy-Item godot\scripts\validate_3d.gd package-windows\scripts\validate_3d.gd
+          @'
+          @echo off
+          cd /d "%~dp0"
+          start "" "FormFactor.exe" --path "%~dp0"
+          '@ | Set-Content -Encoding ASCII package-windows\PLAY_FORMFACTOR.bat
+          @'
+          FormFactor 1.06 - Material 3D Lab
+
+          This is the real Godot 4.7.2 3D client, not the older flat SDL prototype.
 
           PLAY
-          1. Extract this ZIP and double-click FormFactor.exe.
-          2. Left-click a component in the left panel to choose it.
-          3. Left-click the green board to place the component.
-          4. Right-click one placed component, then right-click another to connect them.
-          5. Press V or click the top-right test button to check the board.
-          6. A first valid circuit needs a Power part wired to a load such as a resistor, LED, chip, or connector.
-          7. Press C to clear the board and try again. Press Esc to exit.
+          1. Extract this ZIP.
+          2. Double-click PLAY_FORMFACTOR.bat. FormFactor.exe is the official Godot 4.7.2 engine renamed for this package.
+          3. Left-click the physical 3D power source, then the 3D LED.
+          4. Right-drag or middle-drag to orbit the board. Use the mouse wheel to zoom.
+          5. When the training path completes, the LED changes to an emissive 3D material and a current marker moves along the 3D connection.
 
-          This package is built automatically from the latest main-branch commit only after the test suite passes.
-          TXT
+          The engineering C++ core remains separately validated. The 3D client does not invent missing electrical values.
+          Godot is open source under the MIT license: https://godotengine.org/license/
+          '@ | Set-Content -Encoding UTF8 package-windows\README.txt
+          Compress-Archive -Path package-windows\* -DestinationPath FormFactor-Windows-x64.zip -Force
 
-      - name: Create Windows ZIP
-        shell: pwsh
-        run: Compress-Archive -Path package-windows\* -DestinationPath FormFactor-Windows-x64.zip -Force
-
-      - name: Upload Windows package
+      - name: Upload Windows 3D package
         uses: actions/upload-artifact@v4
         with:
           name: windows-playable
@@ -170,6 +160,7 @@ jobs:
           if-no-files-found: error
 
   publish-latest:
+    if: github.ref == 'refs/heads/main'
     needs:
       - build-linux
       - build-windows
@@ -180,34 +171,29 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Download tested packages
+      - name: Download tested 3D packages
         uses: actions/download-artifact@v4
         with:
           pattern: '*-playable'
           path: dist
           merge-multiple: true
 
-      - name: Point the latest tag at this tested commit
+      - name: Point latest tag at this tested 3D commit
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git tag -f latest "$GITHUB_SHA"
           git push origin refs/tags/latest --force
 
-      - name: Create or refresh the latest playable release
+      - name: Create or refresh latest real 3D playable release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          NOTES="Tested FormFactor 1.06+ material 3D build powered by Godot 4.7.2. Both packages pass the runtime 3D gate for MeshInstance3D geometry, StandardMaterial3D materials, metallic surfaces, Camera3D, real lights, clickable 3D bodies, emissive LED feedback, 3D wiring, and the animated current marker."
           if gh release view latest >/dev/null 2>&1; then
             gh release upload latest dist/FormFactor-Windows-x64.zip dist/FormFactor-Linux-x64.tar.gz --clobber
-            gh release edit latest \
-              --title "FormFactor - Latest Playable Build" \
-              --notes "Automatic tested playable build from the latest main-branch commit. Download the Windows ZIP or Linux archive below." \
-              --latest
+            gh release edit latest --title "FormFactor - Latest Material 3D Build" --notes "$NOTES" --latest
           else
-            gh release create latest \
-              dist/FormFactor-Windows-x64.zip \
-              dist/FormFactor-Linux-x64.tar.gz \
-              --title "FormFactor - Latest Playable Build" \
-              --notes "Automatic tested playable build from the latest main-branch commit. Download the Windows ZIP or Linux archive below."
+            gh release create latest dist/FormFactor-Windows-x64.zip dist/FormFactor-Linux-x64.tar.gz \
+              --title "FormFactor - Latest Material 3D Build" --notes "$NOTES"
           fi
