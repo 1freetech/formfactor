@@ -1,0 +1,13 @@
+{
+  "name": "formfactor-inspector",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Browser inspector for FormFactor frontend snapshots and authoritative validation evidence.",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.2"
+  }
+}
