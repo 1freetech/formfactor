@@ -5,6 +5,7 @@
 namespace {
 
 constexpr std::size_t kHistoryLimit = 64;
+constexpr float kNudgeStep = 12.0F;
 
 struct BoardSnapshot {
     std::vector<PlacedPart> parts;
@@ -117,6 +118,18 @@ bool focused_part_overlaps(const WorkbenchState& s, std::size_t index) {
     return index < s.parts.size() && overlaps_any(s, s.parts[index].rect, index);
 }
 
+bool focused_board_part_valid(const WorkbenchState& s) {
+    return s.focus == FocusZone::BoardPart && !s.parts.empty() &&
+           s.board_focus < s.parts.size();
+}
+
+void mark_board_changed(WorkbenchState& s) {
+    s.validation_ran = false;
+    s.validation_passed = false;
+    s.has_wire_start = false;
+    s.wire_start = 0;
+}
+
 float snap_to_half_grid(float value, float origin) {
     constexpr float step = 12.0F;
     return origin + std::round((value - origin) / step) * step;
@@ -134,6 +147,23 @@ RectF snapped_part_rect(PartKind kind, float x, float y, const RectF& board) {
     return clamp_part_rect(part_rect(kind, sx, sy), board);
 }
 
+bool pick_same_part(WorkbenchState& s) {
+    if (!focused_board_part_valid(s)) {
+        s.status = "FOCUS A BOARD PART BEFORE USING PICK SAME PART.";
+        return false;
+    }
+
+    const std::size_t index = s.board_focus;
+    const PartKind picked = s.parts[index].kind;
+    s.selected_kind = picked;
+    s.palette_focus = static_cast<std::size_t>(picked);
+    s.focus = FocusZone::Palette;
+    s.status = std::string("PICKED ") + info(picked).code + " " + info(picked).name +
+               " FROM " + reference_for(s.parts, index) +
+               ". CLICK AN OPEN BOARD SPOT TO PLACE THE SAME PART.";
+    return true;
+}
+
 bool place_part_snapped(WorkbenchState& s, EditHistory& history,
                         float x, float y, const RectF& board) {
     const RectF q = snapped_part_rect(s.selected_kind, x, y, board);
@@ -146,15 +176,14 @@ bool place_part_snapped(WorkbenchState& s, EditHistory& history,
     s.parts.push_back({s.selected_kind, q});
     s.board_focus = s.parts.size() - 1;
     s.focus = FocusZone::BoardPart;
-    s.validation_ran = false;
-    s.validation_passed = false;
+    mark_board_changed(s);
     s.status = std::string("PLACED ") + reference_for(s.parts, s.board_focus) +
                ". CTRL+Z UNDOS IT. DRAG TO MOVE.";
     return true;
 }
 
 void remove_focused_part(WorkbenchState& s, EditHistory& history) {
-    if (s.focus != FocusZone::BoardPart || s.parts.empty() || s.board_focus >= s.parts.size()) {
+    if (!focused_board_part_valid(s)) {
         s.status = "FOCUS A BOARD PART BEFORE DELETE.";
         return;
     }
@@ -174,11 +203,8 @@ void remove_focused_part(WorkbenchState& s, EditHistory& history) {
         if (wire.to > removed) --wire.to;
     }
 
-    s.has_wire_start = false;
-    s.wire_start = 0;
     s.parts.erase(s.parts.begin() + static_cast<std::ptrdiff_t>(removed));
-    s.validation_ran = false;
-    s.validation_passed = false;
+    mark_board_changed(s);
 
     if (s.parts.empty()) {
         s.board_focus = 0;
@@ -216,7 +242,7 @@ bool click_compatible_target_with_history(WorkbenchState& s, EditHistory& histor
     const std::size_t shown = std::min<std::size_t>(targets.size(), 3);
     for (std::size_t row = 0; row < shown; ++row) {
         if (!contains(target_button_rect(panel, row), x, y)) continue;
-        if (!s.has_wire_start && s.focus == FocusZone::BoardPart && s.board_focus < s.parts.size()) {
+        if (!s.has_wire_start && focused_board_part_valid(s)) {
             connect_part_with_history(s, history, s.board_focus);
         }
         if (s.has_wire_start) connect_part_with_history(s, history, targets[row]);
@@ -248,6 +274,110 @@ void activate_focus_with_history(WorkbenchState& s, EditHistory& history) {
             s.show_help = !s.show_help;
             break;
     }
+}
+
+bool nudge_focused_part(WorkbenchState& s, EditHistory& history,
+                        const RectF& board, int dx, int dy) {
+    if (!focused_board_part_valid(s)) {
+        s.status = "FOCUS A BOARD PART BEFORE NUDGING IT.";
+        return false;
+    }
+
+    const std::size_t index = s.board_focus;
+    const RectF original = s.parts[index].rect;
+    RectF candidate = original;
+    candidate.x += static_cast<float>(dx) * kNudgeStep;
+    candidate.y += static_cast<float>(dy) * kNudgeStep;
+    candidate = clamp_part_rect(candidate, board);
+
+    if (rects_equal(candidate, original)) {
+        s.status = "NUDGE BLOCKED - PART IS AT THE BOARD EDGE.";
+        return false;
+    }
+    if (overlaps_any(s, candidate, index)) {
+        s.status = "NUDGE BLOCKED - ANOTHER PART IS IN THE WAY.";
+        return false;
+    }
+
+    record_edit(history, capture_board(s));
+    s.parts[index].rect = candidate;
+    mark_board_changed(s);
+    s.status = std::string("NUDGED ") + reference_for(s.parts, index) +
+               ". SHIFT+ARROWS MOVE ONE GRID STEP. CTRL+Z UNDOS IT.";
+    return true;
+}
+
+bool duplicate_focused_part(WorkbenchState& s, EditHistory& history,
+                            const RectF& board) {
+    if (!focused_board_part_valid(s)) {
+        s.status = "FOCUS A BOARD PART BEFORE DUPLICATING IT.";
+        return false;
+    }
+
+    const std::size_t source_index = s.board_focus;
+    const PlacedPart source = s.parts[source_index];
+
+    for (int radius = 1; radius <= 12; ++radius) {
+        for (int dy = -radius; dy <= radius; ++dy) {
+            for (int dx = -radius; dx <= radius; ++dx) {
+                if (std::max(std::abs(dx), std::abs(dy)) != radius) continue;
+
+                RectF candidate = source.rect;
+                candidate.x += static_cast<float>(dx) * kNudgeStep;
+                candidate.y += static_cast<float>(dy) * kNudgeStep;
+                const RectF clamped = clamp_part_rect(candidate, board);
+                if (!rects_equal(clamped, candidate)) continue;
+                if (overlaps_any(s, candidate)) continue;
+
+                record_edit(history, capture_board(s));
+                s.parts.push_back({source.kind, candidate});
+                s.board_focus = s.parts.size() - 1;
+                s.focus = FocusZone::BoardPart;
+                mark_board_changed(s);
+                s.status = std::string("DUPLICATED ") +
+                           reference_for(s.parts, source_index) + " AS " +
+                           reference_for(s.parts, s.board_focus) +
+                           ". WIRES WERE NOT COPIED. CTRL+Z UNDOS IT.";
+                return true;
+            }
+        }
+    }
+
+    s.status = "DUPLICATE BLOCKED - NO OPEN GRID SPOT IS CLOSE ENOUGH.";
+    return false;
+}
+
+bool disconnect_focused_part(WorkbenchState& s, EditHistory& history) {
+    if (!focused_board_part_valid(s)) {
+        s.status = "FOCUS A BOARD PART BEFORE DISCONNECTING IT.";
+        return false;
+    }
+
+    const std::size_t index = s.board_focus;
+    const std::size_t connected_count = static_cast<std::size_t>(std::count_if(
+        s.wires.begin(), s.wires.end(), [index](const Wire& wire) {
+            return wire.from == index || wire.to == index;
+        }));
+
+    if (connected_count == 0) {
+        s.status = std::string("NO WIRES TO DISCONNECT FROM ") +
+                   reference_for(s.parts, index) + ".";
+        return false;
+    }
+
+    record_edit(history, capture_board(s));
+    s.wires.erase(
+        std::remove_if(s.wires.begin(), s.wires.end(), [index](const Wire& wire) {
+            return wire.from == index || wire.to == index;
+        }),
+        s.wires.end());
+    mark_board_changed(s);
+
+    s.status = std::string("DISCONNECTED ") + reference_for(s.parts, index) +
+               " FROM " + std::to_string(connected_count) +
+               (connected_count == 1 ? " WIRE. " : " WIRES. ") +
+               "RIGHT CLICK TO REWIRE. CTRL+Z RESTORES IT.";
+    return true;
 }
 
 bool cancel_transient_action(WorkbenchState& s, InteractionState& interaction) {
@@ -379,7 +509,8 @@ void draw_interaction_overlay(SDL_Renderer* r, float w, float h,
         else set_color(r, 255, 225, 70, 235);
         draw_double_rect(r, {p.x - 5.0F, p.y - 5.0F, p.w + 10.0F, p.h + 10.0F});
         if (blocked) {
-            draw_text(r, "BLOCKED", p.x, std::max(board.y + 5.0F, p.y - 18.0F), 0.8F);
+            draw_text(r, "BLOCKED", p.x,
+                      std::max(board.y + 5.0F, p.y - 18.0F), 0.8F);
         }
         return;
     }
@@ -417,7 +548,7 @@ void draw_interaction_overlay(SDL_Renderer* r, float w, float h,
               ghost.x, label_y, 0.75F);
 }
 
-void draw_enhanced_help_overlay(SDL_Renderer* r, float w, float h) {
+void draw_controls_help_overlay(SDL_Renderer* r, float w, float h) {
     draw_help_overlay(r, w, h);
     const RectF q{w * 0.13F, h * 0.10F, w * 0.74F, h * 0.78F};
     const float left = q.x + 30.0F;
@@ -426,14 +557,14 @@ void draw_enhanced_help_overlay(SDL_Renderer* r, float w, float h) {
 
     set_color(r, 3, 6, 7, 252);
     fill_rect(r, {left - 4.0F, q.y + 340.0F, column_w + 8.0F, 190.0F});
-    fill_rect(r, {right - 4.0F, q.y + 82.0F, column_w + 8.0F, 280.0F});
+    fill_rect(r, {right - 4.0F, q.y + 82.0F, column_w + 8.0F, 330.0F});
 
     set_color(r, 57, 255, 20);
     draw_text(r, "MOUSE", left, q.y + 350.0F, 1.35F);
     set_color(r, 210, 221, 223);
     draw_wrapped_text(
         r,
-        "MOVE OVER EMPTY BOARD SPACE TO PREVIEW A SNAPPED PART. GREEN MEANS OPEN. RED MEANS THE PART WOULD OVERLAP ANOTHER PART AND THE DROP IS BLOCKED. CLICK TO PLACE. CLICK AND DRAG A PLACED PART TO MOVE IT. RIGHT CLICK ONE PART THEN ANOTHER TO CONNECT.",
+        "MOVE OVER EMPTY BOARD SPACE TO PREVIEW A SNAPPED PART. GREEN MEANS OPEN. RED MEANS OVERLAP AND THE DROP IS BLOCKED. CLICK TO PLACE. CLICK AND DRAG A PLACED PART TO MOVE IT. RIGHT CLICK ONE PART THEN ANOTHER TO CONNECT.",
         left, q.y + 378.0F, column_w, 1.0F, 5.0F);
 
     set_color(r, 57, 255, 20);
@@ -441,11 +572,11 @@ void draw_enhanced_help_overlay(SDL_Renderer* r, float w, float h) {
     set_color(r, 224, 232, 234);
     draw_wrapped_text(
         r,
-        "CTRL+Z: UNDO. CTRL+Y OR CTRL+SHIFT+Z: REDO. TAB: NEXT GROUP. SHIFT+TAB: PREVIOUS. ARROWS: BROWSE. ENTER OR SPACE: USE FOCUS. DELETE OR BACKSPACE: REMOVE FOCUSED PART. V: TEST. C: CLEAR. H OR F1: HELP. ESC: CANCEL HELP, MOVE, OR WIRE FIRST; PRESS AGAIN WITH NOTHING ACTIVE TO EXIT.",
+        "CTRL+Z: UNDO. CTRL+Y OR CTRL+SHIFT+Z: REDO. CTRL+D: DUPLICATE FOCUSED PART. E: PICK SAME PART TYPE FROM FOCUSED PART. SHIFT+ARROWS: NUDGE ONE GRID STEP. X: DISCONNECT FOCUSED PART WITHOUT DELETING IT. DELETE OR BACKSPACE: REMOVE PART. V: TEST. C: CLEAR. H OR F1: HELP. ESC: CANCEL ACTIVE ACTION FIRST, THEN EXIT.",
         right, q.y + 120.0F, column_w, 1.0F, 5.0F);
 }
 
-void draw_enhanced_workbench(SDL_Renderer* r, int width, int height,
+void draw_controls_workbench(SDL_Renderer* r, int width, int height,
                              const WorkbenchState& s,
                              const InteractionState& interaction) {
     const float w = static_cast<float>(width);
@@ -456,7 +587,7 @@ void draw_enhanced_workbench(SDL_Renderer* r, int width, int height,
     draw_palette(r, w, h, s);
     draw_inspector(r, w, h, s);
     draw_top_bar(r, w, s);
-    if (s.show_help) draw_enhanced_help_overlay(r, w, h);
+    if (s.show_help) draw_controls_help_overlay(r, w, h);
     SDL_RenderPresent(r);
 }
 
@@ -472,7 +603,7 @@ int main(int argc, char* argv[]) {
     }
 
     SDL_Window* window = SDL_CreateWindow(
-        "FormFactor Workbench prototype", SDL_WINDOWPOS_CENTERED,
+        "FormFactor Workbench", SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED, 1480, 900,
         SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
     if (!window) {
@@ -493,7 +624,7 @@ int main(int argc, char* argv[]) {
 
     WorkbenchState state;
     state.show_help = false;
-    state.status = "READY - GREEN PLACES. RED BLOCKS OVERLAP. CTRL+Z UNDOS.";
+    state.status = "READY - E PICKS SAME PART. SHIFT+ARROWS NUDGE. CTRL+D DUPLICATES. X DISCONNECTS.";
     InteractionState interaction;
     EditHistory history;
     update_window_title(window, state);
@@ -530,6 +661,11 @@ int main(int argc, char* argv[]) {
                 const bool shift = (mods & KMOD_SHIFT) != 0;
                 const bool undo_key = command && key == SDLK_z && !shift;
                 const bool redo_key = command && (key == SDLK_y || (key == SDLK_z && shift));
+                const bool duplicate_key = command && key == SDLK_d;
+                const bool nudge_key = shift &&
+                    (key == SDLK_UP || key == SDLK_DOWN ||
+                     key == SDLK_LEFT || key == SDLK_RIGHT) &&
+                    focused_board_part_valid(state);
 
                 if (undo_key) {
                     cancel_drag_silently(state, interaction);
@@ -537,6 +673,35 @@ int main(int argc, char* argv[]) {
                 } else if (redo_key) {
                     cancel_drag_silently(state, interaction);
                     redo_edit(state, history);
+                } else if (duplicate_key) {
+                    cancel_drag_silently(state, interaction);
+                    int width = 0;
+                    int height = 0;
+                    SDL_GetRendererOutputSize(renderer, &width, &height);
+                    duplicate_focused_part(
+                        state, history,
+                        board_rect_for(static_cast<float>(width),
+                                       static_cast<float>(height)));
+                } else if (key == SDLK_e && !command) {
+                    cancel_drag_silently(state, interaction);
+                    pick_same_part(state);
+                } else if (nudge_key) {
+                    cancel_drag_silently(state, interaction);
+                    int width = 0;
+                    int height = 0;
+                    SDL_GetRendererOutputSize(renderer, &width, &height);
+                    const RectF board = board_rect_for(static_cast<float>(width),
+                                                       static_cast<float>(height));
+                    int dx = 0;
+                    int dy = 0;
+                    if (key == SDLK_LEFT) dx = -1;
+                    else if (key == SDLK_RIGHT) dx = 1;
+                    else if (key == SDLK_UP) dy = -1;
+                    else if (key == SDLK_DOWN) dy = 1;
+                    nudge_focused_part(state, history, board, dx, dy);
+                } else if (key == SDLK_x && !command) {
+                    cancel_drag_silently(state, interaction);
+                    disconnect_focused_part(state, history);
                 } else if (key == SDLK_ESCAPE) {
                     if (!cancel_transient_action(state, interaction)) running = false;
                 } else if (key == SDLK_DELETE || key == SDLK_BACKSPACE) {
@@ -544,7 +709,8 @@ int main(int argc, char* argv[]) {
                     remove_focused_part(state, history);
                 } else if (key == SDLK_h || key == SDLK_F1) {
                     state.show_help = !state.show_help;
-                    state.status = state.show_help ? "HELP OPEN - H, F1, OR ESC CLOSES IT." : "HELP CLOSED.";
+                    state.status = state.show_help ?
+                        "HELP OPEN - H, F1, OR ESC CLOSES IT." : "HELP CLOSED.";
                 } else if (key == SDLK_c) {
                     cancel_drag_silently(state, interaction);
                     clear_board_with_history(state, history);
@@ -628,7 +794,7 @@ int main(int argc, char* argv[]) {
         int width = 0;
         int height = 0;
         SDL_GetRendererOutputSize(renderer, &width, &height);
-        draw_enhanced_workbench(renderer, width, height, state, interaction);
+        draw_controls_workbench(renderer, width, height, state, interaction);
     }
 
     SDL_DestroyRenderer(renderer);
