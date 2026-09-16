@@ -84,11 +84,9 @@ jobs:
           Godot is open source under the MIT license: https://godotengine.org/license/
           TXT
           chmod +x package-linux/FormFactor package-linux/PLAY_FORMFACTOR.sh
-
-          # Critical release gate: launch the files exactly as they will ship.
           package-linux/FormFactor --headless --path package-linux --quit-after 3
-
           tar -czf "FormFactor-${VERSION}-Linux-x64.tar.gz" -C package-linux .
+          test -s "FormFactor-${VERSION}-Linux-x64.tar.gz"
 
       - name: Upload Linux playable
         uses: actions/upload-artifact@v4
@@ -134,6 +132,7 @@ jobs:
           $ErrorActionPreference = 'Stop'
           $version = (Get-Content VERSION -Raw).Trim()
           New-Item -ItemType Directory -Force package-windows | Out-Null
+          New-Item -ItemType Directory -Force dist-windows | Out-Null
           Copy-Item godot-engine\Godot_v4.7.2-stable_win64.exe package-windows\FormFactor.exe
           Copy-Item godot\project.godot package-windows\project.godot
           Copy-Item godot\scenes package-windows\scenes -Recurse
@@ -161,17 +160,21 @@ jobs:
           Godot is open source under the MIT license: https://godotengine.org/license/
           "@ | Set-Content -Encoding UTF8 package-windows\README.txt
 
-          # Critical release gate: launch the files exactly as they will ship.
           & .\package-windows\FormFactor.exe --headless --path package-windows --quit-after 3
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-          Compress-Archive -Path package-windows\* -DestinationPath "FormFactor-$version-Windows-x64.zip" -Force
+          $archive = Join-Path (Resolve-Path dist-windows) "FormFactor-$version-Windows-x64.zip"
+          Compress-Archive -Path package-windows\* -DestinationPath $archive -Force
+          if (-not (Test-Path $archive)) { throw "Windows archive was not created: $archive" }
+          $zip = Get-Item $archive
+          if ($zip.Length -le 0) { throw "Windows archive is empty: $archive" }
+          Write-Host "Created tested Windows archive: $($zip.FullName) ($($zip.Length) bytes)"
 
       - name: Upload Windows playable
         uses: actions/upload-artifact@v4
         with:
           name: windows-playable
-          path: FormFactor-*-Windows-x64.zip
+          path: dist-windows/FormFactor-*-Windows-x64.zip
           if-no-files-found: error
 
   publish-release:
