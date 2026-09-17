@@ -29,22 +29,22 @@ func _run_validation() -> void:
         quit(1)
         return
 
-    _check(lab.debug_gpu_particle_pool_size() == 6, "GPU particle pool must contain six reusable emitters")
-    _check(lab.debug_selection_edge_count() == 12, "3D selection box must contain twelve visible edges")
+    _check(int(lab.debug_gpu_particle_pool_size()) == 6, "GPU particle pool must contain six reusable emitters")
+    _check(int(lab.debug_selection_edge_count()) == 12, "3D selection box must contain twelve visible edges")
 
-    var bursts_before := lab.debug_operation_burst_count()
-    _check(lab.debug_catalog_place("resistor", Vector3(0.0, 0.24, 0.0)), "catalog placement must still place a resistor on the blank PCB")
+    var bursts_before: int = int(lab.debug_operation_burst_count())
+    _check(bool(lab.debug_catalog_place("resistor", Vector3(0.0, 0.24, 0.0))), "catalog placement must still place a resistor on the blank PCB")
     await process_frame
-    _check(lab.debug_operation_burst_count() > bursts_before, "successful component placement must trigger a GPU particle burst")
+    _check(int(lab.debug_operation_burst_count()) > bursts_before, "successful component placement must trigger a GPU particle burst")
 
-    _check(lab.debug_set_hover_by_refdes("R1"), "placed resistor must be available to hover targeting")
+    _check(bool(lab.debug_set_hover_by_refdes("R1")), "placed resistor must be available to hover targeting")
     lab.debug_force_visual_feedback_update()
-    _check(lab.debug_selection_highlight_visible(), "hovered component must show the 3D bounds highlight")
-    var bounds: Vector3 = lab.debug_selection_highlight_size()
+    _check(bool(lab.debug_selection_highlight_visible()), "hovered component must show the 3D bounds highlight")
+    var bounds: Vector3 = lab.debug_selection_highlight_size() as Vector3
     _check(bounds.x > 0.72 and bounds.y > 0.55 and bounds.z > 0.62, "selection bounds must pad the actual component collision volume")
 
-    _check(lab.debug_start_board_empty() == false, "visual feedback must not hide or delete the placed component")
-    _check(lab.debug_wire_count() == 0, "visual feedback validation must not invent electrical connections")
+    _check(bool(lab.debug_start_board_empty()) == false, "visual feedback must not hide or delete the placed component")
+    _check(int(lab.debug_wire_count()) == 0, "visual feedback validation must not invent electrical connections")
 
     lab.queue_free()
     await process_frame
