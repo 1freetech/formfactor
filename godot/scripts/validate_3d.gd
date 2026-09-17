@@ -95,7 +95,7 @@ func _run_validation() -> void:
     var user_wire_count := 0
     for mesh_node in scene.find_children("*", "MeshInstance3D", true, false):
         var wire_mesh := mesh_node as MeshInstance3D
-        if wire_mesh != null and str(wire_mesh.name).begins_with("UserWire3D"):
+        if wire_mesh != null and str(wire_mesh.name).begins_with("UserWire_"):
             user_wire_count += 1
     if user_wire_count < 2:
         _fail("expected at least two real 3D user wire meshes, found %d" % user_wire_count)
