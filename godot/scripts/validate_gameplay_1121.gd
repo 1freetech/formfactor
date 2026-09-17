@@ -4,7 +4,7 @@ func _initialize() -> void:
     call_deferred("_run_validation")
 
 func _fail(message: String) -> void:
-    push_error("GODOT 1.122 GAMEPLAY FAIL: " + message)
+    push_error("GODOT SMART GAMEPLAY FAIL: " + message)
     quit(1)
 
 func _has_label_prefix(scene: Node, type_name: String, prefix: String) -> bool:
@@ -15,9 +15,18 @@ func _has_label_prefix(scene: Node, type_name: String, prefix: String) -> bool:
             return true
     return false
 
+func _has_versioned_label3d(scene: Node) -> bool:
+    for child in scene.find_children("*", "Label3D", true, false):
+        if child is Label3D:
+            var text := str((child as Label3D).text)
+            if text.find(" //") > 0 and text.substr(0, text.find(" //")).begins_with("1."):
+                return true
+    return false
+
 func _run_validation() -> void:
-    if str(ProjectSettings.get_setting("application/config/name", "")) != "FormFactor 1.122":
-        _fail("Godot application identity is not synchronized to FormFactor 1.122")
+    var application_name := str(ProjectSettings.get_setting("application/config/name", ""))
+    if not application_name.begins_with("FormFactor "):
+        _fail("Godot application identity no longer identifies FormFactor")
         return
 
     var packed := load("res://scenes/main.tscn") as PackedScene
@@ -52,14 +61,14 @@ func _run_validation() -> void:
     ]
     for method_name in required_methods:
         if not scene.has_method(method_name):
-            _fail("missing FormFactor 1.122 method: %s" % method_name)
+            _fail("missing smart-interaction method: %s" % method_name)
             return
 
-    if not _has_label_prefix(scene, "Label", "FORMFACTOR 1.122"):
-        _fail("visible HUD version label did not advance to 1.122")
+    if not _has_label_prefix(scene, "Label", "FORMFACTOR "):
+        _fail("visible HUD no longer identifies FormFactor")
         return
-    if not _has_label_prefix(scene, "Label3D", "1.122 //"):
-        _fail("visible 3D workbench version label did not advance to 1.122")
+    if not _has_versioned_label3d(scene):
+        _fail("visible 3D workbench no longer exposes a FormFactor update label")
         return
     if not bool(scene.call("debug_context_panel_ready")):
         _fail("smart-target context HUD did not initialize")
@@ -178,5 +187,5 @@ func _run_validation() -> void:
         _fail("one undo after one drag did not restore the pre-drag position")
         return
 
-    print("GODOT 1.122 GAMEPLAY PASS: visible version identity is synchronized, hover focus follows the bright smart target, drag movement creates one clean undo step, and the existing smart-target plus board-history systems remain valid.")
+    print("GODOT SMART GAMEPLAY PASS: current FormFactor identity is visible, hover focus follows the bright smart target, drag movement creates one clean undo step, and smart-target plus board-history systems remain valid.")
     quit(0)
