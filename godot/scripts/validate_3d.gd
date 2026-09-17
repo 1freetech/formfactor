@@ -92,9 +92,13 @@ func _run_validation() -> void:
         _fail("expected at least three clickable player-placed 3D bodies")
         return
 
-    var user_wires := scene.find_children("UserWire3D", "MeshInstance3D", true, false)
-    if user_wires.size() < 2:
-        _fail("expected at least two real 3D user wire meshes")
+    var user_wire_count := 0
+    for mesh_node in scene.find_children("*", "MeshInstance3D", true, false):
+        var wire_mesh := mesh_node as MeshInstance3D
+        if wire_mesh != null and str(wire_mesh.name).begins_with("UserWire3D"):
+            user_wire_count += 1
+    if user_wire_count < 2:
+        _fail("expected at least two real 3D user wire meshes, found %d" % user_wire_count)
         return
 
     var emissive_led_mesh_found := false
@@ -109,5 +113,5 @@ func _run_validation() -> void:
         _fail("player-placed LED did not switch to an emissive StandardMaterial3D")
         return
 
-    print("GODOT3D PASS: blank-board startup plus %d initial meshes, %d StandardMaterial3D materials, %d metallic materials, Camera3D, real lighting, player-placed clickable bodies, user wire meshes, and emissive LED feedback verified." % [meshes.size(), standard_material_count, metallic_material_count])
+    print("GODOT3D PASS: blank-board startup plus %d initial meshes, %d StandardMaterial3D materials, %d metallic materials, Camera3D, real lighting, %d player wire meshes, clickable bodies, and emissive LED feedback verified." % [meshes.size(), standard_material_count, metallic_material_count, user_wire_count])
     quit(0)
