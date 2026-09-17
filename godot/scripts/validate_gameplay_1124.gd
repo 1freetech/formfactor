@@ -40,7 +40,7 @@ func _run_validation() -> void:
     _check(bool(lab.debug_set_hover_by_refdes("R1")), "placed resistor must be available to hover targeting")
     lab.debug_force_visual_feedback_update()
     _check(bool(lab.debug_selection_highlight_visible()), "hovered component must show the 3D bounds highlight")
-    var bounds: Vector3 = lab.debug_selection_highlight_size() as Vector3
+    var bounds: Vector3 = lab.debug_selection_highlight_size()
     _check(bounds.x > 0.72 and bounds.y > 0.55 and bounds.z > 0.62, "selection bounds must pad the actual component collision volume")
 
     _check(bool(lab.debug_start_board_empty()) == false, "visual feedback must not hide or delete the placed component")
