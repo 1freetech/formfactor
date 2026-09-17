@@ -4,14 +4,20 @@ on:
   push:
     branches:
       - main
+      - 'validation/**'
   workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: formfactor-playable-release
+  group: formfactor-playable-release-${{ github.ref }}
   cancel-in-progress: true
+
+env:
+  GODOT_VERSION: 4.7.2-stable
+  GODOT_LINUX_SHA256: cadd3204e728a35d3f13adb7fd0d7902636b79f6b95c40c265eb73b6c35329e4
+  GODOT_WINDOWS_SHA256: 731980f9608d61333e5baf54a2ef17210acc7a538446c0cb9969f002aca1e953
 
 jobs:
   build-linux:
@@ -20,74 +26,80 @@ jobs:
       - name: Check out FormFactor
         uses: actions/checkout@v4
 
-      - name: Install Linux build dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libsdl2-dev libssl-dev patchelf
-
-      - name: Configure test build
-        run: cmake -S . -B build-check
-
-      - name: Build test targets
-        run: cmake --build build-check --parallel 2
-
-      - name: Run tests before publishing
-        run: ctest --test-dir build-check --output-on-failure
-
-      - name: Configure optimized playable build
-        run: cmake -S . -B build-release -DCMAKE_BUILD_TYPE=Release
-
-      - name: Build graphical FreeLab target
-        run: cmake --build build-release --target formfactor_freelab --parallel 2
-
-      - name: Package portable Linux build
+      - name: Download official Godot 4.7.2 Linux engine
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p package-linux/lib
-          cp build-release/formfactor_freelab package-linux/FormFactor
+          curl -L --fail --retry 3 \
+            -o godot-linux.zip \
+            https://github.com/godotengine/godot-builds/releases/download/${GODOT_VERSION}/Godot_v4.7.2-stable_linux.x86_64.zip
+          echo "${GODOT_LINUX_SHA256}  godot-linux.zip" | sha256sum -c -
+          unzip -q godot-linux.zip -d godot-engine
+          chmod +x godot-engine/Godot_v4.7.2-stable_linux.x86_64
+          godot-engine/Godot_v4.7.2-stable_linux.x86_64 --version
 
-          ldd build-release/formfactor_freelab \
-            | awk '/=> \/.*\.so/ {print $3}' \
-            | sort -u \
-            | while read -r lib; do
-                case "$(basename "$lib")" in
-                  libc.so.*|libm.so.*|libdl.so.*|libpthread.so.*|librt.so.*)
-                    continue
-                    ;;
-                esac
-                cp -L "$lib" package-linux/lib/
-              done
+      - name: Validate source gameplay before packaging
+        shell: bash
+        run: |
+          set -euo pipefail
+          GODOT=godot-engine/Godot_v4.7.2-stable_linux.x86_64
+          "$GODOT" --headless --path godot --editor --quit-after 1
+          "$GODOT" --headless --path godot --script res://scripts/validate_3d.gd
+          "$GODOT" --headless --path godot --script res://scripts/validate_gameplay.gd
+          "$GODOT" --headless --path godot --script res://scripts/validate_cad.gd
+          "$GODOT" --headless --path godot --script res://scripts/validate_gameplay_1121.gd
 
-          patchelf --set-rpath '$ORIGIN/lib' package-linux/FormFactor
-          for lib in package-linux/lib/*.so*; do
-            [ -e "$lib" ] || continue
-            patchelf --set-rpath '$ORIGIN' "$lib" || true
-          done
+      - name: Verify engineering core identity
+        run: python3 scripts/check_identity.py
 
-          cat > package-linux/README.txt <<'TXT'
-          FormFactor Linux playable prototype
+      - name: Package complete Godot Linux game
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="$(tr -d '\r\n' < VERSION)"
+          mkdir -p package-linux
+          cp godot-engine/Godot_v4.7.2-stable_linux.x86_64 package-linux/FormFactor
+          cp godot/project.godot package-linux/project.godot
+          cp -R godot/scenes package-linux/scenes
+          cp -R godot/scripts package-linux/scripts
+          cp VERSION package-linux/VERSION
+          cat > package-linux/PLAY_FORMFACTOR.sh <<'SH'
+          #!/usr/bin/env bash
+          set -e
+          cd "$(dirname "$0")"
+          exec ./FormFactor --path .
+          SH
+          cat > package-linux/README.txt <<TXT
+          FormFactor ${VERSION} - PCB Training + Build Lab
 
           PLAY
-          1. Extract this archive and open FormFactor.
-          2. Left-click a component in the left panel to choose it.
-          3. Left-click the green board to place the component.
-          4. Right-click one placed component, then right-click another to connect them.
-          5. Press V or click the top-right test button to check the board.
-          6. A first valid circuit needs a Power part wired to a load such as a resistor, LED, chip, or connector.
-          7. Press C to clear the board and try again. Press Esc to exit.
+          1. Extract the archive and run ./PLAY_FORMFACTOR.sh.
+          2. Pick a component from the left component menu and click the PCB to place it.
+          3. Drag a placed component to move it. Drag empty board/workbench space to rotate the camera.
+          4. Click a placed component and use Q/E or the on-screen buttons to rotate the component.
+          5. Use WIRE to connect parts and TEST to validate a connected power-to-LED path.
+          6. Hover a placed component to see the smart-target marker and context information.
+          7. Press F to smoothly focus the active or hovered component. Press B to return to the full PCB board view.
+          8. Press Ctrl+Z to undo board edits and Ctrl+Y to redo them. Placement, movement, rotation, removal, and wiring are restored as board snapshots.
+          9. Open CAD // PARAMETRIC to edit a plate in 3D, generate OpenSCAD source, and use optional OpenSCAD or FreeCAD exports when those tools are installed.
+          10. Open LEARN // 100 LESSONS for the guided PCB curriculum from basics through capstone boards.
+          11. Every lesson is 1.25 percent harder than the lesson before it using a compounding curve. Training certificates unlock at 10, 25, 50, 75, and 100 completed lessons.
+          12. The 100-lesson top certificate is Open Source Engineer. The live schematic mirror and 25-family component lexicon stay available while you build.
 
-          This package is built automatically from the latest main-branch commit only after the test suite passes.
+          Certificate note: the game can generate a named local digital completion certificate. Automatic email delivery requires a separately configured secure FORMFACTOR_CERTIFICATE_API service so mail credentials are never embedded in the game executable.
+
+          Godot is open source under the MIT license: https://godotengine.org/license/
           TXT
+          chmod +x package-linux/FormFactor package-linux/PLAY_FORMFACTOR.sh
+          package-linux/FormFactor --headless --path package-linux --quit-after 3
+          tar -czf "FormFactor-${VERSION}-Linux-x64.tar.gz" -C package-linux .
+          test -s "FormFactor-${VERSION}-Linux-x64.tar.gz"
 
-          chmod +x package-linux/FormFactor
-          tar -czf FormFactor-Linux-x64.tar.gz -C package-linux .
-
-      - name: Upload Linux package
+      - name: Upload Linux playable
         uses: actions/upload-artifact@v4
         with:
           name: linux-playable
-          path: FormFactor-Linux-x64.tar.gz
+          path: FormFactor-*-Linux-x64.tar.gz
           if-no-files-found: error
 
   build-windows:
@@ -96,80 +108,99 @@ jobs:
       - name: Check out FormFactor
         uses: actions/checkout@v4
 
-      - name: Install MinGW, CMake, SDL2, and OpenSSL
-        uses: msys2/setup-msys2@v2
-        with:
-          msystem: MINGW64
-          update: true
-          install: >-
-            mingw-w64-x86_64-gcc
-            mingw-w64-x86_64-cmake
-            mingw-w64-x86_64-ninja
-            mingw-w64-x86_64-SDL2
-            mingw-w64-x86_64-openssl
-            mingw-w64-x86_64-pkgconf
-
-      - name: Configure test build
-        shell: msys2 {0}
-        run: cmake -S . -B build-check -G Ninja
-
-      - name: Build test targets
-        shell: msys2 {0}
-        run: cmake --build build-check --parallel 2
-
-      - name: Run tests before publishing
-        shell: msys2 {0}
-        run: ctest --test-dir build-check --output-on-failure
-
-      - name: Configure optimized playable build
-        shell: msys2 {0}
-        run: cmake -S . -B build-release -G Ninja -DCMAKE_BUILD_TYPE=Release
-
-      - name: Build graphical FreeLab target
-        shell: msys2 {0}
-        run: cmake --build build-release --target formfactor_freelab --parallel 2
-
-      - name: Collect Windows executable and DLLs
-        shell: msys2 {0}
+      - name: Download official Godot 4.7.2 Windows engine
+        shell: pwsh
         run: |
-          set -euo pipefail
-          mkdir -p package-windows
-          cp build-release/formfactor_freelab.exe package-windows/FormFactor.exe
+          $ErrorActionPreference = 'Stop'
+          $url = "https://github.com/godotengine/godot-builds/releases/download/$env:GODOT_VERSION/Godot_v4.7.2-stable_win64.exe.zip"
+          Invoke-WebRequest -Uri $url -OutFile godot-windows.zip
+          $actual = (Get-FileHash godot-windows.zip -Algorithm SHA256).Hash.ToLower()
+          if ($actual -ne $env:GODOT_WINDOWS_SHA256) {
+            throw "Godot Windows SHA256 mismatch: $actual"
+          }
+          Expand-Archive godot-windows.zip -DestinationPath godot-engine -Force
+          if (-not (Test-Path .\godot-engine\Godot_v4.7.2-stable_win64_console.exe)) {
+            throw 'Godot console executable is missing from the official archive.'
+          }
+          & .\godot-engine\Godot_v4.7.2-stable_win64_console.exe --version
+          if ($LASTEXITCODE -ne 0) { throw "Godot console version check failed with code $LASTEXITCODE" }
 
-          ldd build-release/formfactor_freelab.exe \
-            | awk '/\/mingw64\/bin\// {print $3}' \
-            | sort -u \
-            | while read -r dll; do
-                cp "$dll" package-windows/
-              done
+      - name: Validate source gameplay on Windows console runtime
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $godot = '.\godot-engine\Godot_v4.7.2-stable_win64_console.exe'
+          & $godot --headless --path godot --editor --quit-after 1
+          if ($LASTEXITCODE -ne 0) { throw "Godot editor scan failed with code $LASTEXITCODE" }
+          & $godot --headless --path godot --script res://scripts/validate_3d.gd
+          if ($LASTEXITCODE -ne 0) { throw "3D validation failed with code $LASTEXITCODE" }
+          & $godot --headless --path godot --script res://scripts/validate_gameplay.gd
+          if ($LASTEXITCODE -ne 0) { throw "Gameplay validation failed with code $LASTEXITCODE" }
+          & $godot --headless --path godot --script res://scripts/validate_cad.gd
+          if ($LASTEXITCODE -ne 0) { throw "CAD validation failed with code $LASTEXITCODE" }
+          & $godot --headless --path godot --script res://scripts/validate_gameplay_1121.gd
+          if ($LASTEXITCODE -ne 0) { throw "FormFactor 1.121 gameplay validation failed with code $LASTEXITCODE" }
 
-          cat > package-windows/README.txt <<'TXT'
-          FormFactor Windows playable prototype
+      - name: Package and launch-test complete Godot Windows game
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $version = (Get-Content VERSION -Raw).Trim()
+          New-Item -ItemType Directory -Force package-windows | Out-Null
+          New-Item -ItemType Directory -Force dist-windows | Out-Null
+          Copy-Item godot-engine\Godot_v4.7.2-stable_win64.exe package-windows\FormFactor.exe
+          Copy-Item godot\project.godot package-windows\project.godot
+          Copy-Item godot\scenes package-windows\scenes -Recurse
+          Copy-Item godot\scripts package-windows\scripts -Recurse
+          Copy-Item VERSION package-windows\VERSION
+          @'
+          @echo off
+          cd /d "%~dp0"
+          "FormFactor.exe" --path "%~dp0"
+          '@ | Set-Content -Encoding ASCII package-windows\PLAY_FORMFACTOR.bat
+          @"
+          FormFactor $version - PCB Training + Build Lab
 
           PLAY
-          1. Extract this ZIP and double-click FormFactor.exe.
-          2. Left-click a component in the left panel to choose it.
-          3. Left-click the green board to place the component.
-          4. Right-click one placed component, then right-click another to connect them.
-          5. Press V or click the top-right test button to check the board.
-          6. A first valid circuit needs a Power part wired to a load such as a resistor, LED, chip, or connector.
-          7. Press C to clear the board and try again. Press Esc to exit.
+          1. Extract this ZIP and double-click PLAY_FORMFACTOR.bat.
+          2. Pick a component from the left component menu and click the PCB to place it.
+          3. Drag a placed component to move it. Drag empty board/workbench space to rotate the camera.
+          4. Click a placed component and use Q/E or the on-screen buttons to rotate the component.
+          5. Use WIRE to connect parts and TEST to validate a connected power-to-LED path.
+          6. Hover a placed component to see the smart-target marker and context information.
+          7. Press F to smoothly focus the active or hovered component. Press B to return to the full PCB board view.
+          8. Press Ctrl+Z to undo board edits and Ctrl+Y to redo them. Placement, movement, rotation, removal, and wiring are restored as board snapshots.
+          9. Open CAD // PARAMETRIC to edit a plate in 3D, generate OpenSCAD source, and use optional OpenSCAD or FreeCAD exports when those tools are installed.
+          10. Open LEARN // 100 LESSONS for the guided PCB curriculum from basics through capstone boards.
+          11. Every lesson is 1.25 percent harder than the lesson before it using a compounding curve. Training certificates unlock at 10, 25, 50, 75, and 100 completed lessons.
+          12. The 100-lesson top certificate is Open Source Engineer. The live schematic mirror and 25-family component lexicon stay available while you build.
 
-          This package is built automatically from the latest main-branch commit only after the test suite passes.
-          TXT
+          Certificate note: the game can generate a named local digital completion certificate. Automatic email delivery requires a separately configured secure FORMFACTOR_CERTIFICATE_API service so mail credentials are never embedded in the game executable.
 
-      - name: Create Windows ZIP
-        shell: pwsh
-        run: Compress-Archive -Path package-windows\* -DestinationPath FormFactor-Windows-x64.zip -Force
+          Godot is open source under the MIT license: https://godotengine.org/license/
+          "@ | Set-Content -Encoding UTF8 package-windows\README.txt
 
-      - name: Upload Windows package
+          $exePath = (Resolve-Path package-windows\FormFactor.exe).Path
+          $projectPath = (Resolve-Path package-windows).Path
+          $process = Start-Process -FilePath $exePath -ArgumentList @('--headless', '--path', $projectPath, '--quit-after', '3') -Wait -PassThru
+          if ($process.ExitCode -ne 0) { throw "Packaged FormFactor.exe failed its launch gate with code $($process.ExitCode)" }
+
+          $archive = Join-Path (Resolve-Path dist-windows) "FormFactor-$version-Windows-x64.zip"
+          Compress-Archive -Path package-windows\* -DestinationPath $archive -Force
+          if (-not (Test-Path $archive)) { throw "Windows archive was not created: $archive" }
+          $zip = Get-Item $archive
+          if ($zip.Length -le 0) { throw "Windows archive is empty: $archive" }
+          Write-Host "Created tested Windows archive: $($zip.FullName) ($($zip.Length) bytes)"
+
+      - name: Upload Windows playable
         uses: actions/upload-artifact@v4
         with:
           name: windows-playable
-          path: FormFactor-Windows-x64.zip
+          path: dist-windows/FormFactor-*-Windows-x64.zip
           if-no-files-found: error
 
-  publish-latest:
+  publish-release:
+    if: github.ref == 'refs/heads/main'
     needs:
       - build-linux
       - build-windows
@@ -187,27 +218,39 @@ jobs:
           path: dist
           merge-multiple: true
 
-      - name: Point the latest tag at this tested commit
+      - name: Tag the tested build
+        shell: bash
         run: |
+          set -euo pipefail
+          VERSION="$(tr -d '\r\n' < VERSION)"
+          VERSION_TAG="v${VERSION}"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -f "$VERSION_TAG" "$GITHUB_SHA"
           git tag -f latest "$GITHUB_SHA"
+          git push origin "refs/tags/$VERSION_TAG" --force
           git push origin refs/tags/latest --force
 
-      - name: Create or refresh the latest playable release
+      - name: Publish versioned training release and refresh latest
         env:
           GH_TOKEN: ${{ github.token }}
+        shell: bash
         run: |
-          if gh release view latest >/dev/null 2>&1; then
-            gh release upload latest dist/FormFactor-Windows-x64.zip dist/FormFactor-Linux-x64.tar.gz --clobber
-            gh release edit latest \
-              --title "FormFactor - Latest Playable Build" \
-              --notes "Automatic tested playable build from the latest main-branch commit. Download the Windows ZIP or Linux archive below." \
-              --latest
+          set -euo pipefail
+          VERSION="$(tr -d '\r\n' < VERSION)"
+          VERSION_TAG="v${VERSION}"
+          NOTES="FormFactor ${VERSION} is a material gameplay-control update. Hovered PCB parts now get a visible smart-target marker and context readout. F smoothly focuses the active or hovered part, B returns to the full board, and new on-screen buttons provide the same actions. Ctrl+Z and Ctrl+Y now undo and redo real player-board snapshots, including placed components, movement, rotation, removal, and wire relationships. The parametric CAD workbench from 1.11 remains integrated alongside the 25-family component library, live schematic mirror, connected-circuit test, and 100-lesson training path. The gameplay ideas were independently implemented from general open-world interaction patterns; GTA game data, maps, assets, names, animations, proprietary content, and unlicensed reversed source are not included. Both Windows and Linux packages are source-validated and launch-tested before publication."
+
+          if gh release view "$VERSION_TAG" >/dev/null 2>&1; then
+            gh release upload "$VERSION_TAG" dist/* --clobber
+            gh release edit "$VERSION_TAG" --title "FormFactor ${VERSION}" --notes "$NOTES" --latest
           else
-            gh release create latest \
-              dist/FormFactor-Windows-x64.zip \
-              dist/FormFactor-Linux-x64.tar.gz \
-              --title "FormFactor - Latest Playable Build" \
-              --notes "Automatic tested playable build from the latest main-branch commit. Download the Windows ZIP or Linux archive below."
+            gh release create "$VERSION_TAG" dist/* --title "FormFactor ${VERSION}" --notes "$NOTES" --latest
+          fi
+
+          if gh release view latest >/dev/null 2>&1; then
+            gh release upload latest dist/* --clobber
+            gh release edit latest --title "FormFactor ${VERSION} - Latest Playable" --notes "$NOTES"
+          else
+            gh release create latest dist/* --title "FormFactor ${VERSION} - Latest Playable" --notes "$NOTES"
           fi
