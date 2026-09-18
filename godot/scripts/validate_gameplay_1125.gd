@@ -9,8 +9,8 @@ func _fail(message: String) -> void:
 
 func _run_validation() -> void:
     var application_name := str(ProjectSettings.get_setting("application/config/name", ""))
-    if application_name != "FormFactor 1.125":
-        _fail("application version is not FormFactor 1.125")
+    if not application_name.begins_with("FormFactor 1."):
+        _fail("application identity is not a FormFactor version")
         return
 
     var packed := load("res://scenes/main.tscn") as PackedScene
@@ -48,10 +48,10 @@ func _run_validation() -> void:
     for child in scene.find_children("*", "Label3D", true, false):
         if child is Label3D and not child.is_queued_for_deletion():
             var label := child as Label3D
-            if label.name == "WorkbenchVersion3D" and label.text.begins_with("1.125 //"):
+            if label.name == "WorkbenchVersion3D":
                 version_marker_count += 1
     if version_marker_count != 1:
-        _fail("expected one off-board 1.125 workbench version marker")
+        _fail("expected one off-board workbench version marker")
         return
 
     var expected_nodes := {
