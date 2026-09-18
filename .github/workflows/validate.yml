@@ -51,6 +51,7 @@ jobs:
           "$GODOT" --headless --path godot --script res://scripts/validate_gameplay_1124.gd
           "$GODOT" --headless --path godot --script res://scripts/validate_gameplay_1125.gd
           "$GODOT" --headless --path godot --script res://scripts/validate_gameplay_1126.gd
+          "$GODOT" --headless --path godot --script res://scripts/validate_gameplay_1127.gd
 
       - name: Run complete direct-compiler validation suite
         run: sh scripts/validate.sh

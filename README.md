@@ -8,7 +8,12 @@ No compiler or terminal setup is needed for the packaged builds.
 - **Linux:** [Download the latest FormFactor Linux build](https://github.com/1freetech/formfactor/releases/download/latest/FormFactor-Linux-x64.tar.gz), extract it, then open `FormFactor`.
 - **Latest release page:** [FormFactor - Latest Playable Build](https://github.com/1freetech/formfactor/releases/tag/latest)
 
-Every push to `main` now builds Windows and Linux packages, runs the implemented CTest suite on both platforms, and refreshes the `latest` release only after both builds pass.
+**Current tested run: FormFactor 1.127**
+- **Windows 1.127:** [FormFactor-1.127-Windows-x64.zip](https://github.com/1freetech/formfactor/releases/download/latest/FormFactor-1.127-Windows-x64.zip)
+- **Linux 1.127:** [FormFactor-1.127-Linux-x64.tar.gz](https://github.com/1freetech/formfactor/releases/download/latest/FormFactor-1.127-Linux-x64.tar.gz)
+- The permanent Windows/Linux links above are regenerated on every successful release so they cannot silently remain pinned to an older build.
+
+Every push to `main` builds Windows and Linux packages, runs the implemented CTest suite, launch-tests the packaged game, runs the current Godot gameplay regression on both platforms, and refreshes the `latest` release only after those gates pass.
 
 formfactor is an open-source, physics-grounded PCB construction game and engineering simulator. The long-term goal is an interactive board builder whose designs are accepted only when engineering solvers and manufacturing checks support them.
 

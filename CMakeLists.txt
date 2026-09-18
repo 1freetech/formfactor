@@ -1,5 +1,12 @@
 cmake_minimum_required(VERSION 3.20)
-project(formfactor VERSION 0.1.0 LANGUAGES CXX)
+
+file(STRINGS "${CMAKE_CURRENT_LIST_DIR}/VERSION" FORMFACTOR_VERSION LIMIT_COUNT 1)
+string(STRIP "${FORMFACTOR_VERSION}" FORMFACTOR_VERSION)
+if(NOT FORMFACTOR_VERSION MATCHES "^[0-9]+\\.[0-9]+(\\.[0-9]+)?$")
+  message(FATAL_ERROR "VERSION must contain a numeric CMake-compatible version")
+endif()
+
+project(formfactor VERSION "${FORMFACTOR_VERSION}" LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

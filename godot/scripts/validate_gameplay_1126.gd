@@ -12,7 +12,7 @@ func _check(condition: bool, message: String) -> void:
 
 func _run_validation() -> void:
     var application_name := str(ProjectSettings.get_setting("application/config/name", ""))
-    _check(application_name == "FormFactor 1.126", "application version must be FormFactor 1.126")
+    _check(application_name.begins_with("FormFactor 1."), "application identity must remain a FormFactor 1.x build")
 
     var packed := load("res://scenes/main.tscn") as PackedScene
     _check(packed != null, "main scene must load")

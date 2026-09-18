@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#05090b"/><stop offset="1" stop-color="#10191d"/></linearGradient>
+  <linearGradient id="pcb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1b5b35"/><stop offset="1" stop-color="#0b3822"/></linearGradient>
+  <filter id="glow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<rect width="1600" height="900" fill="url(#bg)"/>
+<text x="72" y="78" font-family="Arial,sans-serif" font-size="52" font-weight="700" fill="#39ff14" filter="url(#glow)">FORMFACTOR 1.127</text>
+<text x="74" y="122" font-family="Arial,sans-serif" font-size="24" fill="#cfe3e7">OPTIMIZE • PLACE • DUPLICATE • DELETE • RELEASE</text>
+
+<g transform="translate(68 168)">
+  <rect x="0" y="0" width="920" height="650" rx="28" fill="#071013" stroke="#263a40" stroke-width="3"/>
+  <rect x="42" y="62" width="836" height="510" rx="16" fill="#3a1f10" opacity=".9"/>
+  <rect x="42" y="48" width="836" height="510" rx="16" fill="url(#pcb)" stroke="#39ff14" stroke-opacity=".48" stroke-width="3"/>
+  <g stroke="#67d892" stroke-opacity=".17" stroke-width="1">
+    <path d="M92 48V558 M142 48V558 M192 48V558 M242 48V558 M292 48V558 M342 48V558 M392 48V558 M442 48V558 M492 48V558 M542 48V558 M592 48V558 M642 48V558 M692 48V558 M742 48V558 M792 48V558 M842 48V558"/>
+    <path d="M42 98H878 M42 148H878 M42 198H878 M42 248H878 M42 298H878 M42 348H878 M42 398H878 M42 448H878 M42 498H878"/>
+  </g>
+  <text x="60" y="34" font-family="Arial,sans-serif" font-size="18" fill="#739095">TEXT-FREE PCB CANVAS • HALF-UNIT PLACEMENT GRID</text>
+
+  <g transform="translate(250 220)">
+    <line x1="-72" y1="32" x2="0" y2="32" stroke="#b9c3c6" stroke-width="8"/>
+    <line x1="170" y1="32" x2="242" y2="32" stroke="#b9c3c6" stroke-width="8"/>
+    <rect x="0" y="0" width="170" height="64" rx="28" fill="#c49a5a" stroke="#dbc18c" stroke-width="3"/>
+    <rect x="34" y="0" width="12" height="64" fill="#5c1b10"/><rect x="68" y="0" width="12" height="64" fill="#151515"/><rect x="102" y="0" width="12" height="64" fill="#cf321c"/><rect x="136" y="0" width="12" height="64" fill="#d2a521"/>
+  </g>
+  <g transform="translate(520 335)" opacity=".95">
+    <line x1="-72" y1="32" x2="0" y2="32" stroke="#b9c3c6" stroke-width="8"/>
+    <line x1="170" y1="32" x2="242" y2="32" stroke="#b9c3c6" stroke-width="8"/>
+    <rect x="0" y="0" width="170" height="64" rx="28" fill="#c49a5a" stroke="#39ff14" stroke-width="4"/>
+    <text x="50" y="-22" font-family="Arial,sans-serif" font-size="18" fill="#39ff14">CTRL+D</text>
+  </g>
+  <rect x="235" y="204" width="260" height="100" rx="12" fill="none" stroke="#00e5ff" stroke-width="3" stroke-dasharray="12 9"/>
+  <text x="78" y="618" font-family="Arial,sans-serif" font-size="18" fill="#e0eeee">Overlap is blocked. Active parts can duplicate or delete without adding PCB text.</text>
+</g>
+
+<g transform="translate(1024 168)">
+  <rect width="506" height="184" rx="18" fill="#0b1519" stroke="#1f3a42" stroke-width="2"/>
+  <text x="28" y="42" font-family="Arial,sans-serif" font-size="21" font-weight="700" fill="#39ff14">SOURCE FIXES</text>
+  <text x="28" y="82" font-family="Arial,sans-serif" font-size="18" fill="#d9e7ea">CMake version = repository VERSION</text>
+  <text x="28" y="114" font-family="Arial,sans-serif" font-size="18" fill="#d9e7ea">Current gameplay regression gates release</text>
+  <text x="28" y="146" font-family="Arial,sans-serif" font-size="18" fill="#d9e7ea">Permanent latest links refresh every build</text>
+
+  <g transform="translate(0 206)">
+    <rect width="506" height="184" rx="18" fill="#0b1519" stroke="#1f3a42" stroke-width="2"/>
+    <text x="28" y="42" font-family="Arial,sans-serif" font-size="21" font-weight="700" fill="#39ff14">GAMEPLAY</text>
+    <text x="28" y="82" font-family="Arial,sans-serif" font-size="18" fill="#d9e7ea">Overlap-safe click placement</text>
+    <text x="28" y="114" font-family="Arial,sans-serif" font-size="18" fill="#d9e7ea">Delete / Backspace active component</text>
+    <text x="28" y="144" font-family="Arial,sans-serif" font-size="18" fill="#d9e7ea">Ctrl+D nearest-valid duplicate</text>
+    <text x="28" y="170" font-family="Arial,sans-serif" font-size="16" fill="#8fffa0">Power net: reachable vs isolated parts</text>
+  </g>
+
+  <g transform="translate(0 412)">
+    <rect width="506" height="206" rx="18" fill="#0b1519" stroke="#1f3a42" stroke-width="2"/>
+    <text x="28" y="42" font-family="Arial,sans-serif" font-size="21" font-weight="700" fill="#39ff14">VISUALS</text>
+    <text x="28" y="82" font-family="Arial,sans-serif" font-size="18" fill="#d9e7ea">Subtle placement grid, no board labels</text>
+    <text x="28" y="114" font-family="Arial,sans-serif" font-size="18" fill="#d9e7ea">Visible PCB depth underlay</text>
+    <text x="28" y="146" font-family="Arial,sans-serif" font-size="18" fill="#d9e7ea">Soft secondary rim light</text>
+    <text x="28" y="180" font-family="Arial,sans-serif" font-size="16" fill="#739095">Engineering truth remains in the validated core.</text>
+  </g>
+</g>
+</svg>
