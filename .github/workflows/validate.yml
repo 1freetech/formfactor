@@ -37,7 +37,7 @@ jobs:
       - name: Validate deterministic CAD bridge
         run: python3 tests/test_cad_bridge.py
 
-      - name: Validate actual Godot 3D scene, gameplay, CAD, blank-board catalog flow, 1.124 GPU feedback, 1.125 electronics visuals, and 1.126 editor fixes
+      - name: Validate Godot 3D scene, gameplay, CAD, blank-board flow, electronics visuals, and 1.127 pin graph
         run: |
           set -euo pipefail
           GODOT=.tools/godot/Godot_v4.7.2-stable_linux.x86_64
@@ -50,7 +50,7 @@ jobs:
           "$GODOT" --headless --path godot --script res://scripts/validate_gameplay_1123.gd
           "$GODOT" --headless --path godot --script res://scripts/validate_gameplay_1124.gd
           "$GODOT" --headless --path godot --script res://scripts/validate_gameplay_1125.gd
-          "$GODOT" --headless --path godot --script res://scripts/validate_gameplay_1126.gd
+          "$GODOT" --headless --path godot --script res://scripts/validate_gameplay_1127.gd
 
       - name: Run complete direct-compiler validation suite
         run: sh scripts/validate.sh
