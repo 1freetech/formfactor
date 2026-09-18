@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-18 — FormFactor 1.127 optimization run
+
+FormFactor 1.127 fixes three maintenance problems: CMake now reads the repository VERSION instead of reporting 0.1.0, the playable-release job runs the current 1.127 gameplay regression before publication on Linux and Windows, and permanent latest-build aliases are regenerated so README download links cannot silently stay on an older package. The Godot main scene now points at a stable current-entry script rather than a numbered implementation file.
+
+Gameplay now rejects component overlap on normal click placement, supports Delete/Backspace removal of the active board part, supports Ctrl+D duplication into the nearest open grid location, and bounds board history to 96 snapshots. Visual presentation adds a text-free half-unit PCB placement grid, a thin board-depth underlay, softer secondary rim lighting, and responsive stretch behavior while keeping the PCB itself free of labels.
+
+This run was cross-checked against open-source EDA and 3D/editor references including KiCad Packages3D source, Signex, SparkBench, Ohmlet, and C-PCB. No third-party code or assets were copied into FormFactor; the implementation uses independently authored patterns and retains the engineering-core rule that rendering cannot decide electrical truth.
+
 ## 2026-09-15 — FreeLab direct-manipulation gameplay update
 
 [PR #12](https://github.com/1freetech/formfactor/pull/12) merged into `main` as [commit 3eeed3d](https://github.com/1freetech/formfactor/commit/3eeed3df8e72eaff27c6a757c8ce75994b68c031). FreeLab now supports click-and-drag movement for placed components, snapped placement previews, Delete/Backspace removal of the focused part and its wires, safer Escape cancellation for help/move/wire actions, live wire previews, compatible-target highlighting, and hover feedback. The CMake FreeLab target now builds `src/workbench_plus.cpp`, and normal validation installs SDL2 so the graphical frontend is included in CI compilation. The temporary custom window/header drag experiment was removed before merge and is not part of this update. The engineering core remains authoritative; these are game-control and presentation improvements only.
