@@ -7,7 +7,7 @@ extends "res://scripts/interactive_lab_1125.gd"
 # 3) the live schematic mirrors actual player-created connections.
 
 const SCHEMATIC_CANVAS_1126 = preload("res://scripts/schematic_symbol_canvas_1126.gd")
-const WIRE_VISUAL_Y := 0.70
+const WIRE_VISUAL_OFFSET_Y := 0.70
 const WIRE_VISUAL_RADIUS := 0.035
 
 func _ready() -> void:
@@ -95,8 +95,8 @@ func _refresh_wires_for_component(body: StaticBody3D) -> void:
         if a == null or b == null or not is_instance_valid(a) or not is_instance_valid(b):
             continue
 
-        var start := a.position + Vector3(0.0, WIRE_VISUAL_Y, 0.0)
-        var finish := b.position + Vector3(0.0, WIRE_VISUAL_Y, 0.0)
+        var start := a.position + Vector3(0.0, WIRE_VISUAL_OFFSET_Y, 0.0)
+        var finish := b.position + Vector3(0.0, WIRE_VISUAL_OFFSET_Y, 0.0)
         var new_node := _segment(
             "UserWire_%d" % (user_wires.find(wire) + 1),
             start,
@@ -107,6 +107,48 @@ func _refresh_wires_for_component(body: StaticBody3D) -> void:
         new_node.set_meta("user_wire", true)
         wire["node"] = new_node
 
+func _clear_player_board() -> void:
+    # The blank-board game no longer owns the legacy starter LED/power meshes.
+    # Calling material_lab._reset_tutorial() after they were removed produces
+    # invalid-node errors, so clear only the player-authored editor state here.
+    last_player_test_passed = false
+    last_player_test_path_length = 0
+    hovered_component = null
+    active_component = null
+    dragging_component = null
+    selection_target = null
+    if selection_highlight != null:
+        selection_highlight.visible = false
+    if focus_marker != null:
+        focus_marker.visible = false
+
+    for wire_variant in user_wires:
+        var wire := wire_variant as Dictionary
+        var node := wire.get("node") as Node
+        if node != null and is_instance_valid(node):
+            node.queue_free()
+    user_wires.clear()
+
+    for body in placed_components:
+        if body == null or not is_instance_valid(body):
+            continue
+        var component_id := str(body.get_meta("component_id", ""))
+        inventory_stock[component_id] = int(inventory_stock.get(component_id, 0)) + 1
+        body.queue_free()
+    placed_components.clear()
+
+    wire_mode = false
+    wire_start = null
+    selected_component_id = ""
+    _refresh_inventory()
+    _refresh_schematic()
+    _update_selected_label()
+    _update_context_target(null)
+    if status_label != null:
+        status_label.text = "Player board cleared. Inventory restored."
+    if build_status != null:
+        build_status.text = "BUILD / BUY"
+
 func _restore_board_snapshot(snapshot: Dictionary) -> void:
     # The older history layer used super._place_component_at_world(), which
     # bypassed newer component builders during replay. Rebuild through the
@@ -115,7 +157,7 @@ func _restore_board_snapshot(snapshot: Dictionary) -> void:
     hovered_component = null
     active_component = null
     dragging_component = null
-    super._clear_player_board()
+    _clear_player_board()
 
     reference_counts.clear()
     for component in COMPONENTS:
@@ -216,7 +258,12 @@ func debug_wire_visuals_current() -> bool:
         var node := wire.get("node") as MeshInstance3D
         if node == null or not is_instance_valid(node):
             return false
-        if absf(node.position.y - WIRE_VISUAL_Y) > 0.001:
+        var a := wire.get("a") as StaticBody3D
+        var b := wire.get("b") as StaticBody3D
+        if a == null or b == null or not is_instance_valid(a) or not is_instance_valid(b):
+            return false
+        var expected_y := (a.position.y + b.position.y) * 0.5 + WIRE_VISUAL_OFFSET_Y
+        if absf(node.position.y - expected_y) > 0.001:
             return false
         var mesh := node.mesh as CylinderMesh
         if mesh == null:
