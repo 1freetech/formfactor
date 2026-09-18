@@ -94,12 +94,17 @@ jobs:
           package-linux/FormFactor --headless --path package-linux --quit-after 3
           tar -czf "FormFactor-${VERSION}-Linux-x64.tar.gz" -C package-linux .
           test -s "FormFactor-${VERSION}-Linux-x64.tar.gz"
+          RELEASE_VISUAL="docs/releases/FormFactor-${VERSION}-Update.svg"
+          test -s "$RELEASE_VISUAL"
+          cp "$RELEASE_VISUAL" "FormFactor-${VERSION}-Update.svg"
 
       - name: Upload Linux playable
         uses: actions/upload-artifact@v4
         with:
           name: linux-playable
-          path: FormFactor-*-Linux-x64.tar.gz
+          path: |
+            FormFactor-*-Linux-x64.tar.gz
+            FormFactor-*-Update.svg
           if-no-files-found: error
 
   build-windows:
@@ -239,7 +244,17 @@ jobs:
           set -euo pipefail
           VERSION="$(tr -d '\r\n' < VERSION)"
           VERSION_TAG="v${VERSION}"
-          NOTES="FormFactor ${VERSION} is a material gameplay-control update. Hovered PCB parts now get a visible smart-target marker and context readout. F smoothly focuses the active or hovered part, B returns to the full board, and new on-screen buttons provide the same actions. Ctrl+Z and Ctrl+Y now undo and redo real player-board snapshots, including placed components, movement, rotation, removal, and wire relationships. The parametric CAD workbench from 1.11 remains integrated alongside the 25-family component library, live schematic mirror, connected-circuit test, and 100-lesson training path. The gameplay ideas were independently implemented from general open-world interaction patterns; GTA game data, maps, assets, names, animations, proprietary content, and unlicensed reversed source are not included. Both Windows and Linux packages are source-validated and launch-tested before publication."
+          IMAGE_URL="https://raw.githubusercontent.com/1freetech/formfactor/${VERSION_TAG}/docs/releases/FormFactor-${VERSION}-Update.svg"
+          NOTES="$(cat <<EOF
+![FormFactor ${VERSION} update](${IMAGE_URL})
+
+FormFactor ${VERSION} fixes three editor problems that were visible in normal PCB building. Undo and redo now restore the current electronics-specific 3D component models instead of falling back to older generic visuals. Moving a connected component now keeps its wire at the same height and thickness as a newly created wire. The live schematic mirror now draws the player's real component-to-component connections instead of only showing a wire count.
+
+The blank PCB start, 25 electronics component families, vector schematic symbols, selection feedback, Build / Buy drag placement, CAD workbench, training path, and validated C++ engineering core remain in place. The dedicated 1.126 regression test checks all three repaired editor behaviors before publication. Both Windows and Linux packages are source-validated and launch-tested before release.
+
+Release visual is also attached as FormFactor-${VERSION}-Update.svg.
+EOF
+)"
 
           if gh release view "$VERSION_TAG" >/dev/null 2>&1; then
             gh release upload "$VERSION_TAG" dist/* --clobber
