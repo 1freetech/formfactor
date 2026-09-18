@@ -19,7 +19,7 @@ func _run_validation() -> void:
     await process_frame
 
     var required_methods: Array[String] = [
-        "select_component", "_place_component_at_world", "_connect_parts", "_test_player_circuit",
+        "select_component", "_place_component_at_world", "debug_connect_pin_refs", "_test_player_circuit",
         "_pan_view", "rotate_active_component", "debug_component_count", "debug_placed_count",
         "debug_wire_count", "debug_pan_position", "debug_position_available", "debug_last_test_passed",
         "debug_last_test_path_length", "debug_player_led_lit", "debug_lexicon_count",
@@ -101,11 +101,18 @@ func _run_validation() -> void:
         _fail("LED placement failed")
         return
 
-    scene.call("_connect_parts", power, resistor)
-    scene.call("_connect_parts", resistor, led)
+    if not bool(scene.call("debug_connect_pin_refs", "PWR1", "POS", "R1", "1")):
+        _fail("could not connect PWR1.POS to R1.1")
+        return
+    if not bool(scene.call("debug_connect_pin_refs", "R1", "2", "D1", "A")):
+        _fail("could not connect R1.2 to D1.A")
+        return
+    if not bool(scene.call("debug_connect_pin_refs", "D1", "K", "PWR1", "NEG")):
+        _fail("could not connect D1.K to PWR1.NEG")
+        return
     await process_frame
-    if int(scene.call("debug_wire_count")) != 2:
-        _fail("expected two player wires in the power-resistor-LED path")
+    if int(scene.call("debug_wire_count")) != 3:
+        _fail("expected three exact pin wires in the power-resistor-LED loop")
         return
 
     var old_position := resistor.position
@@ -115,8 +122,8 @@ func _run_validation() -> void:
     if resistor.position.is_equal_approx(old_position):
         _fail("component drag/move logic did not change the placed part position")
         return
-    if int(scene.call("debug_wire_count")) != 2:
-        _fail("moving a connected component lost its wire relationships")
+    if int(scene.call("debug_wire_count")) != 3:
+        _fail("moving a connected component lost its three pin-wire relationships")
         return
 
     scene.call("_test_player_circuit")
@@ -124,8 +131,8 @@ func _run_validation() -> void:
     if not bool(scene.call("debug_last_test_passed")):
         _fail("connected power-to-LED circuit did not pass after component movement")
         return
-    if int(scene.call("debug_last_test_path_length")) != 2:
-        _fail("connected path did not report the expected two-wire path")
+    if int(scene.call("debug_last_test_path_length")) != 3:
+        _fail("connected loop did not report the expected three external wires")
         return
     if not bool(scene.call("debug_player_led_lit")):
         _fail("player-placed LED did not visibly light after a passing circuit test")

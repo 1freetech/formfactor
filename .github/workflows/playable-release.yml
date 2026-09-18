@@ -48,6 +48,7 @@ jobs:
           "$GODOT" --headless --path godot --script res://scripts/validate_gameplay.gd
           "$GODOT" --headless --path godot --script res://scripts/validate_cad.gd
           "$GODOT" --headless --path godot --script res://scripts/validate_gameplay_1121.gd
+          "$GODOT" --headless --path godot --script res://scripts/validate_gameplay_1127.gd
 
       - name: Verify engineering core identity
         run: python3 scripts/check_identity.py
@@ -63,6 +64,8 @@ jobs:
           cp -R godot/scenes package-linux/scenes
           cp -R godot/scripts package-linux/scripts
           cp VERSION package-linux/VERSION
+          cp LICENSE package-linux/LICENSE
+          cp THIRD_PARTY_NOTICES.md package-linux/THIRD_PARTY_NOTICES.md
           cat > package-linux/PLAY_FORMFACTOR.sh <<'SH'
           #!/usr/bin/env bash
           set -e
@@ -77,14 +80,14 @@ jobs:
           2. Pick a component from the left component menu and click the PCB to place it.
           3. Drag a placed component to move it. Drag empty board/workbench space to rotate the camera.
           4. Click a placed component and use Q/E or the on-screen buttons to rotate the component.
-          5. Use WIRE to connect parts and TEST to validate a connected power-to-LED path.
+          5. Use WIRE to connect exact named pins. TEST checks a simple pin-level power-to-LED loop before engineering validation.
           6. Hover a placed component to see the smart-target marker and context information.
           7. Press F to smoothly focus the active or hovered component. Press B to return to the full PCB board view.
           8. Press Ctrl+Z to undo board edits and Ctrl+Y to redo them. Placement, movement, rotation, removal, and wiring are restored as board snapshots.
           9. Open CAD // PARAMETRIC to edit a plate in 3D, generate OpenSCAD source, and use optional OpenSCAD or FreeCAD exports when those tools are installed.
           10. Open LEARN // 100 LESSONS for the guided PCB curriculum from basics through capstone boards.
           11. Every lesson is 1.25 percent harder than the lesson before it using a compounding curve. Training certificates unlock at 10, 25, 50, 75, and 100 completed lessons.
-          12. The 100-lesson top certificate is Open Source Engineer. The live schematic mirror and 25-family component lexicon stay available while you build.
+          12. Use TRUTH for digital gate tables. SAVE BP and LOAD BP preserve reusable pin-wired Engineering Blueprints.
 
           Certificate note: the game can generate a named local digital completion certificate. Automatic email delivery requires a separately configured secure FORMFACTOR_CERTIFICATE_API service so mail credentials are never embedded in the game executable.
 
@@ -145,6 +148,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "CAD validation failed with code $LASTEXITCODE" }
           & $godot --headless --path godot --script res://scripts/validate_gameplay_1121.gd
           if ($LASTEXITCODE -ne 0) { throw "FormFactor 1.121 gameplay validation failed with code $LASTEXITCODE" }
+          & $godot --headless --path godot --script res://scripts/validate_gameplay_1127.gd
+          if ($LASTEXITCODE -ne 0) { throw "FormFactor 1.127 pin-graph validation failed with code $LASTEXITCODE" }
 
       - name: Package and launch-test complete Godot Windows game
         shell: pwsh
@@ -158,6 +163,8 @@ jobs:
           Copy-Item godot\scenes package-windows\scenes -Recurse
           Copy-Item godot\scripts package-windows\scripts -Recurse
           Copy-Item VERSION package-windows\VERSION
+          Copy-Item LICENSE package-windows\LICENSE
+          Copy-Item THIRD_PARTY_NOTICES.md package-windows\THIRD_PARTY_NOTICES.md
           @'
           @echo off
           cd /d "%~dp0"
@@ -171,14 +178,14 @@ jobs:
           2. Pick a component from the left component menu and click the PCB to place it.
           3. Drag a placed component to move it. Drag empty board/workbench space to rotate the camera.
           4. Click a placed component and use Q/E or the on-screen buttons to rotate the component.
-          5. Use WIRE to connect parts and TEST to validate a connected power-to-LED path.
+          5. Use WIRE to connect exact named pins. TEST checks a simple pin-level power-to-LED loop before engineering validation.
           6. Hover a placed component to see the smart-target marker and context information.
           7. Press F to smoothly focus the active or hovered component. Press B to return to the full PCB board view.
           8. Press Ctrl+Z to undo board edits and Ctrl+Y to redo them. Placement, movement, rotation, removal, and wiring are restored as board snapshots.
           9. Open CAD // PARAMETRIC to edit a plate in 3D, generate OpenSCAD source, and use optional OpenSCAD or FreeCAD exports when those tools are installed.
           10. Open LEARN // 100 LESSONS for the guided PCB curriculum from basics through capstone boards.
           11. Every lesson is 1.25 percent harder than the lesson before it using a compounding curve. Training certificates unlock at 10, 25, 50, 75, and 100 completed lessons.
-          12. The 100-lesson top certificate is Open Source Engineer. The live schematic mirror and 25-family component lexicon stay available while you build.
+          12. Use TRUTH for digital gate tables. SAVE BP and LOAD BP preserve reusable pin-wired Engineering Blueprints.
 
           Certificate note: the game can generate a named local digital completion certificate. Automatic email delivery requires a separately configured secure FORMFACTOR_CERTIFICATE_API service so mail credentials are never embedded in the game executable.
 
@@ -246,8 +253,8 @@ jobs:
           VERSION_TAG="v${VERSION}"
           IMAGE_URL="https://raw.githubusercontent.com/1freetech/formfactor/${VERSION_TAG}/docs/releases/FormFactor-${VERSION}-Update.svg"
           NOTES="![FormFactor ${VERSION} update](${IMAGE_URL})"$'\n\n'
-          NOTES+="FormFactor ${VERSION} fixes three editor problems that were visible in normal PCB building. Undo and redo now restore the current electronics-specific 3D component models instead of falling back to older generic visuals. Moving a connected component now keeps its wire at the same height and thickness as a newly created wire. The live schematic mirror now draws the player's real component-to-component connections instead of only showing a wire count."$'\n\n'
-          NOTES+="The blank PCB start, 25 electronics component families, vector schematic symbols, selection feedback, Build / Buy drag placement, CAD workbench, training path, and validated C++ engineering core remain in place. The dedicated 1.126 regression test checks all three repaired editor behaviors before publication. Both Windows and Linux packages are source-validated and launch-tested before release."$'\n\n'
+          NOTES+="FormFactor ${VERSION} adds pin-level PCB building. Parts now expose named pins, wires store exact endpoints, the live schematic mirrors pin connections, connected pins form named nets, and Engineering Blueprints preserve the exact wired board."$'\\n\\n'
+          NOTES+="The C++ digital core now supports NOT, AND, OR, NAND, NOR, XOR, and XNOR with truth-table generation. A conservative legacy KiCad importer preserves symbol/value/footprint identity, the editor exports a cpp_core_required engineering snapshot, and the dedicated 1.127 regression test checks pin wiring, blueprint restore, package links, and snapshot behavior before publication. Both Windows and Linux packages are source-validated and launch-tested before release."$'\\n\\n'
           NOTES+="Release visual is also attached as FormFactor-${VERSION}-Update.svg."
 
           if gh release view "$VERSION_TAG" >/dev/null 2>&1; then

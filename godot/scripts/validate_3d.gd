@@ -22,8 +22,9 @@ func _run_validation() -> void:
         "debug_start_board_empty",
         "select_component",
         "_place_component_at_world",
-        "_connect_parts",
+        "debug_connect_pin_refs",
         "_test_player_circuit",
+        "debug_last_pin_precheck_passed",
         "debug_last_test_passed"
     ]:
         if not scene.has_method(method_name):
@@ -78,13 +79,20 @@ func _run_validation() -> void:
         _fail("player 3D component placement failed")
         return
 
-    scene.call("_connect_parts", power, resistor)
-    scene.call("_connect_parts", resistor, led_body)
+    if not bool(scene.call("debug_connect_pin_refs", "PWR1", "POS", "R1", "1")):
+        _fail("could not connect PWR1.POS to R1.1")
+        return
+    if not bool(scene.call("debug_connect_pin_refs", "R1", "2", "D1", "A")):
+        _fail("could not connect R1.2 to D1.A")
+        return
+    if not bool(scene.call("debug_connect_pin_refs", "D1", "K", "PWR1", "NEG")):
+        _fail("could not connect D1.K to PWR1.NEG")
+        return
     scene.call("_test_player_circuit")
     await process_frame
 
-    if not bool(scene.call("debug_last_test_passed")):
-        _fail("player-built power-resistor-LED path did not pass the implemented circuit test")
+    if not bool(scene.call("debug_last_pin_precheck_passed")) or not bool(scene.call("debug_last_test_passed")):
+        _fail("player-built pin-level power-resistor-LED loop did not pass the implemented topology test")
         return
 
     var static_bodies := scene.find_children("*", "StaticBody3D", true, false)
@@ -95,10 +103,10 @@ func _run_validation() -> void:
     var user_wire_count := 0
     for mesh_node in scene.find_children("*", "MeshInstance3D", true, false):
         var wire_mesh := mesh_node as MeshInstance3D
-        if wire_mesh != null and str(wire_mesh.name).begins_with("UserWire_"):
+        if wire_mesh != null and (str(wire_mesh.name).begins_with("UserWire_") or str(wire_mesh.name).begins_with("UserPinWire_")):
             user_wire_count += 1
-    if user_wire_count < 2:
-        _fail("expected at least two real 3D user wire meshes, found %d" % user_wire_count)
+    if user_wire_count < 3:
+        _fail("expected at least three real pin-level 3D user wire meshes, found %d" % user_wire_count)
         return
 
     var emissive_led_mesh_found := false

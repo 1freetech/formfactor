@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <rect width="1600" height="900" fill="#050809"/>
+  <rect x="90" y="90" width="1420" height="720" rx="28" fill="#081116" stroke="#39ff14" stroke-width="5"/>
+  <text x="140" y="190" fill="#39ff14" font-family="monospace" font-size="64" font-weight="700">FORMFACTOR 1.127</text>
+  <text x="140" y="250" fill="#d9eef0" font-family="monospace" font-size="31">PIN GRAPH UPDATE</text>
+
+  <g stroke="#ff8c1a" stroke-width="12" fill="none" stroke-linecap="round">
+    <path d="M220 475 H430"/>
+    <path d="M570 475 H790"/>
+    <path d="M930 475 H1160"/>
+    <path d="M1300 475 H1410"/>
+  </g>
+
+  <g fill="#0b171d" stroke="#7be9ff" stroke-width="5">
+    <rect x="430" y="405" width="140" height="140" rx="16"/>
+    <rect x="790" y="405" width="140" height="140" rx="16"/>
+    <rect x="1160" y="405" width="140" height="140" rx="16"/>
+  </g>
+
+  <g fill="#7be9ff" font-family="monospace" font-size="22" text-anchor="middle">
+    <text x="500" y="462">PWR1</text><text x="500" y="495">POS / NEG</text>
+    <text x="860" y="462">R1</text><text x="860" y="495">1 / 2</text>
+    <text x="1230" y="462">D1</text><text x="1230" y="495">A / K</text>
+  </g>
+
+  <g fill="#39ff14" font-family="monospace" font-size="25">
+    <text x="140" y="650">EXACT PIN WIRES • NAMED NETS • BLUEPRINTS • TRUTH TABLES</text>
+    <text x="140" y="700">KiCad IMPORT • PACKAGE LINKS • STRICT VALIDATION</text>
+    <text x="140" y="750">GODOT SHOWS IT. THE C++ CORE DECIDES ENGINEERING TRUTH.</text>
+  </g>
+</svg>
