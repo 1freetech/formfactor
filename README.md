@@ -12,6 +12,8 @@ Every push to `main` now builds Windows and Linux packages, runs the implemented
 
 formfactor is an open-source, physics-grounded PCB construction game and engineering simulator. The long-term goal is an interactive board builder whose designs are accepted only when engineering solvers and manufacturing checks support them.
 
+**Display rule:** the playable physical PCB is a **3D perspective workspace** with 3D component packages. The **2D schematic is a side mirror only** for schematic symbols and connection context; it does not replace the physical board.
+
 Start with the downloads above if you only want to run the current graphical FreeLab prototype. Developers can use [Run FormFactor in VS Code](docs/GETTING_STARTED.md) for simple, numbered source-build instructions.
 
 All setup help and future game screens follow the [simple instructions and component selection rules](docs/INTERACTION_RULES.md): visible buttons, one action per step, and accurate links between component names, schematic symbols, physical packages, and simulation models.
