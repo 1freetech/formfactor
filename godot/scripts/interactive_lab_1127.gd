@@ -742,6 +742,25 @@ func _build_pin_graph(include_internal_topology := false) -> RefCounted:
         )
     return graph
 
+func _count_user_wires_on_paths(forward_path: PackedStringArray, return_path: PackedStringArray) -> int:
+    var path_nodes: Dictionary = {}
+    for endpoint in forward_path:
+        path_nodes[str(endpoint)] = true
+    for endpoint in return_path:
+        path_nodes[str(endpoint)] = true
+
+    var count := 0
+    for wire in user_wires:
+        var a := wire.get("a") as StaticBody3D
+        var b := wire.get("b") as StaticBody3D
+        if a == null or b == null or not is_instance_valid(a) or not is_instance_valid(b):
+            continue
+        var a_endpoint := _endpoint(a, str(wire.get("a_pin", _first_pin_id(a))))
+        var b_endpoint := _endpoint(b, str(wire.get("b_pin", _first_pin_id(b))))
+        if path_nodes.has(a_endpoint) and path_nodes.has(b_endpoint):
+            count += 1
+    return count
+
 func _test_player_circuit() -> void:
     last_pin_precheck_passed = false
     last_player_test_passed = false
@@ -773,7 +792,7 @@ func _test_player_circuit() -> void:
             if not forward_path.is_empty() and not return_path.is_empty():
                 last_pin_precheck_passed = true
                 last_player_test_passed = true
-                last_player_test_path_length = user_wires.size()
+                last_player_test_path_length = _count_user_wires_on_paths(forward_path, return_path)
                 _light_player_led(led)
                 for wire in user_wires:
                     var wire_node := wire.get("node") as MeshInstance3D
