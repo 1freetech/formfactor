@@ -16,7 +16,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
   endif()
 endif()
 
-add_library(formfactor_core src/component.cpp src/component_geometry.cpp src/hash.cpp src/policy_trust.cpp src/key_authority.cpp src/source_authority.cpp src/catalog.cpp src/catalog_filter.cpp src/quantity.cpp src/circuit.cpp src/digital.cpp src/spice.cpp src/stackup.cpp src/layout.cpp src/impedance.cpp src/return_path.cpp src/pdn.cpp src/decoupling.cpp)
+add_library(formfactor_core src/component.cpp src/component_geometry.cpp src/hash.cpp src/policy_trust.cpp src/key_authority.cpp src/source_authority.cpp src/catalog.cpp src/catalog_filter.cpp src/quantity.cpp src/circuit.cpp src/digital.cpp src/kicad_import.cpp src/spice.cpp src/stackup.cpp src/layout.cpp src/impedance.cpp src/return_path.cpp src/pdn.cpp src/decoupling.cpp)
 target_include_directories(formfactor_core PUBLIC include)
 
 if(FORMFACTOR_BUILD_SIGNATURE_VERIFIER)
@@ -210,6 +210,10 @@ add_test(NAME circuit_validation COMMAND circuit_tests)
 add_executable(digital_tests tests/digital_tests.cpp)
 target_link_libraries(digital_tests PRIVATE formfactor_core)
 add_test(NAME digital_simulation COMMAND digital_tests)
+
+add_executable(kicad_import_tests tests/kicad_import_tests.cpp)
+target_link_libraries(kicad_import_tests PRIVATE formfactor_core)
+add_test(NAME kicad_legacy_import COMMAND kicad_import_tests)
 
 add_executable(spice_tests tests/spice_tests.cpp)
 target_link_libraries(spice_tests PRIVATE formfactor_core)
