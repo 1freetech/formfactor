@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#05090b"/>
+    <stop offset="1" stop-color="#10191d"/>
+  </linearGradient>
+  <linearGradient id="pcbTop" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#17613f"/>
+    <stop offset="1" stop-color="#092d20"/>
+  </linearGradient>
+  <linearGradient id="pcbSide" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#0c3b28"/>
+    <stop offset="1" stop-color="#04150f"/>
+  </linearGradient>
+  <filter id="glow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<rect width="1600" height="900" fill="url(#bg)"/>
+<text x="72" y="78" font-family="Arial,sans-serif" font-size="52" font-weight="700" fill="#39ff14" filter="url(#glow)">FORMFACTOR 1.127</text>
+<text x="74" y="122" font-family="Arial,sans-serif" font-size="24" fill="#cfe3e7">3D PCB WORKSPACE • 2D SCHEMATIC MIRROR</text>
+
+<g transform="translate(62 166)">
+  <rect x="0" y="0" width="1040" height="650" rx="28" fill="#071013" stroke="#263a40" stroke-width="3"/>
+  <text x="34" y="42" font-family="Arial,sans-serif" font-size="18" fill="#73a0a8">PRIMARY PLAY SURFACE — PHYSICAL 3D BOARD</text>
+
+  <!-- perspective PCB: top + visible front/right thickness -->
+  <polygon points="130,190 780,112 936,404 278,500" fill="url(#pcbTop)" stroke="#39ff14" stroke-opacity=".58" stroke-width="3"/>
+  <polygon points="278,500 936,404 936,430 278,528" fill="url(#pcbSide)"/>
+  <polygon points="780,112 936,404 936,430 780,140" fill="#08251a"/>
+
+  <!-- plated mounting holes -->
+  <g fill="#c1c9c7" stroke="#e6efec" stroke-width="3">
+    <ellipse cx="187" cy="212" rx="17" ry="10"/><ellipse cx="768" cy="142" rx="17" ry="10"/>
+    <ellipse cx="328" cy="473" rx="17" ry="10"/><ellipse cx="884" cy="391" rx="17" ry="10"/>
+  </g>
+  <g fill="#091110">
+    <ellipse cx="187" cy="212" rx="8" ry="5"/><ellipse cx="768" cy="142" rx="8" ry="5"/>
+    <ellipse cx="328" cy="473" rx="8" ry="5"/><ellipse cx="884" cy="391" rx="8" ry="5"/>
+  </g>
+
+  <!-- 3D power block -->
+  <g>
+    <polygon points="262,290 375,274 405,334 290,352" fill="#11191c"/>
+    <polygon points="290,352 405,334 405,378 290,397" fill="#050809"/>
+    <polygon points="375,274 405,334 405,378 375,318" fill="#0a0f11"/>
+    <ellipse cx="305" cy="302" rx="13" ry="8" fill="#c6cecd"/>
+    <ellipse cx="354" cy="295" rx="13" ry="8" fill="#aab4b4"/>
+    <ellipse cx="305" cy="301" rx="7" ry="4" fill="#e64032"/>
+    <ellipse cx="354" cy="294" rx="7" ry="4" fill="#202627"/>
+  </g>
+
+  <!-- 3D resistor -->
+  <g transform="translate(490 260) rotate(-8)">
+    <line x1="-72" y1="33" x2="2" y2="33" stroke="#bfc7c7" stroke-width="8"/>
+    <line x1="170" y1="33" x2="242" y2="33" stroke="#bfc7c7" stroke-width="8"/>
+    <rect x="0" y="0" width="172" height="66" rx="31" fill="#c79c5d" stroke="#ead49f" stroke-width="3"/>
+    <rect x="34" y="2" width="12" height="62" fill="#5c1b10"/>
+    <rect x="69" y="2" width="12" height="62" fill="#151515"/>
+    <rect x="104" y="2" width="12" height="62" fill="#cf321c"/>
+    <rect x="139" y="2" width="12" height="62" fill="#d2a521"/>
+    <path d="M16 11 Q86 -4 156 12" fill="none" stroke="#fff2c9" stroke-opacity=".44" stroke-width="5"/>
+  </g>
+
+  <!-- 3D LED -->
+  <g>
+    <line x1="782" y1="326" x2="776" y2="390" stroke="#bec8c8" stroke-width="8"/>
+    <line x1="818" y1="321" x2="817" y2="383" stroke="#bec8c8" stroke-width="8"/>
+    <ellipse cx="798" cy="304" rx="42" ry="32" fill="#54f23c" fill-opacity=".30"/>
+    <ellipse cx="798" cy="294" rx="35" ry="43" fill="#78ff58" stroke="#ddffd7" stroke-width="3"/>
+    <ellipse cx="786" cy="278" rx="9" ry="13" fill="#efffeb" fill-opacity=".82"/>
+  </g>
+
+  <!-- raised orange wire -->
+  <path d="M393 322 C470 279, 565 284, 625 309 S729 344, 775 310" fill="none" stroke="#5e2d0d" stroke-width="13" stroke-linecap="round" opacity=".55"/>
+  <path d="M389 314 C470 270, 565 276, 629 301 S728 334, 781 302" fill="none" stroke="#ff891c" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="389" cy="314" r="9" fill="#ffb347"/>
+  <circle cx="781" cy="302" r="9" fill="#ffb347"/>
+
+  <text x="54" y="596" font-family="Arial,sans-serif" font-size="20" fill="#e1eeee">Place, move, rotate and wire real 3D component packages on the PCB.</text>
+</g>
+
+<g transform="translate(1130 166)">
+  <rect width="402" height="650" rx="22" fill="#0a1418" stroke="#234049" stroke-width="3"/>
+  <text x="24" y="44" font-family="Arial,sans-serif" font-size="21" font-weight="700" fill="#39ff14">2D SCHEMATIC MIRROR</text>
+  <text x="24" y="76" font-family="Arial,sans-serif" font-size="16" fill="#9eb8be">Symbols mirror the 3D board.</text>
+
+  <rect x="24" y="108" width="354" height="360" rx="14" fill="#061014" stroke="#1e343b" stroke-width="2"/>
+  <line x1="50" y1="184" x2="100" y2="184" stroke="#dce9eb" stroke-width="3"/>
+  <rect x="100" y="168" width="86" height="32" fill="none" stroke="#dce9eb" stroke-width="3"/>
+  <line x1="186" y1="184" x2="236" y2="184" stroke="#dce9eb" stroke-width="3"/>
+  <path d="M236 184 H268 V264 H330" fill="none" stroke="#ff891c" stroke-width="4"/>
+  <circle cx="330" cy="264" r="7" fill="#ff891c"/>
+  <polygon points="68,302 96,286 96,318" fill="none" stroke="#dce9eb" stroke-width="3"/>
+  <line x1="96" y1="282" x2="96" y2="322" stroke="#dce9eb" stroke-width="3"/>
+  <line x1="42" y1="302" x2="68" y2="302" stroke="#dce9eb" stroke-width="3"/>
+  <line x1="96" y1="302" x2="132" y2="302" stroke="#dce9eb" stroke-width="3"/>
+
+  <text x="24" y="512" font-family="Arial,sans-serif" font-size="18" fill="#dce9eb">The schematic is identification</text>
+  <text x="24" y="540" font-family="Arial,sans-serif" font-size="18" fill="#dce9eb">and connection context only.</text>
+  <text x="24" y="590" font-family="Arial,sans-serif" font-size="17" fill="#39ff14">3D BOARD STAYS PRIMARY</text>
+  <text x="24" y="620" font-family="Arial,sans-serif" font-size="15" fill="#87a4aa">2D does not replace physical gameplay.</text>
+</g>
+</svg>
