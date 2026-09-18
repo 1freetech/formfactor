@@ -60,7 +60,7 @@ func shortest_path(start: String, finish: String) -> PackedStringArray:
     var previous: Dictionary = {}
 
     while not queue.is_empty():
-        var current := queue.pop_front()
+        var current: String = queue.pop_front()
         if current == finish:
             break
         var peers: Array = _adjacency[current]
@@ -96,7 +96,7 @@ func connected_components() -> Array:
         var component: Array[String] = []
         visited[start] = true
         while not queue.is_empty():
-            var current := queue.pop_front()
+            var current: String = queue.pop_front()
             component.append(current)
             var peers: Array = _adjacency[current]
             for peer_variant in peers:
