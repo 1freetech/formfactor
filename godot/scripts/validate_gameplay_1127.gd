@@ -32,7 +32,7 @@ func _run_validation() -> void:
         "debug_set_active_refdes_1127",
         "debug_duplicate_active_1127",
         "debug_delete_active_1127",
-        "debug_component_count",
+        "debug_placed_count",
         "debug_find_component"
     ]:
         _check(lab.has_method(method_name), "missing 1.127 validation method: %s" % method_name)
@@ -44,7 +44,7 @@ func _run_validation() -> void:
     lab.call("select_component", "resistor")
     var first := lab.call("_place_component_at_world", Vector3(0.0, 0.24, 0.0)) as StaticBody3D
     _check(first != null, "first resistor must place on an empty grid point")
-    var after_first := int(lab.debug_component_count())
+    var after_first := int(lab.debug_placed_count())
 
     lab.call("select_component", "led")
     var blocked := lab.call("_place_component_at_world", Vector3(0.0, 0.24, 0.0)) as StaticBody3D
