@@ -516,7 +516,7 @@ void material_draw_ui(SDL_Renderer* renderer, int width, int height,
     fill_rect(renderer, {0.0F, 0.0F, static_cast<float>(width), 72.0F});
     set_color(renderer, 57, 255, 20, 255);
     fill_rect(renderer, {0.0F, 69.0F, static_cast<float>(width), 3.0F});
-    draw_text(renderer, "FORMFACTOR 1.07", 20.0F, 16.0F, 2.0F);
+    draw_text(renderer, "FORMFACTOR 1.127", 20.0F, 16.0F, 2.0F);
     set_color(renderer, 169, 184, 188, 255);
     draw_text(renderer, "MATERIAL 3D LAB - DEPTH, LIGHT, LIVE CIRCUIT FEEDBACK", 20.0F, 46.0F, 0.94F);
 }
@@ -563,7 +563,7 @@ void material_draw_help(SDL_Renderer* renderer, int width, int height) {
     fill_rect(renderer, q);
     set_color(renderer, 57, 255, 20, 255);
     draw_rect(renderer, q);
-    draw_text(renderer, "FORMFACTOR 1.07 - MATERIAL 3D LAB", q.x + 28.0F, q.y + 28.0F, 1.55F);
+    draw_text(renderer, "FORMFACTOR 1.127 - MATERIAL 3D LAB", q.x + 28.0F, q.y + 28.0F, 1.55F);
     set_color(renderer, 221, 231, 233, 255);
     draw_wrapped_text(renderer,
         "THE BOARD NOW HAS A CLEAN BLANK FACE, DARK SOLDER-MASK DEPTH, PLATED HOLES, SOFTER CONTACT SHADOWS, METAL TERMINALS, SPECULAR HIGHLIGHTS, A GLASS-LIKE LED LENS, AND A MOVING CURRENT MARKER AFTER VALIDATION. THESE ARE VISUAL CUES. THEY DO NOT REPLACE THE ENGINEERING TRUTH LAYER.",
@@ -644,7 +644,7 @@ int main(int argc, char* argv[]) {
     }
 
     SDL_Window* window = SDL_CreateWindow(
-        "FormFactor 1.07 - Material 3D Lab", SDL_WINDOWPOS_CENTERED,
+        "FormFactor 1.127 - Material 3D Lab", SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED, 1480, 900,
         SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
     if (!window) {
