@@ -16,6 +16,8 @@ This run started by reading FormFactor's current C++ core, SDL2 FreeLab, Godot i
   - Reference for procedural component meshes and multiple render-quality modes in an electronics simulator.
 - C-PCB (GitHub): https://github.com/vygr/C-PCB
   - C++ reference for keeping routing/solver data separate from the viewer.
+- GDQuest godot-2d-builder power system (GitHub, MIT): https://github.com/gdquest-demos/godot-2d-builder/tree/master/godot/Systems/Power
+  - Reference for retracing source-to-receiver paths when network entities change and for separating connectivity state from receiver behavior. FormFactor adapts the architecture to arbitrary PCB component/wire graphs; it does not copy the tile-grid implementation or treat topology reachability as electrical simulation.
 
 GitHub, GitLab, SourceForge, Codeberg, and Bitbucket were searched for directly relevant maintainable references. Codeberg pages were not machine-readable in this session, and no stronger directly relevant reference surfaced from SourceForge or Bitbucket than the maintained projects above.
 
@@ -26,5 +28,6 @@ GitHub, GitLab, SourceForge, Codeberg, and Bitbucket were searched for directly 
 3. Direct manipulation is faster: Delete/Backspace removes the active component and Ctrl+D duplicates it into the nearest valid grid location.
 4. The PCB remains a blank text-free canvas while using a subtle grid, visible board depth, and soft rim light to improve spatial reading.
 5. The scene now points to a stable current-entry script so versioned regression layers can continue without changing main.tscn every release.
+6. A live PCB power-network topology snapshot now reports source-reachable parts, isolated parts, valid wire links, and source-reachable LEDs. This is gameplay/diagnostic topology only; voltage, current, ratings, and solver evidence stay with the validated C++/SPICE layer.
 
 No third-party source code, game assets, symbols, or 3D models were copied into FormFactor. These references informed architecture and interaction patterns only.
