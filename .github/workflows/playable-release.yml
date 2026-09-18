@@ -48,6 +48,8 @@ jobs:
           "$GODOT" --headless --path godot --script res://scripts/validate_gameplay.gd
           "$GODOT" --headless --path godot --script res://scripts/validate_cad.gd
           "$GODOT" --headless --path godot --script res://scripts/validate_gameplay_1121.gd
+          "$GODOT" --headless --path godot --script res://scripts/validate_gameplay_1126.gd
+          "$GODOT" --headless --path godot --script res://scripts/validate_gameplay_1127.gd
 
       - name: Verify engineering core identity
         run: python3 scripts/check_identity.py
@@ -74,7 +76,7 @@ jobs:
 
           PLAY
           1. Extract the archive and run ./PLAY_FORMFACTOR.sh.
-          2. Pick a component from the left component menu and click the PCB to place it.
+          2. Pick a component from the left component menu and click the 3D PCB to place it. The 2D schematic at the side is a mirror only.
           3. Drag a placed component to move it. Drag empty board/workbench space to rotate the camera.
           4. Click a placed component and use Q/E or the on-screen buttons to rotate the component.
           5. Use WIRE to connect parts and TEST to validate a connected power-to-LED path.
@@ -145,6 +147,10 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "CAD validation failed with code $LASTEXITCODE" }
           & $godot --headless --path godot --script res://scripts/validate_gameplay_1121.gd
           if ($LASTEXITCODE -ne 0) { throw "FormFactor 1.121 gameplay validation failed with code $LASTEXITCODE" }
+          & $godot --headless --path godot --script res://scripts/validate_gameplay_1126.gd
+          if ($LASTEXITCODE -ne 0) { throw "FormFactor 1.126 editor validation failed with code $LASTEXITCODE" }
+          & $godot --headless --path godot --script res://scripts/validate_gameplay_1127.gd
+          if ($LASTEXITCODE -ne 0) { throw "FormFactor 1.127 presentation validation failed with code $LASTEXITCODE" }
 
       - name: Package and launch-test complete Godot Windows game
         shell: pwsh
@@ -168,7 +174,7 @@ jobs:
 
           PLAY
           1. Extract this ZIP and double-click PLAY_FORMFACTOR.bat.
-          2. Pick a component from the left component menu and click the PCB to place it.
+          2. Pick a component from the left component menu and click the 3D PCB to place it. The 2D schematic at the side is a mirror only.
           3. Drag a placed component to move it. Drag empty board/workbench space to rotate the camera.
           4. Click a placed component and use Q/E or the on-screen buttons to rotate the component.
           5. Use WIRE to connect parts and TEST to validate a connected power-to-LED path.
@@ -246,8 +252,38 @@ jobs:
           VERSION_TAG="v${VERSION}"
           IMAGE_URL="https://raw.githubusercontent.com/1freetech/formfactor/${VERSION_TAG}/docs/releases/FormFactor-${VERSION}-Update.svg"
           NOTES="![FormFactor ${VERSION} update](${IMAGE_URL})"$'\n\n'
-          NOTES+="FormFactor ${VERSION} fixes three editor problems that were visible in normal PCB building. Undo and redo now restore the current electronics-specific 3D component models instead of falling back to older generic visuals. Moving a connected component now keeps its wire at the same height and thickness as a newly created wire. The live schematic mirror now draws the player's real component-to-component connections instead of only showing a wire count."$'\n\n'
-          NOTES+="The blank PCB start, 25 electronics component families, vector schematic symbols, selection feedback, Build / Buy drag placement, CAD workbench, training path, and validated C++ engineering core remain in place. The dedicated 1.126 regression test checks all three repaired editor behaviors before publication. Both Windows and Linux packages are source-validated and launch-tested before release."$'\n\n'
+          NOTES+="FormFactor ${VERSION} locks the intended presentation split: the physical PCB is the primary perspective 3D workspace, while the schematic remains a separate 2D mirror for symbol identification and connection context. The 3D board keeps electronics-specific component geometry, camera orbit/zoom, physical placement, movement, rotation, wiring, and material lighting."          NOTES+="Release visual is also attached as FormFactor-${VERSION}-Update.svg."
+
+          if gh release view "$VERSION_TAG" >/dev/null 2>&1; then
+            gh release upload "$VERSION_TAG" dist/* --clobber
+            gh release edit "$VERSION_TAG" --title "FormFactor ${VERSION}" --notes "$NOTES" --latest
+          else
+            gh release create "$VERSION_TAG" dist/* --title "FormFactor ${VERSION}" --notes "$NOTES" --latest
+          fi
+
+          if gh release view latest >/dev/null 2>&1; then
+            gh release upload latest dist/* --clobber
+            gh release edit latest --title "FormFactor ${VERSION} - Latest Playable" --notes "$NOTES"
+          else
+            gh release create latest dist/* --title "FormFactor ${VERSION} - Latest Playable" --notes "$NOTES"
+          fi
+\n\n'
+          NOTES+="The 1.126 undo/redo, moved-wire, and live-schematic fixes remain in place. A new 1.127 regression test blocks release if the main PCB stops being 3D or if the schematic mirror stops being a separate 2D HUD panel. The release visual now shows this 3D-primary layout instead of a flat board illustration."          NOTES+="Release visual is also attached as FormFactor-${VERSION}-Update.svg."
+
+          if gh release view "$VERSION_TAG" >/dev/null 2>&1; then
+            gh release upload "$VERSION_TAG" dist/* --clobber
+            gh release edit "$VERSION_TAG" --title "FormFactor ${VERSION}" --notes "$NOTES" --latest
+          else
+            gh release create "$VERSION_TAG" dist/* --title "FormFactor ${VERSION}" --notes "$NOTES" --latest
+          fi
+
+          if gh release view latest >/dev/null 2>&1; then
+            gh release upload latest dist/* --clobber
+            gh release edit latest --title "FormFactor ${VERSION} - Latest Playable" --notes "$NOTES"
+          else
+            gh release create latest dist/* --title "FormFactor ${VERSION} - Latest Playable" --notes "$NOTES"
+          fi
+\n\n'
           NOTES+="Release visual is also attached as FormFactor-${VERSION}-Update.svg."
 
           if gh release view "$VERSION_TAG" >/dev/null 2>&1; then
