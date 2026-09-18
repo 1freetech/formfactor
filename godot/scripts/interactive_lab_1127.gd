@@ -42,6 +42,7 @@ func _place_component_at_world(world_pos: Vector3) -> StaticBody3D:
     if body != null:
         active_component = body
         _update_context_target(body)
+    _refresh_power_network_context_1127()
     return body
 
 func _commit_history_snapshot() -> bool:
@@ -73,6 +74,113 @@ func _unhandled_input(event: InputEvent) -> void:
                     return
 
     super._unhandled_input(event)
+
+func _test_player_circuit() -> void:
+    super._test_player_circuit()
+    var network := _power_network_snapshot_1127()
+    if status_label != null:
+        status_label.text += " Topology: %d/%d part(s) source-reachable; %d isolated." % [
+            int(network.get("source_reachable", 0)),
+            int(network.get("total_parts", 0)),
+            int(network.get("isolated_parts", 0))
+        ]
+
+func _connect_parts(a: StaticBody3D, b: StaticBody3D) -> void:
+    super._connect_parts(a, b)
+    _refresh_power_network_context_1127()
+
+func _remove_at_screen(screen_pos: Vector2) -> void:
+    super._remove_at_screen(screen_pos)
+    _refresh_power_network_context_1127()
+
+func _clear_player_board() -> void:
+    super._clear_player_board()
+    _refresh_power_network_context_1127()
+
+func _refresh_power_network_context_1127() -> void:
+    if context_title == null or context_detail == null:
+        return
+    if active_component != null and is_instance_valid(active_component):
+        return
+    if hovered_component != null and is_instance_valid(hovered_component):
+        return
+
+    var network := _power_network_snapshot_1127()
+    context_title.text = "POWER NET"
+    context_detail.text = "%d/%d source-linked • %d isolated\nTopology only • TEST checks path" % [
+        int(network.get("source_reachable", 0)),
+        int(network.get("total_parts", 0)),
+        int(network.get("isolated_parts", 0))
+    ]
+
+func _power_network_snapshot_1127() -> Dictionary:
+    var bodies_by_id: Dictionary = {}
+    var adjacency: Dictionary = {}
+    var source_ids: Array[int] = []
+    var led_ids: Dictionary = {}
+
+    for body in placed_components:
+        if body == null or not is_instance_valid(body):
+            continue
+        var object_id := body.get_instance_id()
+        bodies_by_id[object_id] = body
+        adjacency[object_id] = []
+        var component_id := str(body.get_meta("component_id", ""))
+        if component_id == "power":
+            source_ids.append(object_id)
+        elif component_id == "led":
+            led_ids[object_id] = true
+
+    var valid_links := 0
+    for wire in user_wires:
+        var a := wire.get("a") as StaticBody3D
+        var b := wire.get("b") as StaticBody3D
+        if a == null or b == null or not is_instance_valid(a) or not is_instance_valid(b):
+            continue
+        var a_id := a.get_instance_id()
+        var b_id := b.get_instance_id()
+        if not adjacency.has(a_id) or not adjacency.has(b_id):
+            continue
+        adjacency[a_id].append(b_id)
+        adjacency[b_id].append(a_id)
+        valid_links += 1
+
+    var queue: Array[int] = []
+    var reachable: Dictionary = {}
+    for source_id in source_ids:
+        if not reachable.has(source_id):
+            reachable[source_id] = true
+            queue.append(source_id)
+
+    while not queue.is_empty():
+        var current := int(queue.pop_front())
+        var neighbors: Array = adjacency.get(current, [])
+        for neighbor_variant in neighbors:
+            var neighbor := int(neighbor_variant)
+            if reachable.has(neighbor):
+                continue
+            reachable[neighbor] = true
+            queue.append(neighbor)
+
+    var powered_leds := 0
+    for led_id in led_ids.keys():
+        if reachable.has(led_id):
+            powered_leds += 1
+
+    var total_parts := bodies_by_id.size()
+    var source_reachable := reachable.size()
+    return {
+        "total_parts": total_parts,
+        "sources": source_ids.size(),
+        "links": valid_links,
+        "source_reachable": source_reachable,
+        "isolated_parts": maxi(total_parts - source_reachable, 0),
+        "leds": led_ids.size(),
+        "powered_leds": powered_leds
+    }
+
+func debug_power_network_snapshot_1127() -> Dictionary:
+    return _power_network_snapshot_1127()
 
 func _delete_active_component() -> bool:
     if active_component == null or not is_instance_valid(active_component):
@@ -108,6 +216,7 @@ func _delete_active_component() -> bool:
         build_status.text = "REMOVED // %s" % refdes
 
     _commit_history_snapshot()
+    _refresh_power_network_context_1127()
     return true
 
 func _duplicate_active_component() -> bool:
