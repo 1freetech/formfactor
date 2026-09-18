@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-09-18 — FormFactor 1.127 Pin Graph
+
+FormFactor 1.127 moves the playable editor from whole-part wiring toward real PCB topology. Every current component family now exposes named pins, new wires preserve exact pin endpoints, the live schematic mirrors those pin names, connected pins become deterministic named nets, and Engineering Blueprints save and restore the exact pin-wired board. A compact tool bar adds clear select, place, wire, move, rotate, inspect, test, truth-table, save-blueprint, and load-blueprint actions. The editor also writes a versioned engineering snapshot that explicitly says the C++ core is still required for engineering truth.
+
+The engineering core now supports NOT, AND, OR, NAND, NOR, XOR, and XNOR plus deterministic Low/High truth-table generation. A new conservative legacy KiCad schematic importer preserves reference designator, symbol library ID, value, and footprint library ID without inventing pin maps or ratings. Regression tests use attributed MIT reference records from embeddedalpha/PCB-Design. FormFactor also now carries an MIT license and third-party notices; GPLv3 Logic-Circuit-Simulator code and the GodotAUVSim source with no top-level license found during review were not copied.
+
 ## 2026-09-15 — FreeLab direct-manipulation gameplay update
 
 [PR #12](https://github.com/1freetech/formfactor/pull/12) merged into `main` as [commit 3eeed3d](https://github.com/1freetech/formfactor/commit/3eeed3df8e72eaff27c6a757c8ce75994b68c031). FreeLab now supports click-and-drag movement for placed components, snapped placement previews, Delete/Backspace removal of the focused part and its wires, safer Escape cancellation for help/move/wire actions, live wire previews, compatible-target highlighting, and hover feedback. The CMake FreeLab target now builds `src/workbench_plus.cpp`, and normal validation installs SDL2 so the graphical frontend is included in CI compilation. The temporary custom window/header drag experiment was removed before merge and is not part of this update. The engineering core remains authoritative; these are game-control and presentation improvements only.
