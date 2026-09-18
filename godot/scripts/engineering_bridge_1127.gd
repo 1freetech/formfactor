@@ -91,8 +91,8 @@ static func build_snapshot(
             "b_pin": str(wire.get("b_pin", ""))
         })
     wires.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
-        var ak := "%s.%s>%s.%s" % [a.a_ref, a.a_pin, a.b_ref, a.b_pin]
-        var bk := "%s.%s>%s.%s" % [b.a_ref, b.a_pin, b.b_ref, b.b_pin]
+        var ak := "%s.%s>%s.%s" % [str(a.get("a_ref", "")), str(a.get("a_pin", "")), str(a.get("b_ref", "")), str(a.get("b_pin", ""))]
+        var bk := "%s.%s>%s.%s" % [str(b.get("a_ref", "")), str(b.get("a_pin", "")), str(b.get("b_ref", "")), str(b.get("b_pin", ""))]
         return ak < bk
     )
 
