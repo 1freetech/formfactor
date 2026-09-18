@@ -5,7 +5,7 @@ mkdir -p build
 cxx="${CXX:-g++}"
 flags="-std=c++20 -Wall -Wextra -Wpedantic -Werror -Iinclude"
 
-sources="src/component.cpp src/hash.cpp src/policy_trust.cpp src/key_authority.cpp src/source_authority.cpp src/catalog.cpp src/catalog_filter.cpp src/quantity.cpp src/circuit.cpp src/digital.cpp src/spice.cpp src/stackup.cpp src/layout.cpp src/impedance.cpp src/return_path.cpp src/pdn.cpp src/decoupling.cpp"
+sources="src/component.cpp src/hash.cpp src/policy_trust.cpp src/key_authority.cpp src/source_authority.cpp src/catalog.cpp src/catalog_filter.cpp src/quantity.cpp src/circuit.cpp src/digital.cpp src/kicad_import.cpp src/spice.cpp src/stackup.cpp src/layout.cpp src/impedance.cpp src/return_path.cpp src/pdn.cpp src/decoupling.cpp"
 
 $cxx $flags $sources tests/component_tests.cpp -o build/component_tests
 ./build/component_tests
@@ -87,6 +87,8 @@ $cxx $flags $sources tests/circuit_tests.cpp -o build/circuit_tests
 ./build/circuit_tests
 $cxx $flags $sources tests/digital_tests.cpp -o build/digital_tests
 ./build/digital_tests
+$cxx $flags $sources tests/kicad_import_tests.cpp -o build/kicad_import_tests
+./build/kicad_import_tests
 $cxx $flags $sources tests/spice_tests.cpp -o build/spice_tests
 ./build/spice_tests
 $cxx $flags $sources tests/stackup_tests.cpp -o build/stackup_tests
