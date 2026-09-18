@@ -46,7 +46,8 @@
     <text x="28" y="42" font-family="Arial,sans-serif" font-size="21" font-weight="700" fill="#39ff14">GAMEPLAY</text>
     <text x="28" y="82" font-family="Arial,sans-serif" font-size="18" fill="#d9e7ea">Overlap-safe click placement</text>
     <text x="28" y="114" font-family="Arial,sans-serif" font-size="18" fill="#d9e7ea">Delete / Backspace active component</text>
-    <text x="28" y="146" font-family="Arial,sans-serif" font-size="18" fill="#d9e7ea">Ctrl+D nearest-valid duplicate</text>
+    <text x="28" y="144" font-family="Arial,sans-serif" font-size="18" fill="#d9e7ea">Ctrl+D nearest-valid duplicate</text>
+    <text x="28" y="170" font-family="Arial,sans-serif" font-size="16" fill="#8fffa0">Power net: reachable vs isolated parts</text>
   </g>
 
   <g transform="translate(0 412)">
