@@ -744,6 +744,8 @@ func _build_pin_graph(include_internal_topology := false) -> RefCounted:
 
 func _test_player_circuit() -> void:
     last_pin_precheck_passed = false
+    last_player_test_passed = false
+    last_player_test_path_length = 0
     _reset_player_test_visuals()
     var graph = _build_pin_graph(true)
     var powers: Array[StaticBody3D] = []
@@ -770,10 +772,17 @@ func _test_player_circuit() -> void:
             var return_path: PackedStringArray = graph.shortest_path(_endpoint(led, "K"), _endpoint(power, "NEG"))
             if not forward_path.is_empty() and not return_path.is_empty():
                 last_pin_precheck_passed = true
+                last_player_test_passed = true
+                last_player_test_path_length = user_wires.size()
+                _light_player_led(led)
+                for wire in user_wires:
+                    var wire_node := wire.get("node") as MeshInstance3D
+                    if wire_node != null and is_instance_valid(wire_node):
+                        wire_node.material_override = _material(TEST_WIRE_COLOR, 0.18, 0.14, TEST_WIRE_COLOR, 3.0)
                 if build_status != null:
                     build_status.text = "TEST PRECHECK: CLOSED PIN LOOP"
                 if status_label != null:
-                    status_label.text = "Pin topology found a + → LED anode and LED cathode → - loop. This is topology only; C++ validation/simulation still decides engineering truth."
+                    status_label.text = "Pin topology found a + → LED anode and LED cathode → - loop. Visual feedback is active, but C++ validation/simulation still decides engineering truth."
                 _export_engineering_snapshot()
                 return
 
