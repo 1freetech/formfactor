@@ -165,7 +165,7 @@ const INTERNAL_TOPOLOGY_PAIRS := {
     "fuse": [["1", "2"]]
 }
 
-var editor_tool: EditorTool = EditorTool.SELECT
+var editor_tool: int = EditorTool.SELECT
 var wire_start_pin := ""
 var pin_catalog_valid := false
 var pin_catalog_errors: Array[String] = []
@@ -369,7 +369,7 @@ func select_component(component_id: String) -> void:
     if selected_component_id == component_id:
         _set_editor_tool(EditorTool.PLACE, false)
 
-func _set_editor_tool(tool: EditorTool, clear_selection := true) -> void:
+func _set_editor_tool(tool: int, clear_selection := true) -> void:
     editor_tool = tool
     wire_mode = tool == EditorTool.WIRE
     if tool != EditorTool.WIRE:
@@ -426,8 +426,8 @@ func _ensure_pin_ports(body: StaticBody3D) -> void:
     var component_id := str(body.get_meta("component_id", ""))
     var pins: Array = PIN_LIBRARY.get(component_id, [])
     var existing := body.get_node_or_null("PinPorts1127")
-    if existing != null:
-        existing.queue_free()
+    if existing != null and not existing.is_queued_for_deletion():
+        return
 
     var root := Node3D.new()
     root.name = "PinPorts1127"
@@ -781,6 +781,13 @@ func _test_player_circuit() -> void:
         build_status.text = "TEST PRECHECK: OPEN / WRONG PIN"
     if status_label != null:
         status_label.text = "No complete pin-level LED loop found. Check +, -, LED A/K, and any series-part pins."
+
+func _clear_player_board() -> void:
+    wire_start_pin = ""
+    last_pin_precheck_passed = false
+    super._clear_player_board()
+    if not history_replaying:
+        _export_engineering_snapshot()
 
 func _capture_board_snapshot() -> Dictionary:
     var components: Array[Dictionary] = []
