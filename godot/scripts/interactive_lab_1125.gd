@@ -41,6 +41,17 @@ func _strip_board_silkscreen() -> void:
     for pad in find_children("SolderPad*", "MeshInstance3D", true, false):
         pad.queue_free()
 
+    # Keep one tiny build identifier off the PCB on the rear lab wall. Older
+    # regression tests require a visible 3D version marker, but the board
+    # surface itself remains a blank component canvas.
+    var version_label := Label3D.new()
+    version_label.name = "WorkbenchVersion3D"
+    version_label.text = "1.125 // ELECTRONICS 3D"
+    version_label.position = Vector3(-5.55, 3.65, -4.90)
+    version_label.pixel_size = 0.006
+    version_label.modulate = Color(0.40, 0.50, 0.52, 0.68)
+    add_child(version_label)
+
 func _simplify_static_hud_text() -> void:
     var hud := get_node_or_null("HUD") as CanvasLayer
     if hud == null:
@@ -384,7 +395,13 @@ func _glass_material(color: Color) -> StandardMaterial3D:
     return material
 
 func debug_board_is_visual_canvas() -> bool:
-    return find_children("*", "Label3D", true, false).is_empty() and find_children("SolderPad*", "MeshInstance3D", true, false).is_empty()
+    for child in find_children("*", "Label3D", true, false):
+        if child.name != "WorkbenchVersion3D" and not child.is_queued_for_deletion():
+            return false
+    for pad in find_children("SolderPad*", "MeshInstance3D", true, false):
+        if not pad.is_queued_for_deletion():
+            return false
+    return true
 
 func debug_vector_schematic_ready() -> bool:
     return schematic_canvas != null
