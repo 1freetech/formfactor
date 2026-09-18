@@ -108,6 +108,40 @@ void material_fill_quad(SDL_Renderer* renderer, const MaterialPoint& a, const Ma
     }
 }
 
+void material_fill_quad_gradient(SDL_Renderer* renderer, const MaterialPoint& a,
+                                 const MaterialPoint& b, const MaterialPoint& c,
+                                 const MaterialPoint& d,
+                                 std::array<std::uint8_t, 3> near_color,
+                                 std::array<std::uint8_t, 3> far_color,
+                                 int slices = 96) {
+    for (int i = 0; i <= slices; ++i) {
+        const float t = static_cast<float>(i) / static_cast<float>(slices);
+        const auto mix_channel = [t](std::uint8_t near_value, std::uint8_t far_value) {
+            return static_cast<std::uint8_t>(
+                static_cast<float>(near_value) +
+                (static_cast<float>(far_value) - static_cast<float>(near_value)) * t);
+        };
+        set_color(renderer,
+                  mix_channel(near_color[0], far_color[0]),
+                  mix_channel(near_color[1], far_color[1]),
+                  mix_channel(near_color[2], far_color[2]), 255);
+        material_line(renderer, material_mix(a, d, t), material_mix(b, c, t));
+    }
+}
+
+void material_soft_disc(SDL_Renderer* renderer, float x, float y, float radius,
+                        std::array<std::uint8_t, 3> color,
+                        std::uint8_t peak_alpha, int layers = 6) {
+    for (int layer = layers; layer >= 1; --layer) {
+        const float t = static_cast<float>(layer) / static_cast<float>(layers);
+        const float layer_radius = radius * (0.52F + 0.48F * t);
+        const std::uint8_t alpha = static_cast<std::uint8_t>(
+            static_cast<float>(peak_alpha) * (1.0F - 0.76F * t));
+        set_color(renderer, color[0], color[1], color[2], alpha);
+        fill_circle(renderer, x, y, layer_radius);
+    }
+}
+
 void material_outline_quad(SDL_Renderer* renderer, const MaterialPoint& a,
                            const MaterialPoint& b, const MaterialPoint& c,
                            const MaterialPoint& d) {
@@ -183,17 +217,19 @@ void material_draw_board(SDL_Renderer* renderer, int width, int height,
     const MaterialPoint cb = material_project_logical(1000.0F, 620.0F, -0.12F, width, height, camera);
     const MaterialPoint db = material_project_logical(0.0F, 620.0F, -0.12F, width, height, camera);
 
-    set_color(renderer, 3, 18, 15, 255);
-    material_fill_quad(renderer, d, c, cb, db, 80);
-    set_color(renderer, 6, 27, 22, 255);
-    material_fill_quad(renderer, b, c, cb, bb, 80);
+    material_fill_quad_gradient(renderer, d, c, cb, db,
+                                {8, 25, 20}, {2, 10, 9}, 96);
+    material_fill_quad_gradient(renderer, b, c, cb, bb,
+                                {12, 36, 29}, {3, 14, 12}, 96);
 
-    set_color(renderer, 13, 58, 42, 255);
-    material_fill_quad(renderer, a, b, c, d, 120);
-    set_color(renderer, 57, 255, 20, 255);
+    material_fill_quad_gradient(renderer, a, b, c, d,
+                                {20, 74, 53}, {5, 31, 24}, 160);
+    set_color(renderer, 120, 176, 150, 210);
     material_outline_quad(renderer, a, b, c, d);
+    set_color(renderer, 205, 235, 221, 75);
+    material_line(renderer, a, b);
 
-    set_color(renderer, 26, 85, 61, 155);
+    set_color(renderer, 24, 72, 54, 88);
     for (int x = 100; x < 1000; x += 100) {
         material_line(renderer,
                       material_project_logical(static_cast<float>(x), 0.0F, 0.008F,
@@ -215,18 +251,17 @@ void material_draw_board(SDL_Renderer* renderer, int width, int height,
     for (const auto& hole : holes) {
         const MaterialPoint p = material_project_logical(hole.first, hole.second, 0.018F,
                                                          width, height, camera);
-        set_color(renderer, 1, 6, 5, 255);
-        fill_circle(renderer, p.x + 2.0F, p.y + 3.0F, 8.0F);
-        set_color(renderer, 131, 157, 149, 255);
-        draw_circle(renderer, p.x, p.y, 8.0F);
-        set_color(renderer, 12, 19, 18, 255);
-        fill_circle(renderer, p.x, p.y, 4.0F);
+        set_color(renderer, 0, 4, 4, 135);
+        fill_circle(renderer, p.x + 2.0F, p.y + 3.0F, 10.0F);
+        set_color(renderer, 178, 139, 47, 255);
+        fill_circle(renderer, p.x, p.y, 9.0F);
+        set_color(renderer, 236, 214, 139, 210);
+        draw_circle(renderer, p.x - 0.8F, p.y - 0.8F, 7.5F);
+        set_color(renderer, 18, 23, 22, 255);
+        fill_circle(renderer, p.x, p.y, 4.8F);
+        set_color(renderer, 240, 246, 244, 100);
+        draw_circle(renderer, p.x - 1.0F, p.y - 1.0F, 4.0F);
     }
-
-    const MaterialPoint silk = material_project_logical(88.0F, 92.0F, 0.014F,
-                                                        width, height, camera);
-    set_color(renderer, 210, 234, 226, 205);
-    draw_text(renderer, "FORMFACTOR TRAINING PCB", silk.x, silk.y, 0.72F);
 }
 
 MaterialPoint material_part_center(const PlacedPart& part, int width, int height,
@@ -241,10 +276,10 @@ void material_draw_shadow(SDL_Renderer* renderer, const PlacedPart& part, int wi
                           const MaterialCamera& camera) {
     const float cx = part.rect.x + part.rect.w * 0.5F;
     const float cy = part.rect.y + part.rect.h * 0.5F;
-    const MaterialPoint p = material_project_logical(cx + 8.0F, cy + 9.0F, 0.018F,
+    const MaterialPoint p = material_project_logical(cx + 10.0F, cy + 12.0F, 0.018F,
                                                      width, height, camera);
-    set_color(renderer, 0, 0, 0, 100);
-    fill_circle(renderer, p.x, p.y, part.kind == PartKind::Power ? 24.0F : 17.0F);
+    const float radius = part.kind == PartKind::Power ? 31.0F : 22.0F;
+    material_soft_disc(renderer, p.x, p.y, radius, {0, 0, 0}, 138, 7);
 }
 
 void material_component_color(PartKind kind, std::uint8_t& red, std::uint8_t& green,
@@ -294,8 +329,16 @@ void material_draw_component(SDL_Renderer* renderer, const PlacedPart& part,
               static_cast<std::uint8_t>(green * 0.70F),
               static_cast<std::uint8_t>(blue * 0.70F), 255);
     material_fill_quad(renderer, b0, c0, c1, b1, 30);
-    set_color(renderer, red, green, blue, 255);
-    material_fill_quad(renderer, a1, b1, c1, d1, 35);
+    material_fill_quad_gradient(
+        renderer, a1, b1, c1, d1,
+        {static_cast<std::uint8_t>(std::min(255.0F, red * 1.18F)),
+         static_cast<std::uint8_t>(std::min(255.0F, green * 1.18F)),
+         static_cast<std::uint8_t>(std::min(255.0F, blue * 1.18F))},
+        {static_cast<std::uint8_t>(red * 0.72F),
+         static_cast<std::uint8_t>(green * 0.72F),
+         static_cast<std::uint8_t>(blue * 0.72F)}, 48);
+    set_color(renderer, 255, 255, 255, 68);
+    material_line(renderer, a1, b1);
 
     set_color(renderer, highlighted ? 255 : 205,
               highlighted ? 230 : 214,
@@ -317,28 +360,42 @@ void material_draw_component(SDL_Renderer* renderer, const PlacedPart& part,
         const MaterialPoint minus = material_project_logical(x0 + part.rect.w * 0.68F,
                                                              y0 + part.rect.h * 0.40F,
                                                              z + 0.018F, width, height, camera);
-        set_color(renderer, 211, 67, 58, 255);
-        fill_circle(renderer, plus.x, plus.y, 6.0F);
-        set_color(renderer, 31, 35, 38, 255);
-        fill_circle(renderer, minus.x, minus.y, 6.0F);
-        set_color(renderer, 235, 239, 240, 255);
-        draw_text(renderer, "+", plus.x - 3.0F, plus.y - 4.0F, 0.8F);
-        draw_text(renderer, "-", minus.x - 3.0F, minus.y - 4.0F, 0.8F);
+        for (const MaterialPoint terminal : {plus, minus}) {
+            set_color(renderer, 35, 39, 40, 180);
+            fill_circle(renderer, terminal.x + 1.5F, terminal.y + 2.0F, 8.0F);
+            set_color(renderer, 172, 179, 178, 255);
+            fill_circle(renderer, terminal.x, terminal.y, 7.0F);
+            set_color(renderer, 236, 241, 238, 210);
+            draw_circle(renderer, terminal.x - 0.5F, terminal.y - 0.5F, 5.7F);
+            set_color(renderer, 74, 78, 78, 255);
+            SDL_RenderDrawLineF(renderer, terminal.x - 4.0F, terminal.y,
+                                terminal.x + 4.0F, terminal.y);
+            SDL_RenderDrawLineF(renderer, terminal.x, terminal.y - 4.0F,
+                                terminal.x, terminal.y + 4.0F);
+        }
+        set_color(renderer, 231, 69, 59, 255);
+        fill_circle(renderer, plus.x - 10.0F, plus.y + 12.0F, 3.8F);
+        set_color(renderer, 22, 25, 27, 255);
+        fill_circle(renderer, minus.x + 10.0F, minus.y + 12.0F, 3.8F);
     } else if (part.kind == PartKind::Led) {
         const float glow = powered
             ? 13.0F + 3.0F * std::sin(static_cast<float>(SDL_GetTicks()) * 0.009F)
             : 8.0F;
         if (powered) {
-            set_color(renderer, 57, 255, 20, 32);
-            fill_circle(renderer, center.x, center.y - 5.0F, glow + 18.0F);
-            set_color(renderer, 57, 255, 20, 70);
-            fill_circle(renderer, center.x, center.y - 5.0F, glow + 9.0F);
+            material_soft_disc(renderer, center.x, center.y - 5.0F, glow + 24.0F,
+                               {57, 255, 20}, 115, 8);
         }
-        set_color(renderer, powered ? 170 : 80, powered ? 255 : 185,
-                  powered ? 150 : 80, 255);
-        fill_circle(renderer, center.x, center.y - 5.0F, glow);
-        set_color(renderer, 224, 255, 215, 255);
-        draw_circle(renderer, center.x, center.y - 5.0F, glow);
+        set_color(renderer, powered ? 61 : 31, powered ? 198 : 106,
+                  powered ? 44 : 38, 255);
+        fill_circle(renderer, center.x, center.y - 5.0F, glow + 2.0F);
+        set_color(renderer, powered ? 149 : 72, powered ? 255 : 165,
+                  powered ? 131 : 78, 225);
+        fill_circle(renderer, center.x - 1.5F, center.y - 7.0F, glow - 2.0F);
+        set_color(renderer, 236, 255, 231, powered ? 245 : 150);
+        fill_circle(renderer, center.x - glow * 0.32F, center.y - glow * 0.38F,
+                    std::max(2.2F, glow * 0.18F));
+        set_color(renderer, 224, 255, 215, 235);
+        draw_circle(renderer, center.x, center.y - 5.0F, glow + 2.0F);
     }
 }
 
@@ -459,7 +516,7 @@ void material_draw_ui(SDL_Renderer* renderer, int width, int height,
     fill_rect(renderer, {0.0F, 0.0F, static_cast<float>(width), 72.0F});
     set_color(renderer, 57, 255, 20, 255);
     fill_rect(renderer, {0.0F, 69.0F, static_cast<float>(width), 3.0F});
-    draw_text(renderer, "FORMFACTOR 1.06", 20.0F, 16.0F, 2.0F);
+    draw_text(renderer, "FORMFACTOR 1.07", 20.0F, 16.0F, 2.0F);
     set_color(renderer, 169, 184, 188, 255);
     draw_text(renderer, "MATERIAL 3D LAB - DEPTH, LIGHT, LIVE CIRCUIT FEEDBACK", 20.0F, 46.0F, 0.94F);
 }
@@ -506,10 +563,10 @@ void material_draw_help(SDL_Renderer* renderer, int width, int height) {
     fill_rect(renderer, q);
     set_color(renderer, 57, 255, 20, 255);
     draw_rect(renderer, q);
-    draw_text(renderer, "FORMFACTOR 1.06 - MATERIAL 3D LAB", q.x + 28.0F, q.y + 28.0F, 1.55F);
+    draw_text(renderer, "FORMFACTOR 1.07 - MATERIAL 3D LAB", q.x + 28.0F, q.y + 28.0F, 1.55F);
     set_color(renderer, 221, 231, 233, 255);
     draw_wrapped_text(renderer,
-        "THE BOARD NOW HAS DEPTH, MOUNTING HOLES, SILKSCREEN, COMPONENT SHADOWS, POWER TERMINALS, A LIT LED, AND A MOVING CURRENT MARKER AFTER VALIDATION. THESE ARE VISUAL AND GAMEPLAY CUES. THEY DO NOT REPLACE THE ENGINEERING TRUTH LAYER.",
+        "THE BOARD NOW HAS A CLEAN BLANK FACE, DARK SOLDER-MASK DEPTH, PLATED HOLES, SOFTER CONTACT SHADOWS, METAL TERMINALS, SPECULAR HIGHLIGHTS, A GLASS-LIKE LED LENS, AND A MOVING CURRENT MARKER AFTER VALIDATION. THESE ARE VISUAL CUES. THEY DO NOT REPLACE THE ENGINEERING TRUTH LAYER.",
         q.x + 28.0F, q.y + 78.0F, q.w - 56.0F, 0.92F, 5.0F);
     set_color(renderer, 255, 225, 70, 255);
     draw_text(renderer, "CAMERA", q.x + 28.0F, q.y + 235.0F, 1.2F);
@@ -587,7 +644,7 @@ int main(int argc, char* argv[]) {
     }
 
     SDL_Window* window = SDL_CreateWindow(
-        "FormFactor 1.06 - Material 3D Lab", SDL_WINDOWPOS_CENTERED,
+        "FormFactor 1.07 - Material 3D Lab", SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED, 1480, 900,
         SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
     if (!window) {
