@@ -32,6 +32,8 @@ func _run_validation() -> void:
         "debug_set_active_refdes_1127",
         "debug_duplicate_active_1127",
         "debug_delete_active_1127",
+        "debug_power_network_snapshot_1127",
+        "debug_last_test_passed",
         "debug_placed_count",
         "debug_find_component"
     ]:
@@ -62,6 +64,38 @@ func _run_validation() -> void:
     await process_frame
     _check(int(lab.debug_placed_count()) == after_first, "delete must return the board to one component")
     _check(lab.debug_find_component("R2") == null, "deleted component must leave the active board state")
+
+    # Source-derived power-network pattern: verify topology propagation without
+    # pretending that reachability is a voltage/current simulation.
+    lab.call("_clear_player_board")
+    lab.call("select_component", "power")
+    var power := lab.call("_place_component_at_world", Vector3(-2.0, 0.24, 0.0)) as StaticBody3D
+    lab.call("select_component", "resistor")
+    var resistor := lab.call("_place_component_at_world", Vector3(0.0, 0.24, 0.0)) as StaticBody3D
+    lab.call("select_component", "led")
+    var led := lab.call("_place_component_at_world", Vector3(2.0, 0.24, 0.0)) as StaticBody3D
+    _check(power != null and resistor != null and led != null, "power-network fixture parts must place")
+
+    var network_open: Dictionary = lab.debug_power_network_snapshot_1127()
+    _check(int(network_open.get("total_parts", -1)) == 3, "power network must count three placed parts")
+    _check(int(network_open.get("source_reachable", -1)) == 1, "only the source is reachable before wires")
+    _check(int(network_open.get("isolated_parts", -1)) == 2, "two parts must be isolated before wires")
+    _check(int(network_open.get("powered_leds", -1)) == 0, "LED must not be source-reachable before wiring")
+
+    lab.call("_connect_parts", power, resistor)
+    var network_partial: Dictionary = lab.debug_power_network_snapshot_1127()
+    _check(int(network_partial.get("source_reachable", -1)) == 2, "power propagation must reach the first wired receiver")
+    _check(int(network_partial.get("isolated_parts", -1)) == 1, "unwired LED must remain isolated")
+
+    lab.call("_connect_parts", resistor, led)
+    var network_closed: Dictionary = lab.debug_power_network_snapshot_1127()
+    _check(int(network_closed.get("links", -1)) == 2, "power network must count two valid wire links")
+    _check(int(network_closed.get("source_reachable", -1)) == 3, "connected network must reach all three parts")
+    _check(int(network_closed.get("isolated_parts", -1)) == 0, "connected network must have no isolated parts")
+    _check(int(network_closed.get("powered_leds", -1)) == 1, "connected LED must be source-reachable")
+
+    lab.call("_test_player_circuit")
+    _check(bool(lab.debug_last_test_passed()), "connected topology must still pass the existing player circuit-path test")
 
     lab.queue_free()
     await process_frame
