@@ -49,18 +49,18 @@ func _run_validation() -> void:
     lab.call("select_component", "led")
     var blocked := lab.call("_place_component_at_world", Vector3(0.0, 0.24, 0.0)) as StaticBody3D
     _check(blocked == null, "normal click placement must reject an occupied grid point")
-    _check(int(lab.debug_component_count()) == after_first, "blocked placement must not change the board")
+    _check(int(lab.debug_placed_count()) == after_first, "blocked placement must not change the board")
 
     _check(bool(lab.debug_set_active_refdes_1127("R1")), "R1 must become the active component")
     _check(bool(lab.debug_duplicate_active_1127()), "Ctrl+D behavior must duplicate the active component into open space")
     await process_frame
-    _check(int(lab.debug_component_count()) == after_first + 1, "duplicate must add exactly one component")
+    _check(int(lab.debug_placed_count()) == after_first + 1, "duplicate must add exactly one component")
     _check(lab.debug_find_component("R2") != null, "duplicate must receive the next stable resistor reference")
 
     _check(bool(lab.debug_set_active_refdes_1127("R2")), "duplicated R2 must become active")
     _check(bool(lab.debug_delete_active_1127()), "Delete/Backspace behavior must remove the active component")
     await process_frame
-    _check(int(lab.debug_component_count()) == after_first, "delete must return the board to one component")
+    _check(int(lab.debug_placed_count()) == after_first, "delete must return the board to one component")
     _check(lab.debug_find_component("R2") == null, "deleted component must leave the active board state")
 
     lab.queue_free()
