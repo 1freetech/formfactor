@@ -59,5 +59,5 @@ func debug_primary_board_is_3d() -> bool:
     return pcb is MeshInstance3D and camera is Camera3D and camera.projection == Camera3D.PROJECTION_PERSPECTIVE
 
 func debug_schematic_is_2d_mirror() -> bool:
-    var panel := get_node_or_null("HUD/SchematicMirrorPanel")
-    return panel is Control and schematic_canvas is Control and panel.visible
+    var panel := get_node_or_null("HUD/SchematicMirrorPanel") as Control
+    return panel != null and schematic_canvas is Control and panel.visible
