@@ -249,38 +249,8 @@ jobs:
           VERSION_TAG="v${VERSION}"
           IMAGE_URL="https://raw.githubusercontent.com/1freetech/formfactor/${VERSION_TAG}/docs/releases/FormFactor-${VERSION}-Update.svg"
           NOTES="![FormFactor ${VERSION} update](${IMAGE_URL})"$'\n\n'
-          NOTES+="FormFactor ${VERSION} locks the intended presentation split: the physical PCB is the primary perspective 3D workspace, while the schematic remains a separate 2D mirror for symbol identification and connection context. The 3D board keeps electronics-specific component geometry, camera orbit/zoom, physical placement, movement, rotation, wiring, and material lighting."          NOTES+="Release visual is also attached as FormFactor-${VERSION}-Update.svg."
-
-          if gh release view "$VERSION_TAG" >/dev/null 2>&1; then
-            gh release upload "$VERSION_TAG" dist/* --clobber
-            gh release edit "$VERSION_TAG" --title "FormFactor ${VERSION}" --notes "$NOTES" --latest
-          else
-            gh release create "$VERSION_TAG" dist/* --title "FormFactor ${VERSION}" --notes "$NOTES" --latest
-          fi
-
-          if gh release view latest >/dev/null 2>&1; then
-            gh release upload latest dist/* --clobber
-            gh release edit latest --title "FormFactor ${VERSION} - Latest Playable" --notes "$NOTES"
-          else
-            gh release create latest dist/* --title "FormFactor ${VERSION} - Latest Playable" --notes "$NOTES"
-          fi
-\n\n'
-          NOTES+="The 1.126 undo/redo, moved-wire, and live-schematic fixes remain in place. A new 1.127 regression test blocks release if the main PCB stops being 3D or if the schematic mirror stops being a separate 2D HUD panel. The release visual now shows this 3D-primary layout instead of a flat board illustration."          NOTES+="Release visual is also attached as FormFactor-${VERSION}-Update.svg."
-
-          if gh release view "$VERSION_TAG" >/dev/null 2>&1; then
-            gh release upload "$VERSION_TAG" dist/* --clobber
-            gh release edit "$VERSION_TAG" --title "FormFactor ${VERSION}" --notes "$NOTES" --latest
-          else
-            gh release create "$VERSION_TAG" dist/* --title "FormFactor ${VERSION}" --notes "$NOTES" --latest
-          fi
-
-          if gh release view latest >/dev/null 2>&1; then
-            gh release upload latest dist/* --clobber
-            gh release edit latest --title "FormFactor ${VERSION} - Latest Playable" --notes "$NOTES"
-          else
-            gh release create latest dist/* --title "FormFactor ${VERSION} - Latest Playable" --notes "$NOTES"
-          fi
-\n\n'
+          NOTES+="FormFactor ${VERSION} locks the intended presentation split: the physical PCB is the primary perspective 3D workspace, while the schematic remains a separate 2D mirror for symbol identification and connection context. The 3D board keeps electronics-specific component geometry, camera orbit and zoom, physical placement, movement, rotation, wiring, and material lighting."$'\n\n'
+          NOTES+="The 1.126 undo/redo, moved-wire, and live-schematic fixes remain in place. The 1.127 regression test blocks release if the main PCB stops being 3D or if the schematic mirror stops being a separate 2D HUD panel. The release visual now shows this 3D-primary layout instead of a flat board illustration."$'\n\n'
           NOTES+="Release visual is also attached as FormFactor-${VERSION}-Update.svg."
 
           if gh release view "$VERSION_TAG" >/dev/null 2>&1; then
