@@ -257,8 +257,7 @@ jobs:
           VERSION_TAG="v${VERSION}"
           IMAGE_URL="https://raw.githubusercontent.com/1freetech/formfactor/${VERSION_TAG}/docs/releases/FormFactor-${VERSION}-Update.svg"
           NOTES="![FormFactor ${VERSION} update](${IMAGE_URL})"$'\n\n'
-          NOTES+="FormFactor ${VERSION} is an optimization run focused on reliable releases, cleaner PCB interaction, and clearer 3D presentation. Normal click placement now rejects overlaps, Delete/Backspace removes the active part, Ctrl+D duplicates it to the nearest open grid location, and edit history is bounded for long sessions."
-          NOTES+="The PCB remains text-free while adding a subtle placement grid, a visible board-depth underlay, and soft rim lighting. The release pipeline now runs the current gameplay regression on both platforms and refreshes permanent FormFactor-Windows-x64.zip and FormFactor-Linux-x64.tar.gz aliases so README download links always resolve to the newest tested build."
+          NOTES+="FormFactor ${VERSION} is an optimization run focused on reliable releases, cleaner PCB interaction, clearer 3D presentation, and stronger power-network gameplay. Normal click placement rejects overlaps, Delete/Backspace removes the active part, Ctrl+D duplicates it to the nearest open grid location, edit history is bounded, and a topology snapshot reports source-reachable versus isolated parts without pretending to replace SPICE/electrical validation."
           NOTES+="Release visual is also attached as FormFactor-${VERSION}-Update.svg."
 
           if gh release view "$VERSION_TAG" >/dev/null 2>&1; then
@@ -275,7 +274,7 @@ jobs:
             gh release create latest dist/* --title "FormFactor ${VERSION} - Latest Playable" --notes "$NOTES"
           fi
 \n\n'
-          NOTES+="The blank PCB start, 25 electronics component families, vector schematic symbols, selection feedback, Build / Buy drag placement, CAD workbench, training path, and validated C++ engineering core remain in place. The dedicated 1.126 regression test checks all three repaired editor behaviors before publication. Both Windows and Linux packages are source-validated and launch-tested before release."$'\n\n'
+          NOTES+="The PCB remains text-free while adding a subtle placement grid, visible board depth, and soft rim lighting. The release pipeline runs the current gameplay regression on Linux and Windows and refreshes permanent FormFactor-Windows-x64.zip and FormFactor-Linux-x64.tar.gz aliases so README download links resolve to the newest tested build."
           NOTES+="Release visual is also attached as FormFactor-${VERSION}-Update.svg."
 
           if gh release view "$VERSION_TAG" >/dev/null 2>&1; then
@@ -292,23 +291,6 @@ jobs:
             gh release create latest dist/* --title "FormFactor ${VERSION} - Latest Playable" --notes "$NOTES"
           fi
 \n\n'
-          NOTES+="Release visual is also attached as FormFactor-${VERSION}-Update.svg."
-
-          if gh release view "$VERSION_TAG" >/dev/null 2>&1; then
-            gh release upload "$VERSION_TAG" dist/* --clobber
-            gh release edit "$VERSION_TAG" --title "FormFactor ${VERSION}" --notes "$NOTES" --latest
-          else
-            gh release create "$VERSION_TAG" dist/* --title "FormFactor ${VERSION}" --notes "$NOTES" --latest
-          fi
-
-          if gh release view latest >/dev/null 2>&1; then
-            gh release upload latest dist/* --clobber
-            gh release edit latest --title "FormFactor ${VERSION} - Latest Playable" --notes "$NOTES"
-          else
-            gh release create latest dist/* --title "FormFactor ${VERSION} - Latest Playable" --notes "$NOTES"
-          fi
-\n\n'
-          NOTES+="The blank PCB start, 25 electronics component families, vector schematic symbols, selection feedback, Build / Buy drag placement, CAD workbench, training path, and validated C++ engineering core remain in place. The dedicated 1.126 regression test checks all three repaired editor behaviors before publication. Both Windows and Linux packages are source-validated and launch-tested before release."$'\n\n'
           NOTES+="Release visual is also attached as FormFactor-${VERSION}-Update.svg."
 
           if gh release view "$VERSION_TAG" >/dev/null 2>&1; then
