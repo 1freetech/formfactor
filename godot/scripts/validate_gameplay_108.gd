@@ -17,7 +17,7 @@ func _run_validation() -> void:
     root.add_child(scene)
     await process_frame
 
-    if not scene.has_method("debug_position_available") or not scene.has_method("debug_last_test_passed"):
+    if not scene.has_method("debug_position_available") or not scene.has_method("debug_last_test_passed") or not scene.has_method("debug_connect_pin_refs"):
         _fail("1.08 gameplay hooks are missing")
         return
 
@@ -46,7 +46,7 @@ func _run_validation() -> void:
         _fail("stray-wire test parts could not be placed")
         return
 
-    scene.call("_connect_parts", resistor, connector)
+    scene.call("debug_connect_pin_refs", "R1", "1", "J1", "1")
     scene.call("_test_player_circuit")
     if bool(scene.call("debug_last_test_passed")):
         _fail("TEST accepted a stray wire that does not connect power to the LED")
@@ -55,17 +55,22 @@ func _run_validation() -> void:
         _fail("player LED lit without a continuous power path")
         return
 
-    scene.call("_connect_parts", power, led)
+    if not bool(scene.call("debug_connect_pin_refs", "PWR1", "POS", "D1", "A")):
+        _fail("could not connect PWR1.POS to D1.A")
+        return
+    if not bool(scene.call("debug_connect_pin_refs", "D1", "K", "PWR1", "NEG")):
+        _fail("could not connect D1.K to PWR1.NEG")
+        return
     scene.call("_test_player_circuit")
     if not bool(scene.call("debug_last_test_passed")):
-        _fail("connected power-to-LED path did not pass TEST")
+        _fail("closed pin-level power-to-LED loop did not pass TEST")
         return
-    if int(scene.call("debug_last_test_path_length")) != 1:
-        _fail("direct connected path should contain exactly one wire")
+    if int(scene.call("debug_last_test_path_length")) != 2:
+        _fail("direct closed LED loop should contain exactly two external wires")
         return
     if not bool(scene.call("debug_player_led_lit")):
         _fail("the player-placed LED did not visibly light after a valid test")
         return
 
-    print("GAMEPLAY108 PASS: occupied placement blocked, stray wire rejected, connected power-to-LED path accepted, and player LED glow verified.")
+    print("GAMEPLAY108 PASS: occupied placement blocked, stray pin wire rejected, closed power-to-LED pin loop accepted, and player LED glow verified.")
     quit(0)
