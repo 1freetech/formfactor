@@ -16,7 +16,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
   endif()
 endif()
 
-add_library(formfactor_core src/component.cpp src/hash.cpp src/policy_trust.cpp src/key_authority.cpp src/source_authority.cpp src/catalog.cpp src/catalog_filter.cpp src/quantity.cpp src/circuit.cpp src/digital.cpp src/spice.cpp src/stackup.cpp src/layout.cpp src/impedance.cpp src/return_path.cpp src/pdn.cpp src/decoupling.cpp)
+add_library(formfactor_core src/component.cpp src/component_geometry.cpp src/hash.cpp src/policy_trust.cpp src/key_authority.cpp src/source_authority.cpp src/catalog.cpp src/catalog_filter.cpp src/quantity.cpp src/circuit.cpp src/digital.cpp src/spice.cpp src/stackup.cpp src/layout.cpp src/impedance.cpp src/return_path.cpp src/pdn.cpp src/decoupling.cpp)
 target_include_directories(formfactor_core PUBLIC include)
 
 if(FORMFACTOR_BUILD_SIGNATURE_VERIFIER)
@@ -47,6 +47,10 @@ enable_testing()
 add_executable(component_tests tests/component_tests.cpp)
 target_link_libraries(component_tests PRIVATE formfactor_core)
 add_test(NAME component_validation COMMAND component_tests)
+
+add_executable(component_geometry_tests tests/component_geometry_tests.cpp)
+target_link_libraries(component_geometry_tests PRIVATE formfactor_core)
+add_test(NAME component_geometry_catalog COMMAND component_geometry_tests)
 
 add_executable(catalog_tests tests/catalog_tests.cpp)
 target_link_libraries(catalog_tests PRIVATE formfactor_core)
