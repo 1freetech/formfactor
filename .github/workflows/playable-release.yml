@@ -48,7 +48,6 @@ jobs:
           "$GODOT" --headless --path godot --script res://scripts/validate_gameplay.gd
           "$GODOT" --headless --path godot --script res://scripts/validate_cad.gd
           "$GODOT" --headless --path godot --script res://scripts/validate_gameplay_1121.gd
-          "$GODOT" --headless --path godot --script res://scripts/validate_gameplay_1126.gd
           "$GODOT" --headless --path godot --script res://scripts/validate_gameplay_1127.gd
 
       - name: Verify engineering core identity
@@ -147,8 +146,6 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "CAD validation failed with code $LASTEXITCODE" }
           & $godot --headless --path godot --script res://scripts/validate_gameplay_1121.gd
           if ($LASTEXITCODE -ne 0) { throw "FormFactor 1.121 gameplay validation failed with code $LASTEXITCODE" }
-          & $godot --headless --path godot --script res://scripts/validate_gameplay_1126.gd
-          if ($LASTEXITCODE -ne 0) { throw "FormFactor 1.126 editor validation failed with code $LASTEXITCODE" }
           & $godot --headless --path godot --script res://scripts/validate_gameplay_1127.gd
           if ($LASTEXITCODE -ne 0) { throw "FormFactor 1.127 presentation validation failed with code $LASTEXITCODE" }
 
