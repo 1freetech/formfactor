@@ -1,0 +1,40 @@
+{
+  "components": [
+    {
+      "kind": "LED",
+      "shape": "sphere",
+      "color": "#39FF14",
+      "scale": [0.45, 0.45, 0.45]
+    },
+    {
+      "kind": "RESISTOR",
+      "shape": "box",
+      "color": "#B77A33",
+      "scale": [0.82, 0.20, 0.28]
+    },
+    {
+      "kind": "CAPACITOR",
+      "shape": "cylinder",
+      "color": "#338CE8",
+      "scale": [0.44, 0.48, 0.44]
+    },
+    {
+      "kind": "CHIP",
+      "shape": "box",
+      "color": "#101416",
+      "scale": [0.85, 0.20, 0.62]
+    },
+    {
+      "kind": "POWER",
+      "shape": "box",
+      "color": "#E0382F",
+      "scale": [0.85, 0.42, 0.72]
+    },
+    {
+      "kind": "CONNECTOR",
+      "shape": "box",
+      "color": "#D6D9DB",
+      "scale": [0.90, 0.25, 0.35]
+    }
+  ]
+}
