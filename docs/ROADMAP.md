@@ -4,6 +4,8 @@ Apply [simple instructions and component selection rules](INTERACTION_RULES.md) 
 
 The SDL workbench is currently a visual smoke-test prototype. It proves that a native window can launch; it is not the target graphics quality and must not drive engineering truth. Physics and validated data stay below visualization in the dependency graph.
 
+The Godot 4.7.2 client is the playable actual-3D path. Version 1.128 adds a tested layered PBR board presentation with separate visual FR4/copper/mask depth, plated-hole details, fiducials, antialiasing, and a shadow-casting rim light. This geometry is explicitly visual-only and cannot satisfy stackup, drill, finish, clearance, safety, thermal, or manufacturing gates.
+
 See [SEMICONDUCTOR_PHYSICS.md](SEMICONDUCTOR_PHYSICS.md) for the standing path from board/circuit physics through electromagnetic fields, semiconductor-device TCAD, quantum transport, and material/electronic-structure analysis.
 
 ## 1. Truth layer

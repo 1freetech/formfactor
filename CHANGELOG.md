@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-09-19 — FormFactor 1.128 layered PBR PCB
+
+FormFactor 1.128 makes the playable board look and feel more like a real 3D object. The board now shows separate FR4, copper, and solder-mask depth, copper edge rails, twelve plated-hole details, three fiducials, clear-coated material response, antialiasing, and a real shadow-casting rim light. A Godot runtime test loads the game and checks the meshes, materials, layers, light, and 3D/2D view boundary before release. These are visual-only details: they do not prove a real stackup, drill, finish, clearance, impedance, thermal result, or manufacturability.
+
 ## 2026-09-15 — FreeLab direct-manipulation gameplay update
 
 [PR #12](https://github.com/1freetech/formfactor/pull/12) merged into `main` as [commit 3eeed3d](https://github.com/1freetech/formfactor/commit/3eeed3df8e72eaff27c6a757c8ce75994b68c031). FreeLab now supports click-and-drag movement for placed components, snapped placement previews, Delete/Backspace removal of the focused part and its wires, safer Escape cancellation for help/move/wire actions, live wire previews, compatible-target highlighting, and hover feedback. The CMake FreeLab target now builds `src/workbench_plus.cpp`, and normal validation installs SDL2 so the graphical frontend is included in CI compilation. The temporary custom window/header drag experiment was removed before merge and is not part of this update. The engineering core remains authoritative; these are game-control and presentation improvements only.
