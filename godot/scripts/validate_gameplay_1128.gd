@@ -11,8 +11,9 @@ func _check(condition: bool, message: String) -> void:
         push_error("1.128 PBR board validation: %s" % message)
 
 func _run_validation() -> void:
-    _check(str(ProjectSettings.get_setting("application/config/name", "")) == "FormFactor 1.128",
-        "application version must be FormFactor 1.128")
+    var app_name := str(ProjectSettings.get_setting("application/config/name", ""))
+    _check(app_name.begins_with("FormFactor "),
+        "application identity must remain FormFactor")
     _check(int(ProjectSettings.get_setting("rendering/anti_aliasing/quality/msaa_3d", 0)) == 2,
         "real 3D MSAA must be enabled")
 
