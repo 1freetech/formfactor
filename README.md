@@ -16,6 +16,8 @@ formfactor is an open-source, physics-grounded PCB construction game and enginee
 
 **FormFactor 1.128:** the real 3D board now has visible FR4 depth, separate copper and solder-mask layers, copper edge rails, twelve plated-hole details, three fiducials, clear-coated material response, antialiasing, and a real shadow-casting rim light. These details make the board easier to read while orbiting it. They are visual-only and never prove a real stackup or manufacturing result. See the [1.128 open-source discovery record](docs/OPEN_SOURCE_DISCOVERY_1.128.md).
 
+[Review the 1.128 change](https://github.com/1freetech/formfactor/pull/29) · [Verify the merged source](https://github.com/1freetech/formfactor/commit/0fec0bd7724cfe7b1574084e7709cd3530b5527d)
+
 Start with the downloads above if you only want to run the current graphical FreeLab prototype. Developers can use [Run FormFactor in VS Code](docs/GETTING_STARTED.md) for simple, numbered source-build instructions.
 
 All setup help and future game screens follow the [simple instructions and component selection rules](docs/INTERACTION_RULES.md): visible buttons, one action per step, and accurate links between component names, schematic symbols, physical packages, and simulation models.
