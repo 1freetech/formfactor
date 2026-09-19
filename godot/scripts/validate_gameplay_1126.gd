@@ -12,7 +12,7 @@ func _check(condition: bool, message: String) -> void:
 
 func _run_validation() -> void:
     var application_name := str(ProjectSettings.get_setting("application/config/name", ""))
-    _check(application_name == "FormFactor 1.126", "application version must be FormFactor 1.126")
+    _check(application_name.begins_with("FormFactor "), "application identity must remain FormFactor")
 
     var packed := load("res://scenes/main.tscn") as PackedScene
     _check(packed != null, "main scene must load")
@@ -78,8 +78,8 @@ func _run_validation() -> void:
     await process_frame
 
     if failures.is_empty():
-        print("FormFactor 1.126 editor validation: PASS")
+        print("FormFactor 1.126 editor regression validation: PASS")
         quit(0)
     else:
-        print("FormFactor 1.126 editor validation: FAIL (%d)" % failures.size())
+        print("FormFactor 1.126 editor regression validation: FAIL (%d)" % failures.size())
         quit(1)
