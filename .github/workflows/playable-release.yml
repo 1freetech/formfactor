@@ -49,6 +49,7 @@ jobs:
           "$GODOT" --headless --path godot --script res://scripts/validate_cad.gd
           "$GODOT" --headless --path godot --script res://scripts/validate_gameplay_1121.gd
           "$GODOT" --headless --path godot --script res://scripts/validate_gameplay_1127.gd
+          "$GODOT" --headless --path godot --script res://scripts/validate_gameplay_1128.gd
 
       - name: Verify engineering core identity
         run: python3 scripts/check_identity.py
@@ -148,6 +149,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "FormFactor 1.121 gameplay validation failed with code $LASTEXITCODE" }
           & $godot --headless --path godot --script res://scripts/validate_gameplay_1127.gd
           if ($LASTEXITCODE -ne 0) { throw "FormFactor 1.127 presentation validation failed with code $LASTEXITCODE" }
+          & $godot --headless --path godot --script res://scripts/validate_gameplay_1128.gd
+          if ($LASTEXITCODE -ne 0) { throw "FormFactor 1.128 PBR board validation failed with code $LASTEXITCODE" }
 
       - name: Package and launch-test complete Godot Windows game
         shell: pwsh
@@ -249,8 +252,9 @@ jobs:
           VERSION_TAG="v${VERSION}"
           IMAGE_URL="https://raw.githubusercontent.com/1freetech/formfactor/${VERSION_TAG}/docs/releases/FormFactor-${VERSION}-Update.svg"
           NOTES="![FormFactor ${VERSION} update](${IMAGE_URL})"$'\n\n'
-          NOTES+="FormFactor ${VERSION} locks the intended presentation split: the physical PCB is the primary perspective 3D workspace, while the schematic remains a separate 2D mirror for symbol identification and connection context. The 3D board keeps electronics-specific component geometry, camera orbit and zoom, physical placement, movement, rotation, wiring, and material lighting."$'\n\n'
-          NOTES+="The 1.126 undo/redo, moved-wire, and live-schematic fixes remain in place. The 1.127 regression test blocks release if the main PCB stops being 3D or if the schematic mirror stops being a separate 2D HUD panel. The release visual now shows this 3D-primary layout instead of a flat board illustration."$'\n\n'
+          NOTES+="FormFactor ${VERSION} gives the real 3D PCB visible depth and clearer material response. The board now has separate visual FR4, copper, and solder-mask layers, copper edge rails, twelve plated-hole details, three fiducials, antialiasing, and a real shadow-casting rim light."$'\n\n'
+          NOTES+="This makes the board shape and surface easier to read while the player orbits the workbench. The existing 3D component placement, movement, rotation, wiring, testing, and 2D schematic mirror remain in place."$'\n\n'
+          NOTES+="All new board details are visual-only. They do not prove a real stackup, finish, drill size, clearance, impedance, thermal result, safety result, or manufacturability."$'\n\n'
           NOTES+="Release visual is also attached as FormFactor-${VERSION}-Update.svg."
 
           if gh release view "$VERSION_TAG" >/dev/null 2>&1; then

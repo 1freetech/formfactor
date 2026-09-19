@@ -4,8 +4,8 @@
 
 No compiler or terminal setup is needed for the packaged builds.
 
-- **Windows:** [Download the latest FormFactor Windows build](https://github.com/1freetech/formfactor/releases/download/latest/FormFactor-Windows-x64.zip), extract the ZIP, then double-click `FormFactor.exe`.
-- **Linux:** [Download the latest FormFactor Linux build](https://github.com/1freetech/formfactor/releases/download/latest/FormFactor-Linux-x64.tar.gz), extract it, then open `FormFactor`.
+- **Windows:** [Download FormFactor 1.128 for Windows](https://github.com/1freetech/formfactor/releases/download/latest/FormFactor-1.128-Windows-x64.zip), extract the ZIP, then double-click `PLAY_FORMFACTOR.bat`.
+- **Linux:** [Download FormFactor 1.128 for Linux](https://github.com/1freetech/formfactor/releases/download/latest/FormFactor-1.128-Linux-x64.tar.gz), extract it, then run `PLAY_FORMFACTOR.sh`.
 - **Latest release page:** [FormFactor - Latest Playable Build](https://github.com/1freetech/formfactor/releases/tag/latest)
 
 Every push to `main` now builds Windows and Linux packages, runs the implemented CTest suite on both platforms, and refreshes the `latest` release only after both builds pass.
@@ -13,6 +13,8 @@ Every push to `main` now builds Windows and Linux packages, runs the implemented
 formfactor is an open-source, physics-grounded PCB construction game and engineering simulator. The long-term goal is an interactive board builder whose designs are accepted only when engineering solvers and manufacturing checks support them.
 
 **Display rule:** the playable physical PCB is a **3D perspective workspace** with 3D component packages. The **2D schematic is a side mirror only** for schematic symbols and connection context; it does not replace the physical board.
+
+**FormFactor 1.128:** the real 3D board now has visible FR4 depth, separate copper and solder-mask layers, copper edge rails, twelve plated-hole details, three fiducials, clear-coated material response, antialiasing, and a real shadow-casting rim light. These details make the board easier to read while orbiting it. They are visual-only and never prove a real stackup or manufacturing result. See the [1.128 open-source discovery record](docs/OPEN_SOURCE_DISCOVERY_1.128.md).
 
 Start with the downloads above if you only want to run the current graphical FreeLab prototype. Developers can use [Run FormFactor in VS Code](docs/GETTING_STARTED.md) for simple, numbered source-build instructions.
 
