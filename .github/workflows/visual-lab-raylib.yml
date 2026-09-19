@@ -1,0 +1,52 @@
+name: visual-lab-raylib
+
+on:
+  push:
+    branches:
+      - experiment/visual-lab-raylib
+    paths:
+      - 'experiments/raylib_visual_lab/**'
+      - 'docs/OPEN_SOURCE_VISUAL_RESEARCH.md'
+      - '.github/workflows/visual-lab-raylib.yml'
+  pull_request:
+    paths:
+      - 'experiments/raylib_visual_lab/**'
+      - 'docs/OPEN_SOURCE_VISUAL_RESEARCH.md'
+      - '.github/workflows/visual-lab-raylib.yml'
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out FormFactor
+        uses: actions/checkout@v4
+
+      - name: Install raylib desktop build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libasound2-dev \
+            libgl1-mesa-dev \
+            libx11-dev \
+            libxrandr-dev \
+            libxi-dev \
+            libxcursor-dev \
+            libxinerama-dev
+
+      - name: Configure visual lab
+        run: cmake -S experiments/raylib_visual_lab -B build-visual-lab -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build visual lab
+        run: cmake --build build-visual-lab --parallel 2
+
+  windows:
+    runs-on: windows-latest
+    steps:
+      - name: Check out FormFactor
+        uses: actions/checkout@v4
+
+      - name: Configure visual lab
+        run: cmake -S experiments/raylib_visual_lab -B build-visual-lab -A x64
+
+      - name: Build visual lab
+        run: cmake --build build-visual-lab --config Release --parallel 2
