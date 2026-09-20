@@ -159,7 +159,6 @@ void draw_board_3d(SDL_Renderer* r, int width, int height, const Camera3D& camer
     const ScreenPoint c = project_logical(1000.0F, 620.0F, 0.0F, width, height, camera);
     const ScreenPoint d = project_logical(0.0F, 620.0F, 0.0F, width, height, camera);
 
-    const ScreenPoint ab = project_logical(0.0F, 0.0F, -0.10F, width, height, camera);
     const ScreenPoint bb = project_logical(1000.0F, 0.0F, -0.10F, width, height, camera);
     const ScreenPoint cb = project_logical(1000.0F, 620.0F, -0.10F, width, height, camera);
     const ScreenPoint db = project_logical(0.0F, 620.0F, -0.10F, width, height, camera);

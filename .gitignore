@@ -1,3 +1,25 @@
 /build/
 /build-cmake/
 *.user
+
+# Unity 6.3 generated state. Keep Assets, Packages, and ProjectSettings tracked.
+/unity/FormFactor/[Ll]ibrary/
+/unity/FormFactor/[Tt]emp/
+/unity/FormFactor/[Oo]bj/
+/unity/FormFactor/[Bb]uild/
+/unity/FormFactor/[Bb]uilds/
+/unity/FormFactor/[Ll]ogs/
+/unity/FormFactor/[Uu]ser[Ss]ettings/
+/unity/FormFactor/MemoryCaptures/
+/unity/FormFactor/Recordings/
+/unity/FormFactor/*.csproj
+/unity/FormFactor/*.sln
+/unity/FormFactor/*.suo
+
+# Godot prototype generated state.
+/godot/FormFactorPrototype/.godot/
+/godot/FormFactorPrototype/.import/
+
+# TypeScript inspector dependencies and compiled output.
+/web/formfactor-inspector/node_modules/
+/web/formfactor-inspector/dist/
