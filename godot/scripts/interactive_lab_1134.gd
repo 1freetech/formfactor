@@ -29,7 +29,7 @@ func _retitle_existing_lab() -> void:
 
 func _build_board() -> void:
     # 80 x 50 x 1.6 mm teaching board; thickness is the common nominal FR-4 board value.
-    var center_y := BOARD_TOP_Y - mm(BOARD_THICKNESS_MM) * 0.5
+    var center_y: float = BOARD_TOP_Y - mm(BOARD_THICKNESS_MM) * 0.5
     var fr4 := _material(Color(0.018, 0.19, 0.075, 1.0), 0.02, 0.52)
     _box("PCB_Substrate", mm3(BOARD_WIDTH_MM, BOARD_THICKNESS_MM, BOARD_DEPTH_MM), Vector3(0, center_y, 0), fr4)
 
@@ -48,7 +48,7 @@ func _build_board() -> void:
 func _build_resistor(body: Node3D, body_material: Material, metal: Material) -> void:
     # Generic DIN-style 0.25 W axial teaching package: 6.3 x 2.3 mm body,
     # 0.6 mm leads, 10.16 mm nominal mounting pitch. Not a manufacturer claim.
-    var y := mm(2.0)
+    var y: float = mm(2.0)
     var core := _cylinder_child(body, "AxialResistorBody3D", mm(1.15), mm(6.3), Vector3(0, y, 0), body_material)
     core.rotation_degrees.z = 90.0
     for x in [-mm(4.1), mm(4.1)]:
@@ -60,19 +60,19 @@ func _build_resistor(body: Node3D, body_material: Material, metal: Material) -> 
 func _build_dip(body: Node3D, pins_per_side: int, black: Material, metal: Material) -> void:
     # Generic through-hole DIP: 2.54 mm pin pitch, 7.62 mm row spacing.
     # Body length follows pin count; package is explicitly generic, not manufacturer-exact.
-    var body_length_mm := maxf(9.8, float(pins_per_side - 1) * 2.54 + 2.2)
+    var body_length_mm: float = maxf(9.8, float(pins_per_side - 1) * 2.54 + 2.2)
     _box_child(body, "DIPBody3D", mm3(body_length_mm, 3.3, 6.35), Vector3(0, mm(2.05), 0), black)
     for side in [-1.0, 1.0]:
         for i in range(pins_per_side):
-            var x_mm := (float(i) - float(pins_per_side - 1) * 0.5) * 2.54
-            var z_mm := side * 3.81
+            var x_mm: float = (float(i) - float(pins_per_side - 1) * 0.5) * 2.54
+            var z_mm: float = side * 3.81
             _box_child(body, "DIPPin3D", mm3(0.50, 1.8, 0.25), Vector3(mm(x_mm), mm(0.9), mm(z_mm)), metal)
 
 func _build_to92(body: Node3D, black: Material, metal: Material) -> void:
     # Generic TO-92 teaching envelope: 4.8 x 4.0 x 5.0 mm, 1.27 mm lead pitch.
     _box_child(body, "TO92Body3D", mm3(4.8, 5.0, 4.0), Vector3(0, mm(3.1), 0), black)
     for i in range(3):
-        var x_mm := (float(i) - 1.0) * 1.27
+        var x_mm: float = (float(i) - 1.0) * 1.27
         _cylinder_child(body, "TO92Lead3D", mm(0.22), mm(2.2), Vector3(mm(x_mm), mm(1.1), 0), metal)
 
 func _build_led_component(body: Node3D, metal: Material) -> void:
