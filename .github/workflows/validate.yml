@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - 'validation/**'
+      - 'automation/**'
   pull_request:
 
 jobs:
@@ -13,31 +14,24 @@ jobs:
     steps:
       - name: Check out FormFactor
         uses: actions/checkout@v4
-
       - name: Install native and Godot validation dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y libsdl2-dev curl unzip
-
       - name: Install official Godot 4.7.2 stable validator
         run: |
           set -euo pipefail
           mkdir -p .tools/godot
-          curl -L --fail --retry 3 \
-            -o /tmp/godot.zip \
-            https://github.com/godotengine/godot-builds/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip
+          curl -L --fail --retry 3 -o /tmp/godot.zip https://github.com/godotengine/godot-builds/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip
           echo "cadd3204e728a35d3f13adb7fd0d7902636b79f6b95c40c265eb73b6c35329e4  /tmp/godot.zip" | sha256sum -c -
           unzip -q /tmp/godot.zip -d .tools/godot
           chmod +x .tools/godot/Godot_v4.7.2-stable_linux.x86_64
           .tools/godot/Godot_v4.7.2-stable_linux.x86_64 --version
-
       - name: Verify FormFactor identity
         run: python3 scripts/check_identity.py
-
       - name: Validate deterministic CAD bridge
         run: python3 tests/test_cad_bridge.py
-
-      - name: Validate actual Godot 3D scene, gameplay, CAD, editor fixes, 1.127 view roles, and 1.128 layered PBR board
+      - name: Validate actual Godot 3D scene, gameplay, CAD, and current workbench regressions
         run: |
           set -euo pipefail
           GODOT=.tools/godot/Godot_v4.7.2-stable_linux.x86_64
@@ -53,41 +47,23 @@ jobs:
           "$GODOT" --headless --path godot --script res://scripts/validate_gameplay_1126.gd
           "$GODOT" --headless --path godot --script res://scripts/validate_gameplay_1127.gd
           "$GODOT" --headless --path godot --script res://scripts/validate_gameplay_1128.gd
-
+          "$GODOT" --headless --path godot --script res://scripts/validate_gameplay_1131.gd
+          "$GODOT" --headless --path godot --script res://scripts/validate_gameplay_1132.gd
       - name: Run complete direct-compiler validation suite
         run: sh scripts/validate.sh
-
       - name: Configure CMake engineering and FreeLab targets
         run: cmake -S . -B build-cmake
-
       - name: Build CMake engineering and FreeLab targets
         run: cmake --build build-cmake --parallel 2
-
       - name: Run complete CTest suite
         run: ctest --test-dir build-cmake --output-on-failure
-
       - name: Run focused strict-warning sanitizer checks
         run: |
-          g++ -std=c++20 -Wall -Wextra -Wpedantic -Werror \
-            -fsanitize=address,undefined -fno-omit-frame-pointer -Iinclude \
-            src/quantity.cpp tests/quantity_tests.cpp \
-            -o build/quantity_sanitizer_tests
+          g++ -std=c++20 -Wall -Wextra -Wpedantic -Werror -fsanitize=address,undefined -fno-omit-frame-pointer -Iinclude src/quantity.cpp tests/quantity_tests.cpp -o build/quantity_sanitizer_tests
           ASAN_OPTIONS=detect_leaks=1 ./build/quantity_sanitizer_tests
-          g++ -std=c++20 -Wall -Wextra -Wpedantic -Werror \
-            -fsanitize=address,undefined -fno-omit-frame-pointer -Iinclude \
-            src/hash.cpp src/policy_trust.cpp src/policy_signature.cpp \
-            tests/regression/formfactor_cr_19_ed25519_signature_verification.cpp \
-            -lcrypto -o build/policy_signature_sanitizer_tests
+          g++ -std=c++20 -Wall -Wextra -Wpedantic -Werror -fsanitize=address,undefined -fno-omit-frame-pointer -Iinclude src/hash.cpp src/policy_trust.cpp src/policy_signature.cpp tests/regression/formfactor_cr_19_ed25519_signature_verification.cpp -lcrypto -o build/policy_signature_sanitizer_tests
           ASAN_OPTIONS=detect_leaks=1 ./build/policy_signature_sanitizer_tests
-          g++ -std=c++20 -Wall -Wextra -Wpedantic -Werror \
-            -fsanitize=address,undefined -fno-omit-frame-pointer -Iinclude \
-            src/hash.cpp src/policy_trust.cpp src/key_authority.cpp \
-            tests/regression/formfactor_cr_20_pinned_key_trust_root.cpp \
-            -o build/key_authority_sanitizer_tests
+          g++ -std=c++20 -Wall -Wextra -Wpedantic -Werror -fsanitize=address,undefined -fno-omit-frame-pointer -Iinclude src/hash.cpp src/policy_trust.cpp src/key_authority.cpp tests/regression/formfactor_cr_20_pinned_key_trust_root.cpp -o build/key_authority_sanitizer_tests
           ASAN_OPTIONS=detect_leaks=1 ./build/key_authority_sanitizer_tests
-          g++ -std=c++20 -Wall -Wextra -Wpedantic -Werror \
-            -fsanitize=address,undefined -fno-omit-frame-pointer -Iinclude \
-            src/hash.cpp src/policy_trust.cpp src/key_authority.cpp \
-            tests/regression/formfactor_cr_21_root_update_sequence.cpp \
-            -o build/root_transition_sanitizer_tests
+          g++ -std=c++20 -Wall -Wextra -Wpedantic -Werror -fsanitize=address,undefined -fno-omit-frame-pointer -Iinclude src/hash.cpp src/policy_trust.cpp src/key_authority.cpp tests/regression/formfactor_cr_21_root_update_sequence.cpp -o build/root_transition_sanitizer_tests
           ASAN_OPTIONS=detect_leaks=1 ./build/root_transition_sanitizer_tests
