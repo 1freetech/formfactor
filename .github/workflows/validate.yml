@@ -5,6 +5,8 @@ on:
     branches:
       - main
       - 'validation/**'
+      - 'update-*/**'
+      - 'update-*'
   pull_request:
 
 jobs:
@@ -65,6 +67,15 @@ jobs:
 
       - name: Run complete CTest suite
         run: ctest --test-dir build-cmake --output-on-failure
+
+      - name: Configure optional Box3D physics target
+        run: cmake -S . -B build-box3d -DFORMFACTOR_ENABLE_BOX3D_PHYSICS=ON -DFORMFACTOR_BUILD_FREELAB=OFF
+
+      - name: Build Box3D physics smoke target
+        run: cmake --build build-box3d --target box3d_physics_tests --parallel 2
+
+      - name: Run Box3D physics smoke test
+        run: ctest --test-dir build-box3d -R box3d_physics_smoke --output-on-failure
 
       - name: Run focused strict-warning sanitizer checks
         run: |
