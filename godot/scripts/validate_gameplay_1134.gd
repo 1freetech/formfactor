@@ -49,6 +49,13 @@ func _initialize() -> void:
     xs.sort()
     if xs.size() < 2 or not near(xs[1] - xs[0], 0.254, 0.002):
         fail("DIP pin pitch is not 2.54 mm"); return
-    if lab.get_script().resource_path.find("1134") == -1:\n        fail("main scene is not using the 0.134 realism layer"); return\n    if lab.inspection_toolbar_visible or lab.compact_toolbar.visible:\n        fail("secondary workbench controls must start collapsed"); return\n    if lab.workbench_menu_button == null or lab.workbench_menu_button.text != "WORKBENCH ▸":\n        fail("collapsed Workbench menu control missing"); return\n    if lab.view_hint == null or not lab.view_hint.visible:\n        fail("Help must remain visible at startup"); return
+    if lab.get_script().resource_path.find("1134") == -1:
+        fail("main scene is not using the 0.134 realism layer"); return
+    if lab.inspection_toolbar_visible or lab.compact_toolbar.visible:
+        fail("secondary workbench controls must start collapsed"); return
+    if lab.workbench_menu_button == null or lab.workbench_menu_button.text != "WORKBENCH ▸":
+        fail("collapsed Workbench menu control missing"); return
+    if lab.view_hint == null or not lab.view_hint.visible:
+        fail("Help must remain visible at startup"); return
     print("FormFactor 0.134 visual-realism regression passed: mm scale, board thickness/top plane, resistor body, DIP pitch, real 3D main scene.")
     quit(0)
