@@ -3,7 +3,7 @@
 config_version=5
 
 [application]
-config/name="FormFactor 1.133"
+config/name="FormFactor 0.134"
 run/main_scene="res://scenes/main.tscn"
 
 [display]

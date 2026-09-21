@@ -49,6 +49,7 @@ jobs:
           "$GODOT" --headless --path godot --script res://scripts/validate_gameplay_1128.gd
           "$GODOT" --headless --path godot --script res://scripts/validate_gameplay_1131.gd
           "$GODOT" --headless --path godot --script res://scripts/validate_gameplay_1132.gd
+          "$GODOT" --headless --path godot --script res://scripts/validate_gameplay_1134.gd
       - name: Run complete direct-compiler validation suite
         run: sh scripts/validate.sh
       - name: Configure CMake engineering and FreeLab targets
