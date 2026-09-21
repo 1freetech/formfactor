@@ -1,6 +1,6 @@
 extends "res://scripts/interactive_lab_1132.gd"
 
-# FormFactor 1.134 visual-realism layer.
+# FormFactor 0.134 visual-realism layer.
 # Geometry is presentation-only: it may represent sourced/package-standard dimensions,
 # but it never creates electrical, thermal, timing, manufacturing, package, or simulation truth.
 # Authoritative geometry source unit is millimeters. 1 Godot world unit = 10 mm.
@@ -16,16 +16,45 @@ func mm(value: float) -> float:
 func mm3(x: float, y: float, z: float) -> Vector3:
     return Vector3(mm(x), mm(y), mm(z))
 
+var workbench_menu_button: Button
+
 func _ready() -> void:
     super._ready()
+    _declutter_workbench()
     if status_label != null:
         status_label.text = "3D PCB // dimensioned in mm // schematic is context only"
+
+func _declutter_workbench() -> void:
+    # Keep Help visible, but open the board with secondary inspection controls collapsed.
+    inspection_toolbar_visible = false
+    if compact_toolbar != null:
+        compact_toolbar.visible = false
+    if mode_badge != null:
+        mode_badge.position = Vector2(18, 52)
+    var hud := get_node_or_null("HUD") as CanvasLayer
+    if hud == null:
+        return
+    workbench_menu_button = Button.new()
+    workbench_menu_button.name = "WorkbenchMenu0134"
+    workbench_menu_button.text = "WORKBENCH ▸"
+    workbench_menu_button.position = Vector2(18, 78)
+    workbench_menu_button.custom_minimum_size = Vector2(112, 24)
+    workbench_menu_button.add_theme_font_size_override("font_size", 9)
+    workbench_menu_button.pressed.connect(_toggle_workbench_menu)
+    hud.add_child(workbench_menu_button)
+    if view_hint != null:
+        view_hint.position = Vector2(1110, 18)
+
+func _toggle_workbench_menu() -> void:
+    _toggle_inspection_toolbar()
+    if workbench_menu_button != null:
+        workbench_menu_button.text = "WORKBENCH ◂" if inspection_toolbar_visible else "WORKBENCH ▸"
 
 func _retitle_existing_lab() -> void:
     super._retitle_existing_lab()
     var version_label := get_node_or_null("WorkbenchVersion3D") as Label3D
     if version_label != null:
-        version_label.text = "1.134 // DIMENSIONED 3D PCB"
+        version_label.text = "0.134 // DIMENSIONED 3D PCB"
 
 func _build_board() -> void:
     # 80 x 50 x 1.6 mm teaching board; thickness is the common nominal FR-4 board value.
