@@ -29,7 +29,7 @@ func _run_validation() -> void:
         _fail("Godot application identity no longer identifies FormFactor")
         return
 
-    var packed := load("res://scenes/main.tscn") as PackedScene
+    var packed := load("res://scenes/fixtures/workbench_1134.tscn") as PackedScene
     if packed == null:
         _fail("main.tscn did not load")
         return

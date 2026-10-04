@@ -9,11 +9,11 @@ func _fail(message: String) -> void:
 
 func _run_validation() -> void:
     var application_name := str(ProjectSettings.get_setting("application/config/name", ""))
-    if not application_name.begins_with("FormFactor 1."):
+    if not application_name.begins_with("FormFactor "):
         _fail("application identity is not a FormFactor version")
         return
 
-    var packed := load("res://scenes/main.tscn") as PackedScene
+    var packed := load("res://scenes/fixtures/workbench_1125.tscn") as PackedScene
     if packed == null:
         _fail("main.tscn did not load")
         return

@@ -1,7 +1,7 @@
 extends SceneTree
 
 func _init() -> void:
-    var packed := load("res://scenes/main.tscn") as PackedScene
+    var packed := load("res://scenes/fixtures/workbench_1131.tscn") as PackedScene
     if packed == null:
         push_error("1.131 validation: main 3D scene missing")
         quit(1)

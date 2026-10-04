@@ -1,3 +1,7 @@
+## FormFactor 0.135 — smooth board construction
+
+Wordless icon controls, component previews, local snap assistance and repeat placement. Help and engineering details open on demand; prototype connectivity stays scientifically UNKNOWN. See [controls and validation](docs/smooth-board-0.135.md).
+
 # FormFactor
 
 ## Play FormFactor

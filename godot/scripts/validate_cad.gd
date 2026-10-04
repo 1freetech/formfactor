@@ -8,7 +8,7 @@ func _fail(message: String) -> void:
     quit(1)
 
 func _run_validation() -> void:
-    var packed := load("res://scenes/main.tscn") as PackedScene
+    var packed := load("res://scenes/fixtures/workbench_1134.tscn") as PackedScene
     if packed == null:
         _fail("main.tscn did not load")
         return

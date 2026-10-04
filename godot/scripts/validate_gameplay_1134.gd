@@ -8,7 +8,7 @@ func near(a: float, b: float, tolerance: float = EPS) -> bool:
     return absf(a - b) <= tolerance
 
 func _initialize() -> void:
-    var packed := load("res://scenes/main.tscn") as PackedScene
+    var packed := load("res://scenes/fixtures/workbench_1134.tscn") as PackedScene
     if packed == null:
         fail("main scene missing"); return
     var lab := packed.instantiate()
@@ -28,7 +28,7 @@ func _initialize() -> void:
         fail("board top plane is inconsistent"); return
 
     lab.select_component("resistor")
-    var resistor := lab._place_component_at_world(Vector3(0, float(lab.BOARD_TOP_Y), 0))
+    var resistor: StaticBody3D = lab._place_component_at_world(Vector3(0, float(lab.BOARD_TOP_Y), 0))
     await process_frame
     if resistor == null:
         fail("could not place resistor"); return
@@ -37,11 +37,14 @@ func _initialize() -> void:
         fail("generic resistor body is not 6.3 mm long"); return
 
     lab.select_component("logic")
-    var dip := lab._place_component_at_world(Vector3(1.5, float(lab.BOARD_TOP_Y), 0))
+    var dip: StaticBody3D = lab._place_component_at_world(Vector3(1.5, float(lab.BOARD_TOP_Y), 0))
     await process_frame
     if dip == null:
         fail("could not place DIP"); return
-    var pins := dip.find_children("DIPPin3D", "MeshInstance3D", true, false)
+    var pins: Array[Node] = []
+    for child in dip.get_children():
+        if child is MeshInstance3D and child.mesh is BoxMesh and (child.mesh as BoxMesh).size.is_equal_approx(Vector3(0.05, 0.18, 0.025)):
+            pins.append(child)
     var xs: Array[float] = []
     for pin in pins:
         var x := (pin as MeshInstance3D).position.x

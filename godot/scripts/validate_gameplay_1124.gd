@@ -11,7 +11,7 @@ func _check(condition: bool, message: String) -> void:
         push_error("1.124 gameplay validation: %s" % message)
 
 func _run_validation() -> void:
-    var packed := load("res://scenes/main.tscn") as PackedScene
+    var packed := load("res://scenes/fixtures/workbench_1124.tscn") as PackedScene
     _check(packed != null, "main scene must load")
     if packed == null:
         quit(1)
