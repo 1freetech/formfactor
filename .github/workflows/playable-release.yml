@@ -43,7 +43,7 @@ jobs:
           set -euo pipefail
           GODOT=godot-engine/Godot_v4.7.2-stable_linux.x86_64
           "$GODOT" --headless --path godot --editor --quit-after 1
-          for script in validate_3d.gd validate_gameplay.gd validate_cad.gd validate_gameplay_1121.gd validate_gameplay_1127.gd validate_gameplay_1128.gd validate_gameplay_1129.gd validate_gameplay_1130.gd validate_gameplay_1131.gd validate_gameplay_1132.gd; do
+          for script in validate_3d.gd validate_gameplay.gd validate_cad.gd validate_gameplay_1121.gd validate_gameplay_1127.gd validate_gameplay_1128.gd validate_gameplay_1129.gd validate_gameplay_1130.gd validate_gameplay_1131.gd validate_gameplay_1132.gd validate_gameplay_1134.gd validate_gameplay_1135.gd; do
             "$GODOT" --headless --path godot --script "res://scripts/$script"
           done
 
@@ -72,15 +72,15 @@ jobs:
 
           PLAY
           1. Extract the archive and run ./PLAY_FORMFACTOR.sh.
-          2. Pick a component from the left component menu and click the 3D PCB to place it. The 2D schematic at the side is a mirror only.
+          2. Pick a symbol from the icon catalog and click the 3D PCB to place it. The 2D schematic at the side is a mirror only.
           3. Drag a placed component to move it. Drag empty board/workbench space to rotate the camera.
           4. Click a placed component and use Q/E or the on-screen buttons to rotate the component.
-          5. Use WIRE to connect parts and TEST to validate a connected power-to-LED path.
+          5. Use the wire icon to connect parts and the waveform icon to check connectivity only. Electrical results remain UNKNOWN.
           6. Hover a placed component to see the smart-target marker and context information.
           7. Press F to smoothly focus the active or hovered component. Press B to return to the full PCB board view.
           8. Press Ctrl+Z to undo board edits and Ctrl+Y to redo them.
-          9. Open CAD // PARAMETRIC for the 3D parametric workspace.
-          10. Open LEARN // 100 LESSONS for the guided PCB curriculum.
+          9. Press Delete to remove the hovered part. Escape cancels placement.
+          10. Click the question-mark icon for Help and the magnifier for component details.
 
           Engineering truth remains authoritative: visual presentation never proves electrical, thermal, timing, package, stackup, clearance, safety, or manufacturability results.
           TXT
@@ -91,7 +91,7 @@ jobs:
           # while all source validators passed. Import + packaged-tree validators test
           # package integrity without conflating it with CI display/session behavior.
           package-linux/FormFactor --headless --path package-linux --editor --quit-after 1
-          for script in validate_3d.gd validate_gameplay.gd validate_cad.gd validate_gameplay_1129.gd validate_gameplay_1130.gd validate_gameplay_1131.gd validate_gameplay_1132.gd; do
+          for script in validate_3d.gd validate_gameplay.gd validate_cad.gd validate_gameplay_1129.gd validate_gameplay_1130.gd validate_gameplay_1131.gd validate_gameplay_1132.gd validate_gameplay_1134.gd validate_gameplay_1135.gd; do
             package-linux/FormFactor --headless --path package-linux --script "res://scripts/$script"
           done
 
@@ -130,7 +130,7 @@ jobs:
           $godot = '.\godot-engine\Godot_v4.7.2-stable_win64_console.exe'
           & $godot --headless --path godot --editor --quit-after 1
           if ($LASTEXITCODE -ne 0) { throw "Godot editor scan failed with code $LASTEXITCODE" }
-          $scripts = @('validate_3d.gd','validate_gameplay.gd','validate_cad.gd','validate_gameplay_1121.gd','validate_gameplay_1127.gd','validate_gameplay_1128.gd','validate_gameplay_1129.gd','validate_gameplay_1130.gd','validate_gameplay_1131.gd','validate_gameplay_1132.gd')
+          $scripts = @('validate_3d.gd','validate_gameplay.gd','validate_cad.gd','validate_gameplay_1121.gd','validate_gameplay_1127.gd','validate_gameplay_1128.gd','validate_gameplay_1129.gd','validate_gameplay_1130.gd','validate_gameplay_1131.gd','validate_gameplay_1132.gd','validate_gameplay_1134.gd','validate_gameplay_1135.gd')
           foreach ($script in $scripts) {
             & $godot --headless --path godot --script "res://scripts/$script"
             if ($LASTEXITCODE -ne 0) { throw "$script failed with code $LASTEXITCODE" }
@@ -205,14 +205,14 @@ jobs:
           TAG="v${VERSION}"
           NOTES=$'- FormFactor '"${VERSION}"$': cross-platform playable packaging repaired and verified from the copied package tree.\n- Current 3D/CAD/gameplay/inspection regressions run on Linux and Windows; the physical 3D PCB remains primary and the 2D schematic remains mirror/context only.\n- Engineering-truth boundary preserved: presentation cannot invent electrical, thermal, timing, package, stackup, safety, or manufacturing evidence.\n- Windows and Linux downloads below are published only after both package jobs pass.'
           if gh release view "$TAG" >/dev/null 2>&1; then
-            gh release upload "$TAG" dist/* --clobber
+            gh release upload "$TAG" dist/* docs/formfactor-0.135-gameplay.jpg --clobber
             gh release edit "$TAG" --title "FormFactor ${VERSION}" --notes "$NOTES" --latest
           else
-            gh release create "$TAG" dist/* --title "FormFactor ${VERSION}" --notes "$NOTES" --latest
+            gh release create "$TAG" dist/* docs/formfactor-0.135-gameplay.jpg --title "FormFactor ${VERSION}" --notes "$NOTES" --latest
           fi
           if gh release view latest >/dev/null 2>&1; then
-            gh release upload latest dist/* --clobber
+            gh release upload latest dist/* docs/formfactor-0.135-gameplay.jpg --clobber
             gh release edit latest --title "FormFactor ${VERSION} - Latest Playable" --notes "$NOTES"
           else
-            gh release create latest dist/* --title "FormFactor ${VERSION} - Latest Playable" --notes "$NOTES"
+            gh release create latest dist/* docs/formfactor-0.135-gameplay.jpg --title "FormFactor ${VERSION} - Latest Playable" --notes "$NOTES"
           fi

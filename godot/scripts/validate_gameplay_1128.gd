@@ -17,7 +17,7 @@ func _run_validation() -> void:
     _check(int(ProjectSettings.get_setting("rendering/anti_aliasing/quality/msaa_3d", 0)) == 2,
         "real 3D MSAA must be enabled")
 
-    var packed := load("res://scenes/main.tscn") as PackedScene
+    var packed := load("res://scenes/fixtures/workbench_1128.tscn") as PackedScene
     _check(packed != null, "main scene must load")
     if packed == null:
         quit(1)

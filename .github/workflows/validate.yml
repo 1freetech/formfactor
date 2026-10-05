@@ -17,7 +17,7 @@ jobs:
       - name: Install native and Godot validation dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libsdl2-dev curl unzip
+          sudo apt-get install -y libsdl2-dev curl unzip xvfb
       - name: Install official Godot 4.7.2 stable validator
         run: |
           set -euo pipefail
@@ -49,6 +49,18 @@ jobs:
           "$GODOT" --headless --path godot --script res://scripts/validate_gameplay_1128.gd
           "$GODOT" --headless --path godot --script res://scripts/validate_gameplay_1131.gd
           "$GODOT" --headless --path godot --script res://scripts/validate_gameplay_1132.gd
+          "$GODOT" --headless --path godot --script res://scripts/validate_gameplay_1134.gd
+          "$GODOT" --headless --path godot --script res://scripts/validate_gameplay_1135.gd
+      - name: Capture live wordless board evidence
+        run: |
+          mkdir -p runtime-proof
+          FORMFACTOR_CAPTURE_PATH="$PWD/runtime-proof/formfactor-0.135-gameplay.jpg" xvfb-run -a .tools/godot/Godot_v4.7.2-stable_linux.x86_64 --path godot --script res://scripts/validate_gameplay_1135.gd -- --capture
+      - name: Upload exact-head runtime proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: formfactor-0.135-runtime-${{ github.sha }}
+          path: runtime-proof/*.jpg
+          if-no-files-found: error
       - name: Run complete direct-compiler validation suite
         run: sh scripts/validate.sh
       - name: Configure CMake engineering and FreeLab targets

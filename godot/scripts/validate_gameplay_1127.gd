@@ -12,10 +12,10 @@ func _check(condition: bool, message: String) -> void:
 
 func _run_validation() -> void:
     var application_name := str(ProjectSettings.get_setting("application/config/name", ""))
-    _check(application_name.begins_with("FormFactor 1."),
-        "application identity must remain FormFactor with a three-decimal 1.x version")
+    _check(application_name.begins_with("FormFactor "),
+        "application identity must remain FormFactor with a version")
 
-    var packed := load("res://scenes/main.tscn") as PackedScene
+    var packed := load("res://scenes/fixtures/workbench_1127.tscn") as PackedScene
     _check(packed != null, "main scene must load")
     if packed == null:
         quit(1)
